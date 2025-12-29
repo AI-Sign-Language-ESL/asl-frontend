@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
-import '../l10n/app_localizations.dart';
+import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import 'custom_sidebar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DatasetContributionScreen extends StatelessWidget {
   const DatasetContributionScreen({Key? key}) : super(key: key);

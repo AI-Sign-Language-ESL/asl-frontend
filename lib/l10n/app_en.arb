@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "worldUnheard": "𝐴 𝑤𝑜𝑟𝑙𝑑 𝑤ℎ𝑒𝑟𝑒 𝑛𝑜 𝑜𝑛𝑒 𝑖𝑠 𝑙𝑒𝑓𝑡 𝑢𝑛ℎ𝑒𝑎𝑟𝑑",
   "getStarted": "Get Started ➔ ",
   "continueAsGuest": "Continue as a guest",
@@ -42,7 +43,7 @@
   "user": "User",
   "organization": "Organization",
   "madeWithLove": "Made with 💖 for the Deaf community",
-  "profile": "profile",
+  "profile": "Profile",
   "checkEmail": "Check your email",
   "sentResetLink": "We have sent a password reset link to\nyour registered email address.",
   "backToLogin": "Back to Login",
@@ -95,5 +96,4 @@
   "enterTextToSign": "Enter text to convert to sign language",
   "typeYourMessage": "Type your message here...",
   "orSignUpWith": "Or Sign up with"
-
 }

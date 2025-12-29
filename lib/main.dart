@@ -1,11 +1,12 @@
 // lib/main.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import 'screens/custom_sidebar.dart';
 import 'screens/dataset_contribution_screen.dart';
-import 'screens/home_screen.dart'; // ← Your NEW beautiful home
+import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/org_signup_screen.dart';
 import 'screens/organization_profile_screen.dart';
@@ -74,11 +75,20 @@ class MyApp extends StatelessWidget {
     return Consumer<LocaleProvider>(
       builder: (context, localeProvider, child) {
         return MaterialApp(
-          locale: localeProvider.locale,
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
           debugShowCheckedModeBanner: false,
           title: 'TAFAHOM',
+
+          locale: localeProvider.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+
+          // ✅ CORRECT localization delegates for intl-based localization
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+
           theme: ThemeData(
             fontFamily: 'Cairo',
             primaryColor: const Color(0xFF275878),
@@ -89,18 +99,22 @@ class MyApp extends StatelessWidget {
               foregroundColor: Color(0xFF275878),
               centerTitle: true,
               titleTextStyle: TextStyle(
-                  color: Color(0xFF275878),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
+                color: Color(0xFF275878),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            pageTransitionsTheme: const PageTransitionsTheme(builders: {
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            }),
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              },
+            ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF275878),
-                  foregroundColor: Colors.white),
+                backgroundColor: const Color(0xFF275878),
+                foregroundColor: Colors.white,
+              ),
             ),
           ),
 
@@ -114,26 +128,21 @@ class MyApp extends StatelessWidget {
             '/reset_password': (_) => const ResetPasswordScreen(),
             '/reset_sent': (_) => const ResetSentScreen(),
             '/set_new_password': (_) => const SetNewPasswordScreen(),
-
-            // MAIN APP ROUTE → this is your "home"
-            '/home': (_) => const MainNavigator(), // ← ADDED THIS
-
+            '/home': (_) => const MainNavigator(),
             '/main': (_) => const MainNavigator(),
             '/user_profile': (_) => const UserProfileScreen(),
             '/org_profile': (_) => const OrganizationProfileScreen(),
             '/subscription': (_) => SubscriptionScreen(),
           },
 
-          // Optional: Smart initial screen based on login state
-          home:
-              const AuthWrapper(), // ← This decides splash → login OR direct to main
+          home: const AuthWrapper(),
         );
       },
     );
   }
 }
 
-/// This widget automatically sends logged-in users straight to MainNavigator
+/// Auto route based on login state
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -141,19 +150,17 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
 
-    // If already logged in (e.g. after hot restart), go directly to main app
     if (userProvider.isLoggedIn) {
       return const MainNavigator();
     }
-
-    // Otherwise start normal flow
     return const SplashScreen();
   }
 }
 
-/// Your beautiful post-login app with sidebar
+/// Main app with sidebar
 class MainNavigator extends StatefulWidget {
   const MainNavigator({Key? key}) : super(key: key);
+
   @override
   State<MainNavigator> createState() => MainNavigatorState();
 }
@@ -166,8 +173,7 @@ class MainNavigatorState extends State<MainNavigator> {
     final userProvider = Provider.of<UserProvider>(context);
 
     final List<Widget> _screens = [
-      HomeScreen(username: userProvider.username ?? ''), // ← NEW beautiful home
-
+      HomeScreen(username: userProvider.username ?? ''),
       SignToTextScreen(),
       DatasetContributionScreen(),
       SubscriptionScreen(),

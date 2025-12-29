@@ -1,4 +1,5 @@
 {
+  "@@locale": "ar",
   "worldUnheard": "عالم حيث لا يُترك أحد غير مسموع",
   "getStarted": "ابدأ ➔ ",
   "continueAsGuest": "المتابعة كضيف",
@@ -95,5 +96,4 @@
   "cameraNotAvailable": "الكاميرا غير متوفرة",
   "enterTextToSign": "أدخل النص لتحويله إلى لغة الإشارة",
   "typeYourMessage": "اكتب رسالتك هنا..."
-  
 }

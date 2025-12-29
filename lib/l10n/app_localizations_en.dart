@@ -9,8 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get worldUnheard =>
-      '𝐴 𝑤𝑜𝑟𝑙𝑑 𝑤ℎ𝑒𝑟𝑒 𝑛𝑜 𝑜𝑛𝑒 𝑖𝑠 𝑙𝑒𝑓𝑡 𝑢𝑛ℎ𝑒𝑎𝑟𝑑';
+  String get worldUnheard => '𝐴 𝑤𝑜𝑟𝑙𝑑 𝑤ℎ𝑒𝑟𝑒 𝑛𝑜 𝑜𝑛𝑒 𝑖𝑠 𝑙𝑒𝑓𝑡 𝑢𝑛ℎ𝑒𝑎𝑟𝑑';
 
   @override
   String get getStarted => 'Get Started ➔ ';
@@ -139,14 +138,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get madeWithLove => 'Made with 💖 for the Deaf community';
 
   @override
-  String get profile => 'profile';
+  String get profile => 'Profile';
 
   @override
   String get checkEmail => 'Check your email';
 
   @override
-  String get sentResetLink =>
-      'We have sent a password reset link to\nyour registered email address.';
+  String get sentResetLink => 'We have sent a password reset link to\nyour registered email address.';
 
   @override
   String get backToLogin => 'Back to Login';
@@ -173,8 +171,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPassword => 'Reset Password';
 
   @override
-  String get willEmailLink =>
-      'We will email you a link to reset your password.';
+  String get willEmailLink => 'We will email you a link to reset your password.';
 
   @override
   String get emailAddress => 'Email Address';
@@ -258,8 +255,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpUsGrow => 'Help Us Grow';
 
   @override
-  String get recordSign =>
-      'Record a sign and tell us what it means to\nimprove our dataset.';
+  String get recordSign => 'Record a sign and tell us what it means to\nimprove our dataset.';
 
   @override
   String get whatSignMean => 'What does this sign mean?';
