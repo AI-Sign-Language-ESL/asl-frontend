@@ -1,5 +1,7 @@
 // lib/widgets/custom_sidebar.dart
 import 'package:flutter/material.dart';
+import 'package:tafahom_english_light/l10n/app_localizations.dart';
+
 import '../core/constants/colors.dart';
 import '../screens/home_screen.dart';
 import '../screens/sign_to_text_screen.dart';
@@ -7,7 +9,6 @@ import '../screens/dataset_contribution_screen.dart';
 import '../screens/subscription_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomSidebar extends StatelessWidget {
   final int selectedIndex;
@@ -19,14 +20,14 @@ class CustomSidebar extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  // ✅ SAFE NAVIGATION METHOD (FIX)
+  /// Safe navigation helper
   void _safeNavigate(BuildContext context, Widget screen, int index) {
     onItemTapped(index);
 
-    // 1️⃣ Close the sidebar / dialog
+    // Close drawer
     Navigator.of(context).pop();
 
-    // 2️⃣ Navigate AFTER drawer/dialog is closed
+    // Navigate after drawer is closed
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => screen),
@@ -37,6 +38,7 @@ class CustomSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
     return Drawer(
       child: Container(
         color: AppColors.primaryBlue,
@@ -65,7 +67,7 @@ class CustomSidebar extends StatelessWidget {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/login',
-                    (r) => false,
+                    (route) => false,
                   );
                 });
               },
@@ -78,7 +80,7 @@ class CustomSidebar extends StatelessWidget {
   }
 
   Widget _item(BuildContext context, IconData icon, String title, int index) {
-    bool selected = selectedIndex == index;
+    final bool selected = selectedIndex == index;
 
     return ListTile(
       leading: Icon(
@@ -108,13 +110,6 @@ class CustomSidebar extends StatelessWidget {
             break;
 
           case 1:
-            _safeNavigate(
-              context,
-              const SignToTextScreen(),
-              index,
-            );
-            break;
-
           case 2:
             _safeNavigate(
               context,
@@ -134,7 +129,7 @@ class CustomSidebar extends StatelessWidget {
           case 4:
             _safeNavigate(
               context,
-              SubscriptionScreen(),
+              const SubscriptionScreen(),
               index,
             );
             break;

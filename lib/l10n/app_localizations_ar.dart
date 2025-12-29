@@ -51,8 +51,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signUp => 'تسجيل';
 
   @override
-  String get pleaseEnterEmailUsername =>
-      'يرجى إدخال بريدك الإلكتروني أو اسم المستخدم';
+  String get pleaseEnterEmailUsername => 'يرجى إدخال بريدك الإلكتروني أو اسم المستخدم';
 
   @override
   String get pleaseEnterPassword => 'يرجى إدخال كلمة المرور';
@@ -145,8 +144,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkEmail => 'تحقق من بريدك';
 
   @override
-  String get sentResetLink =>
-      'لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى\nبريدك الإلكتروني المسجل.';
+  String get sentResetLink => 'لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى\nبريدك الإلكتروني المسجل.';
 
   @override
   String get backToLogin => 'العودة إلى تسجيل الدخول';
@@ -173,8 +171,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resetPassword => 'إعادة تعيين كلمة المرور';
 
   @override
-  String get willEmailLink =>
-      'سنرسل لك رابطًا عبر البريد الإلكتروني لإعادة تعيين كلمة المرور.';
+  String get willEmailLink => 'سنرسل لك رابطًا عبر البريد الإلكتروني لإعادة تعيين كلمة المرور.';
 
   @override
   String get emailAddress => 'عنوان البريد الإلكتروني';
@@ -258,8 +255,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpUsGrow => 'ساعدنا على النمو';
 
   @override
-  String get recordSign =>
-      'سجل إشارة وأخبرنا ماذا تعني ل\nتحسين مجموعة البيانات الخاصة بنا.';
+  String get recordSign => 'سجل إشارة وأخبرنا ماذا تعني ل\nتحسين مجموعة البيانات الخاصة بنا.';
 
   @override
   String get whatSignMean => 'ماذا تعني هذه الإشارة؟';

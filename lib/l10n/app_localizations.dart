@@ -359,7 +359,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile.
   ///
   /// In en, this message translates to:
-  /// **'profile'**
+  /// **'Profile'**
   String get profile;
 
   /// No description provided for @checkEmail.
