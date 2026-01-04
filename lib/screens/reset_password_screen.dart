@@ -1,15 +1,64 @@
 // lib/screens/reset_password_screen.dart
 import 'package:flutter/material.dart';
+import 'package:tafahom_english_light/services/auth_service.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 
-class ResetPasswordScreen extends StatelessWidget {
+class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
+
+  @override
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+}
+
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorText;
+
+  Future<void> _sendResetLink() async {
+    final local = AppLocalizations.of(context)!;
+
+    if (_emailController.text.trim().isEmpty) {
+      setState(() => _errorText = local.emailAddress);
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorText = null;
+    });
+
+    try {
+      await AuthService().requestPasswordReset(
+        email: _emailController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushNamed(context, '/reset_sent');
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorText = local.invalidEmailOrPassword;
+      });
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFD5EBF5), // Same as your app
+      backgroundColor: const Color(0xFFD5EBF5),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -19,7 +68,7 @@ class ResetPasswordScreen extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,11 +85,13 @@ class ResetPasswordScreen extends StatelessWidget {
 
             // Email Field
             TextField(
+              controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 hintText: local.emailAddress,
                 filled: true,
                 fillColor: Colors.white,
+                errorText: _errorText,
                 prefixIcon:
                     const Icon(Icons.mail_outline, color: Colors.black87),
                 border: OutlineInputBorder(
@@ -57,25 +108,26 @@ class ResetPasswordScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/reset_sent');
-                },
+                onPressed: _isLoading ? null : _sendResetLink,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF275878),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: Text(
-                  local.sendResetLink,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
-                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        local.sendResetLink,
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
               ),
             ),
 
-            const Spacer(), // Pushes the bottom text to the very bottom
+            const Spacer(),
 
-            // Try logging in? Login now (bold)
+            // Try logging in?
             Center(
               child: RichText(
                 textAlign: TextAlign.center,
@@ -99,7 +151,7 @@ class ResetPasswordScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20), // Small padding from bottom
+            const SizedBox(height: 20),
           ],
         ),
       ),

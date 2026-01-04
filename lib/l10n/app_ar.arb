@@ -95,5 +95,16 @@
   "orSignUpWith": "أو سجل باستخدام",
   "cameraNotAvailable": "الكاميرا غير متوفرة",
   "enterTextToSign": "أدخل النص لتحويله إلى لغة الإشارة",
-  "typeYourMessage": "اكتب رسالتك هنا..."
+  "typeYourMessage": "اكتب رسالتك هنا...",
+  "invalidEmailOrPassword": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  "signupFailed": "فشل إنشاء الحساب، حاول مرة أخرى",
+  "accountCreatedSuccessfully": "تم إنشاء الحساب بنجاح",
+  "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
+  "twoFactorAuth": "المصادقة الثنائية",
+  "enterOtpCode": "أدخل رمز التحقق المكون من 6 أرقام",
+  "verify": "تأكيد",
+  "invalidOtp": "رمز التحقق غير صحيح",
+  "cancel": "إلغاء",
+  "fillAllFields": "يرجى ملء جميع الخانات",
+  "emailAlreadyExists": "البريد الإلكتروني مستخدم بالفعل"
 }

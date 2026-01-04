@@ -1,7 +1,8 @@
-// lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
+import '../main.dart'; // LocaleProvider
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -12,25 +13,21 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isDarkMode = false;
-  bool isArabic = true;
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+    final localeProvider = context.watch<LocaleProvider>();
+
+    final bool isArabic = localeProvider.locale.languageCode == 'ar';
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: AppColors.primaryBlue,
         title: const Text(
-          'TAFAHOM.', // Brand; kept hard-coded
+          'TAFAHOM.',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        actions: const [
-          Icon(Icons.menu),
-          SizedBox(width: 16),
-        ],
       ),
       body: Center(
         child: Container(
@@ -51,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
+              // ===== TITLE =====
               Text(
                 local.settings,
                 style: const TextStyle(
@@ -63,13 +60,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 40),
 
-              // App Language
+              // ===== APP LANGUAGE =====
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     local.appLanguage,
-                    style: const TextStyle(fontSize: 18, color: Colors.black87),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   ToggleButtons(
                     borderRadius: BorderRadius.circular(30),
@@ -79,20 +76,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     constraints:
                         const BoxConstraints(minHeight: 40, minWidth: 60),
                     isSelected: [isArabic, !isArabic],
-                    onPressed: (int index) {
-                      setState(() {
-                        isArabic = index == 0;
-                      });
+                    onPressed: (index) {
+                      localeProvider.setLocale(
+                        index == 0 ? const Locale('ar') : const Locale('en'),
+                      );
                     },
                     children: const [
                       Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text("AR",
-                              style: TextStyle(fontWeight: FontWeight.w600))),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text("AR",
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                      ),
                       Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text("EN",
-                              style: TextStyle(fontWeight: FontWeight.w600))),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text("EN",
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                      ),
                     ],
                   ),
                 ],
@@ -100,13 +99,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 32),
 
-              // App Theme
+              // ===== APP THEME =====
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     local.appTheme,
-                    style: const TextStyle(fontSize: 18, color: Colors.black87),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   ToggleButtons(
                     borderRadius: BorderRadius.circular(30),
@@ -116,18 +115,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     constraints:
                         const BoxConstraints(minHeight: 40, minWidth: 60),
                     isSelected: [!isDarkMode, isDarkMode],
-                    onPressed: (int index) {
+                    onPressed: (index) {
                       setState(() {
                         isDarkMode = index == 1;
                       });
+
+                      // 🔜 Ready to connect to global theme provider
                     },
                     children: const [
                       Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons.dark_mode, size: 20)),
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.light_mode, size: 20),
+                      ),
                       Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons.light_mode, size: 20)),
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.dark_mode, size: 20),
+                      ),
                     ],
                   ),
                 ],
@@ -135,13 +138,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 32),
 
-              // Subscription Status
+              // ===== SUBSCRIPTION =====
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     local.subscriptionLower,
-                    style: const TextStyle(fontSize: 18, color: Colors.black87),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   Text(
                     local.oneMonthLeft,

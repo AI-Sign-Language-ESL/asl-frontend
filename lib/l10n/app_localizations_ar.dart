@@ -295,4 +295,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orSignUpWith => 'أو سجل باستخدام';
+
+  @override
+  String get invalidEmailOrPassword => 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+
+  @override
+  String get signupFailed => 'فشل إنشاء الحساب، حاول مرة أخرى';
+
+  @override
+  String get accountCreatedSuccessfully => 'تم إنشاء الحساب بنجاح';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get twoFactorAuth => 'المصادقة الثنائية';
+
+  @override
+  String get enterOtpCode => 'أدخل رمز التحقق المكون من 6 أرقام';
+
+  @override
+  String get verify => 'تأكيد';
+
+  @override
+  String get invalidOtp => 'رمز التحقق غير صحيح';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get fillAllFields => 'يرجى ملء جميع الخانات';
+
+  @override
+  String get emailAlreadyExists => 'البريد الإلكتروني مستخدم بالفعل';
 }

@@ -1,14 +1,73 @@
 // lib/screens/organization_profile_screen.dart
 import 'package:flutter/material.dart';
+import 'package:tafahom_english_light/services/auth_service.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 
-class OrganizationProfileScreen extends StatelessWidget {
+class OrganizationProfileScreen extends StatefulWidget {
   const OrganizationProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<OrganizationProfileScreen> createState() =>
+      _OrganizationProfileScreenState();
+}
+
+class _OrganizationProfileScreenState extends State<OrganizationProfileScreen> {
+  bool _isLoading = true;
+  String? _error;
+
+  String firstName = '';
+  String lastName = '';
+  String username = '';
+  String email = '';
+  String orgName = '';
+  String orgActivity = '';
+  String jobTitle = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final data = await AuthService().getProfile();
+
+      setState(() {
+        firstName = data['first_name'] ?? '';
+        lastName = data['last_name'] ?? '';
+        username = data['username'] ?? '';
+        email = data['email'] ?? '';
+        orgName = data['organization_name'] ?? '';
+        orgActivity = data['organization_activity'] ?? '';
+        jobTitle = data['job_title'] ?? '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load profile';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        body: Center(child: Text(_error!)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -45,7 +104,6 @@ class OrganizationProfileScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Avatar
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: AppColors.primaryBlue.withOpacity(0.15),
@@ -55,49 +113,35 @@ class OrganizationProfileScreen extends StatelessWidget {
                       color: AppColors.primaryBlue,
                     ),
                   ),
-
                   const SizedBox(height: 40),
-
-                  // First Name & Last Name Row
                   Row(
                     children: [
                       Expanded(
                         child: _ProfileField(
-                            label: local.firstnameLower, value: "Value"),
+                          label: local.firstnameLower,
+                          value: firstName,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: _ProfileField(
-                            label: local.lastnameLower, value: "Value"),
+                          label: local.lastnameLower,
+                          value: lastName,
+                        ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
-
-                  // Username
-                  _ProfileField(label: local.usernameLower, value: "Value"),
-
+                  _ProfileField(label: local.usernameLower, value: username),
                   const SizedBox(height: 20),
-
-                  // Email
-                  _ProfileField(label: local.emailLower, value: "Value"),
-
+                  _ProfileField(label: local.emailLower, value: email),
                   const SizedBox(height: 20),
-
-                  // Organization Name
-                  _ProfileField(label: local.orgNameLower, value: "Value"),
-
+                  _ProfileField(label: local.orgNameLower, value: orgName),
                   const SizedBox(height: 20),
-
-                  // Organization Activity
-                  _ProfileField(label: local.orgActivityLower, value: "Value"),
-
+                  _ProfileField(
+                      label: local.orgActivityLower, value: orgActivity),
                   const SizedBox(height: 20),
-
-                  // Job Title
-                  _ProfileField(label: local.jobTitleLower, value: "Value"),
-
+                  _ProfileField(label: local.jobTitleLower, value: jobTitle),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -109,7 +153,8 @@ class OrganizationProfileScreen extends StatelessWidget {
   }
 }
 
-// Reusable field widget
+// ---------------- FIELD WIDGET ----------------
+
 class _ProfileField extends StatelessWidget {
   final String label;
   final String value;
@@ -131,7 +176,7 @@ class _ProfileField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextField(
-          readOnly: true, // or false if editable
+          readOnly: true,
           decoration: InputDecoration(
             filled: true,
             fillColor: const Color(0xFFF8F9FA),

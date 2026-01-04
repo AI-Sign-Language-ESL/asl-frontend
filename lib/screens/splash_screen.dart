@@ -1,8 +1,7 @@
-// lib/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
-import '../main.dart'; // For LocaleProvider
+import '../main.dart'; // LocaleProvider
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -10,81 +9,77 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+    final localeProvider = context.read<LocaleProvider>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFD5EBF5),
       body: SafeArea(
         child: Column(
           children: [
-            // Language switch button
+            // ===== LANGUAGE SWITCH =====
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () {
-                    Provider.of<LocaleProvider>(context, listen: false)
-                        .setLocale(const Locale('en'));
-                  },
+                  onPressed: () => localeProvider.setLocale(const Locale('en')),
                   child: const Text('EN'),
                 ),
                 TextButton(
-                  onPressed: () {
-                    Provider.of<LocaleProvider>(context, listen: false)
-                        .setLocale(const Locale('ar'));
-                  },
+                  onPressed: () => localeProvider.setLocale(const Locale('ar')),
                   child: const Text('AR'),
                 ),
               ],
             ),
-            const SizedBox(height: 200), // small clean space
 
-            // LOGO
+            const Spacer(flex: 2),
+
+            // ===== LOGO =====
             Image.asset(
               'assets/logo.png',
               width: 230,
               height: 230,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(height: 1),
 
-// TAFAHOM PNG with thin underline
+            const SizedBox(height: 8),
+
+            // ===== TAFAHOM LOGO + UNDERLINE =====
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ClipRect(
-                  child: Align(
-                    alignment: Alignment.center,
-                    heightFactor: 1, // adjust crop
-                    child: Image.asset(
-                      'assets/TAFAHOM TYPO.png',
-                      width: 240,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                Image.asset(
+                  'assets/TAFAHOM TYPO.png',
+                  width: 240,
+                  fit: BoxFit.contain,
                 ),
-
-                const SizedBox(
-                    height: 20), // spacing between image and underline
-
+                const SizedBox(height: 16),
                 Container(
-                  width: 230, // adjust underline width to your PNG width
+                  width: 230,
                   height: 1,
                   color: Colors.black,
                 ),
               ],
             ),
 
-            const Spacer(flex: 1), // flexible space before tagline
-            Text(
-              local.worldUnheard,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const Spacer(flex: 1), // space after tagline
+            const Spacer(),
 
-            // Get Started Button
+            // ===== TAGLINE =====
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                local.worldUnheard,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
+            const Spacer(),
+
+            // ===== GET STARTED =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: SizedBox(
@@ -97,44 +92,38 @@ class SplashScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/login'),
                   child: Text(
                     local.getStarted,
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
               ),
             ),
+
             const SizedBox(height: 10),
 
-            // Continue as guest
+            // ===== CONTINUE AS GUEST =====
             TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/home');
-              },
+              onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
               child: Text(
                 local.continueAsGuest,
                 style: const TextStyle(
                   fontSize: 17,
-                  color: Colors.black87,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
 
-            const Spacer(flex: 3),
+            const Spacer(),
 
-            // Footer
+            // ===== FOOTER =====
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
                 local.builtBy,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

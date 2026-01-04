@@ -295,4 +295,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orSignUpWith => 'Or Sign up with';
+
+  @override
+  String get invalidEmailOrPassword => 'Invalid email or password';
+
+  @override
+  String get signupFailed => 'Signup failed. Please try again.';
+
+  @override
+  String get accountCreatedSuccessfully => 'Account created successfully';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get twoFactorAuth => 'Two-Factor Authentication';
+
+  @override
+  String get enterOtpCode => 'Enter the 6-digit code from your authenticator app.';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get invalidOtp => 'Invalid verification code';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get fillAllFields => 'Please fill all fields';
+
+  @override
+  String get emailAlreadyExists => 'Email already exists';
 }

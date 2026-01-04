@@ -1,14 +1,68 @@
 // lib/screens/user_profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import 'package:tafahom_english_light/profile/profile_service.dart';
 import '../core/constants/colors.dart';
 
-class UserProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  final ProfileService _profileService = ProfileService();
+
+  bool _isLoading = true;
+  String? _error;
+
+  String username = '';
+  String firstName = '';
+  String lastName = '';
+  String email = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final data = await _profileService.getProfile();
+
+      setState(() {
+        username = data['username'] ?? '';
+        firstName = data['first_name'] ?? '';
+        lastName = data['last_name'] ?? '';
+        email = data['email'] ?? '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load profile';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        body: Center(child: Text(_error!)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -44,7 +98,6 @@ class UserProfileScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Profile Avatar
                   CircleAvatar(
                     radius: 52,
                     backgroundColor: AppColors.primaryBlue.withOpacity(0.15),
@@ -54,27 +107,14 @@ class UserProfileScreen extends StatelessWidget {
                       color: AppColors.primaryBlue,
                     ),
                   ),
-
                   const SizedBox(height: 40),
-
-                  // First Name
-                  const _UserProfileField(
-                      label: "firstname",
-                      value:
-                          "Value"), // Note: original is hard-coded lower; localize if needed, but kept for design
+                  _UserProfileField(label: local.firstName, value: firstName),
                   const SizedBox(height: 20),
-
-                  // Last Name
-                  const _UserProfileField(label: "lastname", value: "Value"),
+                  _UserProfileField(label: local.lastName, value: lastName),
                   const SizedBox(height: 20),
-
-                  // Username
-                  const _UserProfileField(label: "username", value: "Value"),
+                  _UserProfileField(label: local.username, value: username),
                   const SizedBox(height: 20),
-
-                  // Email
-                  const _UserProfileField(label: "Email", value: "Value"),
-
+                  _UserProfileField(label: local.email, value: email),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -86,7 +126,6 @@ class UserProfileScreen extends StatelessWidget {
   }
 }
 
-// Reusable field widget (same as organization but simpler)
 class _UserProfileField extends StatelessWidget {
   final String label;
   final String value;

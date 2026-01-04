@@ -1,151 +1,127 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../core/constants/colors.dart';
-import 'package:tafahom_english_light/l10n/app_localizations.dart';
-import 'custom_sidebar.dart';
+import 'package:image_picker/image_picker.dart';
 
-class DatasetContributionScreen extends StatelessWidget {
+import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import 'package:tafahom_english_light/core/constants/colors.dart';
+import 'package:tafahom_english_light/services/dataset_contribution_service.dart';
+
+class DatasetContributionScreen extends StatefulWidget {
   const DatasetContributionScreen({Key? key}) : super(key: key);
 
-  void _navigate(BuildContext context, int index) {
-    Navigator.pop(context); // close sidebar first
-    switch (index) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.pushReplacementNamed(context, '/text_to_sign');
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/sign_to_text');
-        break;
-      case 3:
-        // already here
-        break;
-      case 4:
-        Navigator.pushReplacementNamed(context, '/subscription');
-        break;
-      case 5:
-        Navigator.pushReplacementNamed(context, '/profile');
-        break;
-      case 6:
-        Navigator.pushReplacementNamed(context, '/settings');
-        break;
+  @override
+  State<DatasetContributionScreen> createState() =>
+      _DatasetContributionScreenState();
+}
+
+class _DatasetContributionScreenState extends State<DatasetContributionScreen> {
+  final _labelController = TextEditingController();
+  final _service = DatasetContributionService();
+
+  File? _videoFile;
+  bool _isUploading = false;
+
+  /// Pick video
+  Future<void> _pickVideo() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickVideo(
+      source: ImageSource.camera,
+      maxDuration: const Duration(seconds: 15),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _videoFile = File(picked.path);
+      });
     }
+  }
+
+  /// Upload
+  Future<void> _submit() async {
+    final local = AppLocalizations.of(context)!;
+
+    if (_videoFile == null || _labelController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(local.fillAllFields)),
+      );
+      return;
+    }
+
+    setState(() => _isUploading = true);
+
+    try {
+      await _service.uploadContribution(
+        video: _videoFile!, // ✅ CORRECT
+        label: _labelController.text.trim(), // ✅ CORRECT
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(local.thankContribution)),
+      );
+
+      _labelController.clear();
+      setState(() => _videoFile = null);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Upload failed")),
+      );
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _labelController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // === Right-side sidebar ===
-      endDrawer: CustomSidebar(
-        selectedIndex: 3, // current screen
-        onItemTapped: (index) => _navigate(context, index),
-      ),
-
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: Text(local.contributeDataset),
         foregroundColor: AppColors.primaryBlue,
-        title: Text(
-          local.tafahom,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-            ),
-          ),
-          const SizedBox(width: 16),
-        ],
+        elevation: 0,
       ),
-
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 40),
-            Icon(
-              Icons.cloud_upload_outlined,
-              size: 80,
-              color: AppColors.primaryBlue.withOpacity(0.7),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              local.helpUsGrow,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryBlue,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              local.recordSign,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 40),
-            Text(
-              local.whatSignMean,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
             TextField(
+              controller: _labelController,
               decoration: InputDecoration(
                 hintText: local.egGoodMorning,
-                hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
               ),
             ),
-            const SizedBox(height: 32),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F9FC),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                  style: BorderStyle.solid,
-                  width: 1.5,
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: _pickVideo,
+              child: Container(
+                height: 160,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.lightGray,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.videocam_outlined,
-                    size: 64,
-                    color: AppColors.primaryBlue.withOpacity(0.6),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    local.uploadVideo,
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
-                  ),
-                ],
+                child: Center(
+                  child: _videoFile == null
+                      ? Text(local.uploadVideo)
+                      : const Icon(Icons.check_circle,
+                          size: 60, color: Colors.green),
+                ),
               ),
             ),
             const Spacer(),
@@ -153,25 +129,12 @@ class DatasetContributionScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(local.thankContribution)),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                  elevation: 0,
-                ),
-                child: Text(
-                  local.submitContribution,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600),
-                ),
+                onPressed: _isUploading ? null : _submit,
+                child: _isUploading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(local.submitContribution),
               ),
             ),
-            const SizedBox(height: 40),
           ],
         ),
       ),

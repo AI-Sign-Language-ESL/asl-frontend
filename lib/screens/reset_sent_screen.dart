@@ -1,6 +1,6 @@
-// lib/screens/reset_sent_screen.dart
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import 'package:tafahom_english_light/core/constants/colors.dart';
 
 class ResetSentScreen extends StatelessWidget {
   const ResetSentScreen({super.key});
@@ -8,77 +8,90 @@ class ResetSentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFD5EBF5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false, // ✅ prevent going back
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // EXACT icon from your screenshot
+            // === ICON ===
             Container(
               width: 160,
               height: 160,
               decoration: const BoxDecoration(
-                color: const Color(0xFFD5EBF5),
                 shape: BoxShape.circle,
+                color: AppColors.background,
               ),
-              padding: const EdgeInsets.all(1),
+              alignment: Alignment.center,
               child: Image.asset(
                 'assets/icons/envelope_lock.png',
                 width: 100,
                 height: 100,
+                fit: BoxFit.contain,
               ),
             ),
-            const SizedBox(height: 30),
 
+            const SizedBox(height: 32),
+
+            // === TITLE ===
             Text(
               local.checkEmail,
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textDark,
               ),
+              textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: 16),
 
+            // === DESCRIPTION ===
             Text(
               local.sentResetLink,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.black87,
                 height: 1.5,
+                color: AppColors.textDark,
               ),
             ),
-            const SizedBox(height: 60),
 
+            const SizedBox(height: 56),
+
+            // === BACK TO LOGIN BUTTON ===
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/login',
-                  (route) => false,
-                ),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF275878),
+                  backgroundColor: AppColors.primaryBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 0,
                 ),
                 child: Text(
                   local.backToLogin,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryWhite,
+                  ),
                 ),
               ),
             ),

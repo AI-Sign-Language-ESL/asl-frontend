@@ -1,20 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:tafahom_english_light/l10n/app_localizations.dart'
-    show AppLocalizations;
+import 'package:tafahom_english_light/services/auth_service.dart';
+import 'package:tafahom_english_light/l10n/app_localizations.dart';
 
-// ✅ IMPORT YOUR TARGET SCREENS
 import 'sign_to_text_screen.dart';
 import 'dataset_contribution_screen.dart';
-import 'custom_sidebar.dart';
+import '../widgets/custom_sidebar.dart';
 
-class HomeScreen extends StatelessWidget {
-  final String username;
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-  const HomeScreen({super.key, required this.username});
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _username = '';
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final data = await AuthService().getProfile();
+
+      if (!mounted) return;
+
+      setState(() {
+        _username = data['username'] ?? '';
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _username = '';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -35,13 +73,16 @@ class HomeScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.notifications_none,
-                          color: Colors.grey.shade700),
+                      Icon(
+                        Icons.notifications_none,
+                        color: Colors.grey.shade700,
+                      ),
                       const SizedBox(width: 12),
-
-                      // ✅ FIXED HAMBURGER BUTTON
                       IconButton(
-                        icon: Icon(Icons.menu, color: Colors.grey.shade700),
+                        icon: Icon(
+                          Icons.menu,
+                          color: Colors.grey.shade700,
+                        ),
                         onPressed: () {
                           showGeneralDialog(
                             context: context,
@@ -61,8 +102,8 @@ class HomeScreen extends StatelessWidget {
                                     color: Colors.transparent,
                                     child: CustomSidebar(
                                       selectedIndex: 0,
-                                      onItemTapped: (index) {
-                                        Navigator.pop(context); // close sidebar
+                                      onItemTapped: (_) {
+                                        Navigator.pop(context);
                                       },
                                     ),
                                   ),
@@ -86,36 +127,19 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // ================= WELCOME =================
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 30),
-                  children: [
-                    TextSpan(
-                      text: local.welcome,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F4E6A),
-                      ),
-                    ),
-                    TextSpan(
-                      text: '$username',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: local.exclamationEmoji,
-                      style: const TextStyle(fontSize: 28),
-                    ),
-                  ],
+              Text(
+                '${local.welcome}${_username}!',
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F4E6A),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               // ================= MAIN CARD =================
               Container(
@@ -125,9 +149,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(
-                  // ... (truncated 1602 characters)...
                   children: [
-                    // ... (assuming no additional strings in truncated part; add if there are)
                     SizedBox(
                       width: double.infinity,
                       height: 48,
@@ -190,7 +212,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // ================= SUPPORTED DIALECTS =================
               Container(

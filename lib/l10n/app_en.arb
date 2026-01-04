@@ -95,5 +95,16 @@
   "cameraNotAvailable": "Camera not available",
   "enterTextToSign": "Enter text to convert to sign language",
   "typeYourMessage": "Type your message here...",
-  "orSignUpWith": "Or Sign up with"
+  "orSignUpWith": "Or Sign up with",
+  "invalidEmailOrPassword": "Invalid email or password",
+  "signupFailed": "Signup failed. Please try again.",
+  "accountCreatedSuccessfully": "Account created successfully",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "twoFactorAuth": "Two-Factor Authentication",
+  "enterOtpCode": "Enter the 6-digit code from your authenticator app.",
+  "verify": "Verify",
+  "invalidOtp": "Invalid verification code",
+  "cancel": "Cancel",
+  "fillAllFields": "Please fill all fields",
+  "emailAlreadyExists": "Email already exists"
 }
