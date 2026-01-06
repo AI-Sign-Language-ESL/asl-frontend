@@ -80,21 +80,35 @@ class SplashScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 1),
 
-                // TAFAHOM PNG with thin underline
+                // TAFAHOM PNG/Text with thin underline
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ClipRect(
-                      child: Align(
-                        alignment: Alignment.center,
-                        heightFactor: 1,
-                        child: Image.asset(
-                          'assets/TAFAHOM TYPO.png',
-                          width: 240,
-                          fit: BoxFit.contain,
+                    if (isArabic)
+                      // Arabic text version
+                      const Text(
+                        'تَفَاهُمٌ',
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF275878),
+                          height: 0.6,
+                        ),
+                        textDirection: TextDirection.rtl,
+                      )
+                    else
+                      // English image version
+                      ClipRect(
+                        child: Align(
+                          alignment: Alignment.center,
+                          heightFactor: 1,
+                          child: Image.asset(
+                            'assets/TAFAHOM TYPO.png',
+                            width: 240,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
-                    ),
                     const SizedBox(height: 20),
                     Container(
                       width: 230,
@@ -106,7 +120,7 @@ class SplashScreen extends StatelessWidget {
 
                 const Spacer(flex: 1),
 
-                // Tagline
+                // Tagline with proper Arabic text rendering
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
@@ -115,22 +129,27 @@ class SplashScreen extends StatelessWidget {
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
+                      // Ensure proper Arabic text rendering
+                      fontFamily:
+                          null, // Use system default for proper diacritics
                     ),
                     textAlign: TextAlign.center,
+                    textDirection:
+                        isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
                 ),
 
                 const Spacer(flex: 1),
 
-                // Get Started Button
+// Get Started Button with dynamic arrow positioning
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF275878),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -142,24 +161,18 @@ class SplashScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            local.getStarted,
+                            isArabic ? 'ابدأ' : local.getStarted,
                             style: const TextStyle(
-                              fontSize: 18,
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            isArabic ? Icons.arrow_back : Icons.arrow_forward,
-                            color: Colors.white,
-                            size: 20,
                           ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
 
                 // Continue as guest
                 TextButton(
@@ -169,10 +182,12 @@ class SplashScreen extends StatelessWidget {
                   child: Text(
                     local.continueAsGuest,
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 19,
                       color: Colors.black87,
                       fontWeight: FontWeight.w500,
                     ),
+                    textDirection:
+                        isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
                 ),
 

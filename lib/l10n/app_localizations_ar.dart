@@ -9,40 +9,40 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get worldUnheard => 'عالم حيث لا يُترك أحد غير مسموع';
+  String get worldUnheard => 'عَالَمٌ لَا يُتْرَكُ فِيهِ احَدٌ بِدُونِ صَوْتٍ';
 
   @override
-  String get getStarted => 'ابدأ ➔ ';
+  String get getStarted => 'ابدأ';
 
   @override
-  String get continueAsGuest => 'المتابعة كضيف';
+  String get continueAsGuest => 'استمر كضيف';
 
   @override
-  String get builtBy => 'بني بواسطة NU • بالتعاون مع EgyDeaf';
+  String get builtBy => 'Built by NU • In collaboration with EgyDeaf';
 
   @override
-  String get welcome => 'مرحبا ';
+  String get welcome => 'أَهْلًا وَسَهْلًا';
 
   @override
-  String get signsAlive => 'حيث تأتي إشاراتك إلى الحياة.';
+  String get signsAlive => 'حَيْثُ تَنْبِضُ إِشَارَاتُكَ بِالْحَيَاةِ';
 
   @override
   String get enterEmailUsername => 'أدخل بريدك الإلكتروني أو اسم المستخدم';
 
   @override
-  String get password => 'كلمة المرور';
+  String get password => 'أدخل كلمه السر';
 
   @override
   String get rememberMe => 'تذكرني!';
 
   @override
-  String get forgotPassword => 'نسيت كلمة المرور؟';
+  String get forgotPassword => 'نسيت كلمة السر';
 
   @override
   String get login => 'تسجيل الدخول';
 
   @override
-  String get orLoginWith => 'أو تسجيل الدخول باستخدام';
+  String get orLoginWith => 'أو سجل باستخدام';
 
   @override
   String get dontHaveAccount => 'ليس لديك حساب؟ ';
@@ -54,7 +54,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pleaseEnterEmailUsername => 'يرجى إدخال بريدك الإلكتروني أو اسم المستخدم';
 
   @override
-  String get pleaseEnterPassword => 'يرجى إدخال كلمة المرور';
+  String get enterPassword => 'أدخل كلمة السر';
 
   @override
   String get subscription => 'الاشتراك';
@@ -228,13 +228,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orgActivityLower => 'نشاط المنظمة';
 
   @override
-  String get jobTitleLower => 'عنوان الوظيفة';
+  String get jobTitleLower => 'المسمي الوظيفي';
 
   @override
   String get exclamationEmoji => '! 👋';
 
   @override
-  String get startTranslating => 'ابدأ الترجمة ➔';
+  String get startTranslating => 'ابدأ الترجمة';
 
   @override
   String get contributeDataset => 'المساهمة في مجموعة البيانات';
