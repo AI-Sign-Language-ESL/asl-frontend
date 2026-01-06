@@ -22,14 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _emailError;
   String? _passwordError;
 
-  // Check if both fields are filled
   bool get _isFormValid =>
       _emailController.text.trim().isNotEmpty &&
       _passwordController.text.isNotEmpty;
 
-// Inside _attemptLogin() method – replace the whole method with this:
   void _attemptLogin() {
     final local = AppLocalizations.of(context)!;
+
     setState(() {
       _emailError = _emailController.text.trim().isEmpty
           ? local.pleaseEnterEmailUsername
@@ -39,17 +38,15 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (_isFormValid) {
-      // Save login state
       context.read<UserProvider>().login(
             _emailController.text.trim(),
             org: false,
           );
 
-      // THIS IS THE KEY LINE – go to the new main app
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/main', // ← matches route in main.dart
-        (route) => false, // removes splash, login, everything
+        '/main',
+        (route) => false,
       );
     }
   }
@@ -64,195 +61,253 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: const Color(0xFFD5EBF5),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 80),
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-              const SizedBox(height: 20), // smaller top space
+    final socialButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF275878),
+      minimumSize: const Size(double.infinity, 56),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 2,
+    );
 
-// Header
-              Image.asset(
-                'assets/TAFAHOM TYPO.png',
-                width: 240, // bigger now actually fills space
-                height: 40, // adjust proportionally
-                fit: BoxFit.contain,
-              ),
-
-              const SizedBox(height: 8), // tiny space below PNG
-
-              Text(
-                local.welcome,
-                style:
-                    const TextStyle(fontSize: 63, fontWeight: FontWeight.w900),
-              ),
-              Text(
-                local.signsAlive,
-                style: const TextStyle(fontSize: 22, color: Colors.black87),
-              ),
-              const SizedBox(height: 25), // reduce space before email field
-
-              // Email/Username Field
-              TextField(
-                controller: _emailController,
-                onChanged: (_) => setState(() => _emailError = null),
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: local.enterEmailUsername,
-                  filled: true,
-                  fillColor: Colors.white,
-                  errorText: _emailError,
-                  errorStyle: const TextStyle(color: Colors.red, fontSize: 16),
-                  prefixIcon:
-                      const Icon(Icons.person_outline, color: Colors.black87),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    return Directionality(
+      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFD5EBF5),
+        body: Stack(
+          children: [
+            // Arabic background
+            if (isArabic)
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/ar_background.png',
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 20),
 
-              // Password Field
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                onChanged: (_) => setState(() => _passwordError = null),
-                // ... (truncated 1046 characters)...
-                decoration: InputDecoration(
-                  hintText: local.password,
-                  filled: true,
-                  fillColor: Colors.white,
-                  errorText: _passwordError,
-                  errorStyle: const TextStyle(color: Colors.red, fontSize: 16),
-                  prefixIcon:
-                      const Icon(Icons.lock_outline, color: Colors.black87),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
+            SafeArea(
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height,
                   ),
-                ),
-              ),
-              const SizedBox(height: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 80),
 
-              // Remember me + Forgot password
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        activeColor: const Color(0xFF275878),
-                        onChanged: (value) =>
-                            setState(() => _rememberMe = value!),
-                      ),
-                      Text(local.rememberMe,
-                          style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/reset_password'),
-                    child: Text(
-                      local.forgotPassword,
-                      style: const TextStyle(
-                          color: Color(0xFF275878), fontSize: 16),
+                        // Logo
+                        Image.asset(
+                          'assets/TAFAHOM TYPO.png',
+                          width: 240,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 8),
+
+                        Text(
+                          local.welcome,
+                          style: const TextStyle(
+                            fontSize: 63,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        Text(
+                          local.signsAlive,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            color: Colors.black87,
+                          ),
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        // Email
+                        TextField(
+                          controller: _emailController,
+                          onChanged: (_) => setState(() => _emailError = null),
+                          decoration: InputDecoration(
+                            hintText: local.enterEmailUsername,
+                            filled: true,
+                            fillColor: Colors.white,
+                            errorText: _emailError,
+                            prefixIcon: const Icon(Icons.person_outline),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Password
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          onChanged: (_) =>
+                              setState(() => _passwordError = null),
+                          decoration: InputDecoration(
+                            hintText: local.password,
+                            filled: true,
+                            fillColor: Colors.white,
+                            errorText: _passwordError,
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Remember + Forgot
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _rememberMe,
+                                  activeColor: const Color(0xFF275878),
+                                  onChanged: (v) =>
+                                      setState(() => _rememberMe = v!),
+                                ),
+                                Text(local.rememberMe),
+                              ],
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pushNamed(
+                                context,
+                                '/reset_password',
+                              ),
+                              child: Text(local.forgotPassword),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Login
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: _isFormValid ? _attemptLogin : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF275878),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Text(
+                              local.login,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        // Or login with divider
+                        Row(
+                          children: [
+                            const Expanded(
+                              child:
+                                  Divider(thickness: 1, color: Colors.black26),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                local.orLoginWith,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              child:
+                                  Divider(thickness: 1, color: Colors.black26),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Google & Apple Buttons
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon:
+                                const FaIcon(FontAwesomeIcons.google, size: 25),
+                            label: const Text(''),
+                            onPressed: () {},
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const FaIcon(
+                              FontAwesomeIcons.apple,
+                              size: 26,
+                            ),
+                            label: const Text(''),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                            ),
+                          ),
+                        ),
+                        // Sign up
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(local.dontHaveAccount),
+                              TextButton(
+                                onPressed: () => Navigator.pushNamed(
+                                  context,
+                                  '/signup_choice',
+                                ),
+                                child: Text(
+                                  local.signUp,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Login Button - Smart disable
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isFormValid ? _attemptLogin : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF275878),
-                    disabledBackgroundColor: Colors.grey.shade400,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 3,
-                  ),
-                  child: Text(
-                    local.login,
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
-                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Or login with
-              Center(
-                  child: Text(local.orLoginWith,
-                      style: const TextStyle(color: Colors.black))),
-              const SizedBox(height: 10),
-
-              // Google & Apple Buttons
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const FaIcon(FontAwesomeIcons.google, size: 25),
-                  label: const Text(''),
-                  onPressed: () {},
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const FaIcon(
-                    FontAwesomeIcons.apple,
-                    size: 26,
-                  ),
-                  label: const Text(''),
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                  ),
-                ),
-              ),
-
-              // Sign up link
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(local.dontHaveAccount),
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/signup_choice'),
-                      child: Text(
-                        local.signUp,
-                        style: const TextStyle(
-                            color: Color(0xFF275878),
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

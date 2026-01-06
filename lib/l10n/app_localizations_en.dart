@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldUnheard => '𝐴 𝑤𝑜𝑟𝑙𝑑 𝑤ℎ𝑒𝑟𝑒 𝑛𝑜 𝑜𝑛𝑒 𝑖𝑠 𝑙𝑒𝑓𝑡 𝑢𝑛ℎ𝑒𝑎𝑟𝑑';
 
   @override
-  String get getStarted => 'Get Started ➔ ';
+  String get getStarted => 'Get Started ';
 
   @override
   String get continueAsGuest => 'Continue as a guest';
@@ -21,7 +21,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get builtBy => 'Built by NU • In collaboration with EgyDeaf';
 
   @override
-  String get welcome => 'Welcome ';
+  String get welcome => 'Welcome!';
 
   @override
   String get signsAlive => 'Where your signs come alive.';
@@ -54,7 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterEmailUsername => 'Please enter your email or username';
 
   @override
-  String get pleaseEnterPassword => 'Please enter your password';
+  String get enterPassword => 'Please enter your password';
 
   @override
   String get subscription => 'Subscription';
