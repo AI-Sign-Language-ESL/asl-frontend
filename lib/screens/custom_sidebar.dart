@@ -9,6 +9,7 @@ import '../screens/dataset_contribution_screen.dart';
 import '../screens/subscription_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
+import 'text_to_sign_screen.dart';
 
 class CustomSidebar extends StatelessWidget {
   final int selectedIndex;
@@ -104,18 +105,20 @@ class CustomSidebar extends StatelessWidget {
           case 0:
             _safeNavigate(
               context,
-              const HomeScreen(username: "User"),
+              HomeScreen(
+                username: '',
+                usernameLower: '',
+              ),
               index,
             );
             break;
 
           case 1:
+            _safeNavigate(context, const TextToSignScreen(), index);
+            break;
+
           case 2:
-            _safeNavigate(
-              context,
-              const SignToTextScreen(),
-              index,
-            );
+            _safeNavigate(context, const SignToTextScreen(), index);
             break;
 
           case 3:

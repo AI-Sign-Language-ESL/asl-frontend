@@ -59,9 +59,9 @@ class SplashScreen extends StatelessWidget {
                           child: Text(
                             isArabic ? 'English' : 'العربية',
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 18,
                               color: Color(0xFF275878),
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -78,7 +78,7 @@ class SplashScreen extends StatelessWidget {
                   width: 230,
                   height: 230,
                 ),
-                const SizedBox(height: 1),
+                const SizedBox(height: 0.5),
 
                 // TAFAHOM PNG/Text with thin underline
                 Column(

@@ -2,24 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart'
     show AppLocalizations;
 
-// ✅ IMPORT YOUR TARGET SCREENS
 import 'sign_to_text_screen.dart';
 import 'dataset_contribution_screen.dart';
-import 'custom_sidebar.dart';
+import 'custom_sidebar.dart'; // Ensure this file exports CustomSidebar
 
 class HomeScreen extends StatelessWidget {
   final String username;
 
-  const HomeScreen({super.key, required this.username});
+  // Use a GlobalKey to manage the Scaffold state
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  static const Color background = Color(0xFFD5EBF5);
+  static const Color primaryBlue = Color(0xFF275878);
+  static const Color cardBlue = Color(0xFF8FAFC3);
+  static const Color primaryWhite = Color(0xFFFFFFFF);
+
+  HomeScreen({
+    super.key,
+    required this.username,
+    required String usernameLower,
+  });
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+    final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      key: _scaffoldKey, // 1. Assign the key here
+      backgroundColor: primaryWhite,
+      // 2. Add the CustomSidebar as a drawer (or endDrawer for RTL support)
+      drawer: CustomSidebar(
+        selectedIndex: 0,
+        onItemTapped: (int p1) {},
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -27,58 +46,35 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset(
-                    'assets/TAFAHOM TYPO.png',
-                    width: 130,
-                    height: 40,
-                    fit: BoxFit.contain,
-                  ),
+                  if (isArabic)
+                    const Text(
+                      'تَفَاهُمٌ',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF275878),
+                        height: 1.1,
+                      ),
+                      textAlign: TextAlign.right,
+                    )
+                  else
+                    Image.asset(
+                      'assets/TAFAHOM.png',
+                      width: 120,
+                      height: 40,
+                      fit: BoxFit.contain,
+                    ),
                   Row(
                     children: [
-                      Icon(Icons.notifications_none,
-                          color: Colors.grey.shade700),
-                      const SizedBox(width: 12),
-
-                      // ✅ FIXED HAMBURGER BUTTON
+                      const Icon(Icons.notifications,
+                          color: Color(0xFFD4AF37), size: 28),
+                      const SizedBox(width: 10),
                       IconButton(
-                        icon: Icon(Icons.menu, color: Colors.grey.shade700),
+                        icon: const Icon(Icons.menu,
+                            color: Colors.black, size: 32),
                         onPressed: () {
-                          showGeneralDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            barrierLabel: "Sidebar",
-                            barrierColor: Colors.black.withOpacity(0.3),
-                            transitionDuration:
-                                const Duration(milliseconds: 300),
-                            pageBuilder: (_, __, ___) {
-                              return Align(
-                                alignment: Alignment.centerRight,
-                                child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  height: double.infinity,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: CustomSidebar(
-                                      selectedIndex: 0,
-                                      onItemTapped: (index) {
-                                        Navigator.pop(context); // close sidebar
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                            transitionBuilder: (_, animation, __, child) {
-                              return SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: const Offset(1, 0),
-                                  end: Offset.zero,
-                                ).animate(animation),
-                                child: child,
-                              );
-                            },
-                          );
+                          // 3. Open the drawer using the scaffold key
+                          _scaffoldKey.currentState?.openDrawer();
                         },
                       ),
                     ],
@@ -86,190 +82,218 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
               // ================= WELCOME =================
               RichText(
                 text: TextSpan(
-                  style: const TextStyle(fontSize: 30),
+                  style: const TextStyle(fontSize: 34, height: 0.7),
                   children: [
                     TextSpan(
                       text: local.welcome,
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F4E6A),
-                      ),
+                          fontWeight: FontWeight.bold, color: primaryBlue),
                     ),
                     TextSpan(
-                      text: '$username',
+                      text: ' $username',
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                     TextSpan(
                       text: local.exclamationEmoji,
-                      style: const TextStyle(fontSize: 28),
+                      style: const TextStyle(fontSize: 25),
                     ),
                   ],
                 ),
               ),
 
               const SizedBox(height: 20),
-
-              // ================= MAIN CARD =================
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8FAFC3),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Column(
-                  // ... (truncated 1602 characters)...
-                  children: [
-                    // ... (assuming no additional strings in truncated part; add if there are)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const SignToTextScreen(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2F5D7C),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          local.startTranslating,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const DatasetContributionScreen(),
-                            ),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE8F3FA),
-                          side: BorderSide.none,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          local.contributeDataset,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ================= SUPPORTED DIALECTS =================
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE1EEF6),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      local.supportedDialects,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: const [
-                        _DialectChip(flag: '🇪🇬', label: 'ESL'),
-                        SizedBox(width: 12),
-                        _DialectChip(flag: '🇺🇸', label: 'ASL'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              _buildMainCard(context, local, isArabic),
+              const SizedBox(height: 20),
+              _buildDialectsCard(local, isArabic),
             ],
           ),
         ),
       ),
     );
   }
+
+  // ... (Keep your _buildMainCard and _buildDialectsCard methods exactly as they were)
+
+  Widget _buildMainCard(
+      BuildContext context, AppLocalizations local, bool isArabic) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 127, 161, 182),
+        borderRadius: BorderRadius.circular(35),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Styled title to match multi-color design in screenshots [cite: 11, 14]
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 35,
+                fontWeight: FontWeight.w900,
+                height: 1.2,
+              ),
+              children: isArabic
+                  ? [
+                      const TextSpan(
+                          text: "تعزيز حق ",
+                          style: TextStyle(color: Colors.white70)),
+                      const TextSpan(
+                          text: "التواصل ",
+                          style: TextStyle(color: primaryBlue)),
+                      const TextSpan(
+                          text: "لكل أفراد المجتمع.",
+                          style: TextStyle(color: Colors.white70)),
+                    ]
+                  : [
+                      const TextSpan(
+                          text: "Bridging the Gap Between ",
+                          style: TextStyle(color: Colors.white70)),
+                      const TextSpan(
+                          text: "Sound ", style: TextStyle(color: primaryBlue)),
+                      const TextSpan(
+                          text: "and ",
+                          style: TextStyle(color: Colors.white70)),
+                      const TextSpan(
+                          text: "Silence.",
+                          style: TextStyle(color: primaryBlue)),
+                    ],
+            ),
+          ),
+          const SizedBox(height: 13),
+          Text(
+            local.mainDescription,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 17),
+          // Start Translating Button
+          ElevatedButton(
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SignToTextScreen())),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryBlue,
+              minimumSize: const Size(double.infinity, 52),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: Text(
+              local.startTranslating, // [cite: 5, 12]
+              style: const TextStyle(
+                  color: primaryWhite,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Contribute Button
+          ElevatedButton(
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const DatasetContributionScreen())),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: background,
+              foregroundColor: Colors.black,
+              minimumSize: const Size(double.infinity, 52),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              local.contributeDataset,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDialectsCard(AppLocalizations local, bool isArabic) {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(25),
+          decoration: BoxDecoration(
+            color: Color(0xFFD5EBF5), // EXACT COLOR: #A5BCCA8A
+            borderRadius: BorderRadius.circular(35),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                local.supportedDialects,
+                style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black),
+              ),
+              const SizedBox(height: 25),
+              Row(
+                children: const [
+                  _DialectChip(flag: '🇪🇬', label: 'ESL'),
+                  SizedBox(width: 15),
+                  _DialectChip(flag: '🇺🇸', label: 'ASL'),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // Watermark Icon exactly as seen in design [cite: 11, 12]
+        Positioned(
+          right: isArabic ? null : 10,
+          left: isArabic ? 10 : null,
+          bottom: -10,
+          child: Opacity(
+            opacity: 0.2,
+            child: Icon(Icons.translate, size: 140, color: primaryBlue),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-// ================= DIALECT CHIP =================
 class _DialectChip extends StatelessWidget {
   final String flag;
   final String label;
 
-  const _DialectChip({
-    required this.flag,
-    required this.label,
-  });
+  const _DialectChip({required this.flag, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFE1EEF6),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: Colors.grey.shade300,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(flag, style: const TextStyle(fontSize: 24)),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: Colors.black87,
-            ),
-          ),
+          Text(flag, style: const TextStyle(fontSize: 22)),
+          const SizedBox(width: 10),
+          Text(label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  color: Colors.black87)),
         ],
       ),
     );

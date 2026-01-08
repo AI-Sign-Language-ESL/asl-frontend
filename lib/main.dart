@@ -19,6 +19,7 @@ import 'screens/sign_to_text_screen.dart';
 import 'screens/signup_choice_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/subscription_screen.dart';
+import 'screens/text_to_sign_screen.dart';
 import 'screens/user_profile_screen.dart';
 import 'screens/user_signup_screen.dart';
 
@@ -129,6 +130,12 @@ class MyApp extends StatelessWidget {
             '/reset_sent': (_) => const ResetSentScreen(),
             '/set_new_password': (_) => const SetNewPasswordScreen(),
             '/home': (_) => const MainNavigator(),
+            '/home': (context) => HomeScreen(
+                  username: "User",
+                  usernameLower: 'user',
+                ),
+            '/sign-to-text': (context) => const SignToTextScreen(),
+            '/text-to-sign': (context) => const TextToSignScreen(),
             '/main': (_) => const MainNavigator(),
             '/user_profile': (_) => const UserProfileScreen(),
             '/org_profile': (_) => const OrganizationProfileScreen(),
@@ -173,7 +180,10 @@ class MainNavigatorState extends State<MainNavigator> {
     final userProvider = Provider.of<UserProvider>(context);
 
     final List<Widget> _screens = [
-      HomeScreen(username: userProvider.username ?? ''),
+      HomeScreen(
+        username: userProvider.username ?? '',
+        usernameLower: '',
+      ),
       SignToTextScreen(),
       DatasetContributionScreen(),
       SubscriptionScreen(),
