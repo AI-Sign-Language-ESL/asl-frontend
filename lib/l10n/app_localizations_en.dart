@@ -21,7 +21,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get builtBy => 'Built by NU • In collaboration with EgyDeaf';
 
   @override
-  String get welcome => 'Welcome!';
+  String get welcome => 'Welcome';
 
   @override
   String get signsAlive => 'Where your signs come alive.';
@@ -54,7 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterEmailUsername => 'Please enter your email or username';
 
   @override
-  String get enterPassword => 'Please enter your password';
+  String get pleaseEnterPassword => 'Please enter your password';
 
   @override
   String get subscription => 'Subscription';
@@ -222,6 +222,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLower => 'Email';
 
   @override
+  String get organizationSignup => 'Organization Sign Up';
+
+  @override
   String get orgNameLower => 'organization name';
 
   @override
@@ -244,6 +247,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
+
+  @override
+  String get mainDescription => 'Real-time bidirectional translation between Sign Language and spoken voice. Powered by advanced computer vision and generative AI to create a world where communication has no barriers.';
 
   @override
   String get signToText => 'Sign to Text';

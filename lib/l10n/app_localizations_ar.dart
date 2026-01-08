@@ -21,7 +21,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get builtBy => 'Built by NU • In collaboration with EgyDeaf';
 
   @override
-  String get welcome => 'أَهْلًا وَسَهْلًا';
+  String get welcome => 'مرحبا ';
 
   @override
   String get signsAlive => 'حَيْثُ تَنْبِضُ إِشَارَاتُكَ بِالْحَيَاةِ';
@@ -36,7 +36,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rememberMe => 'تذكرني!';
 
   @override
-  String get forgotPassword => 'نسيت كلمة السر';
+  String get forgotPassword => 'نسيت كلمة المرور؟';
 
   @override
   String get login => 'تسجيل الدخول';
@@ -54,7 +54,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pleaseEnterEmailUsername => 'يرجى إدخال بريدك الإلكتروني أو اسم المستخدم';
 
   @override
-  String get enterPassword => 'أدخل كلمة السر';
+  String get pleaseEnterPassword => 'يرجى إدخال كلمة المرور';
 
   @override
   String get subscription => 'الاشتراك';
@@ -222,6 +222,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get emailLower => 'البريد الإلكتروني';
 
   @override
+  String get organizationSignup => 'تسجيل منظمة';
+
+  @override
   String get orgNameLower => 'اسم المنظمة';
 
   @override
@@ -234,7 +237,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exclamationEmoji => '! 👋';
 
   @override
-  String get startTranslating => 'ابدأ الترجمة';
+  String get startTranslating => 'ابدأ الترجمة ➔';
 
   @override
   String get contributeDataset => 'المساهمة في مجموعة البيانات';
@@ -244,6 +247,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get home => 'الرئيسية';
+
+  @override
+  String get mainDescription => 'ترجمة ثنائية الاتجاه في الوقت الفعلي بين لغة الإشارة والصوت المنطوق. مدعومة بتقنيات حاسوبية بصرية متقدمة وذكاء اصطناعي توليدي، لخلق عالم لا توجد فيه أي حواجز للتواصل.';
 
   @override
   String get signToText => 'إشارة إلى نص';

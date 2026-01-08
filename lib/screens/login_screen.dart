@@ -33,8 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _emailError = _emailController.text.trim().isEmpty
           ? local.pleaseEnterEmailUsername
           : null;
-      _passwordError =
-          _passwordController.text.isEmpty ? local.pleaseEnterPassword : null;
+      _passwordError = _passwordController.text.isEmpty ? local.password : null;
     });
 
     if (_isFormValid) {
@@ -100,22 +99,38 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const SizedBox(height: 80),
 
-                        // Logo
-                        Image.asset(
-                          'assets/TAFAHOM TYPO.png',
-                          width: 240,
-                          height: 40,
-                          fit: BoxFit.contain,
-                        ),
-                        const SizedBox(height: 8),
-
+// NEW - Logo section (conditional Arabic/English)
+                        if (isArabic)
+                          // Arabic text with special styling
+                          const Text(
+                            'تَفَاهُمٌ',
+                            style: TextStyle(
+                              fontSize: 48,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF275878),
+                              height: 1.1,
+                            ),
+                            textAlign: TextAlign.right,
+                          )
+                        else
+                          // English logo image
+                          Image.asset(
+                            'assets/TAFAHOM TYPO.png',
+                            width: 240,
+                            height: 40,
+                            fit: BoxFit.contain,
+                          ),
+// Welcome + subtitle
                         Text(
-                          local.welcome,
+                          isArabic ? 'أهلاً وسهلاً' : 'Welcome!',
                           style: const TextStyle(
-                            fontSize: 63,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 55,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
                           ),
                         ),
+
+                        const SizedBox(height: 4),
                         Text(
                           local.signsAlive,
                           style: const TextStyle(
@@ -187,7 +202,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onChanged: (v) =>
                                       setState(() => _rememberMe = v!),
                                 ),
-                                Text(local.rememberMe),
+                                Text(local.rememberMe,
+                                    style: const TextStyle(
+                                        fontSize: 17, color: Colors.black)),
                               ],
                             ),
                             TextButton(
@@ -195,12 +212,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 context,
                                 '/reset_password',
                               ),
-                              child: Text(local.forgotPassword),
+                              child: Text(
+                                local.forgotPassword,
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.black87),
+                              ),
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 22),
 
                         // Login
                         SizedBox(
@@ -284,7 +305,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(local.dontHaveAccount),
+                              Text(local.dontHaveAccount,
+                                  style: const TextStyle(fontSize: 16)),
                               TextButton(
                                 onPressed: () => Navigator.pushNamed(
                                   context,
@@ -293,7 +315,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   local.signUp,
                                   style: const TextStyle(
-                                    fontSize: 15,
+                                    fontSize: 17,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
