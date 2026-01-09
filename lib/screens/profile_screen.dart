@@ -1,190 +1,183 @@
-// lib/screens/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
+import 'custom_sidebar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  static const Color underlineColor = Color(0xFFD5EBF5);
+
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
+    bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: const BackButton(color: AppColors.primaryBlue),
-        title: Text(
-          local.profile,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryBlue,
-          ),
-        ),
-        centerTitle: true,
+      backgroundColor: Colors.white,
+      endDrawer: CustomSidebar(
+        selectedIndex: 4,
+        onItemTapped: (index) {
+          Navigator.pop(context);
+        },
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            children: [
-              // === Profile Header ===
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey[200],
-                    backgroundImage: const NetworkImage(
-                      'https://randomuser.me/api/portraits/men/32.jpg', // Replace with real image
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: isArabic
+            ? const Text('تَفَاهُمٌ',
+                style: TextStyle(
+                    fontSize: 33,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF275878)))
+            : Image.asset('assets/TAFAHOM.png',
+                width: 120, height: 30, fit: BoxFit.contain),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.black, size: 30),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(color: const Color(0xFFD5EBF5), width: 3),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 1. Profile Title with Full Width Underline
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 25, 24, 15),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: underlineColor, width: 2),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "user", // Placeholder; localize if needed, but kept as is
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryBlue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.primaryBlue),
-                          ),
-                          child: Text(
-                            local.user,
-                            style: const TextStyle(
-                              color: AppColors.primaryBlue,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 40),
-
-              // === Account Section ===
-              _buildSectionTitle(local.account),
-              const SizedBox(height: 12),
-              _buildListTile(
-                icon: Icons.person_outline,
-                title: local.changePersonalProfile,
-                onTap: () {},
-              ),
-              _buildListTile(
-                icon: Icons.email_outlined,
-                title: local.changeEmailAddress,
-                onTap: () {},
-              ),
-              _buildListTile(
-                icon: Icons.lock_outline,
-                title: local.changePassword,
-                onTap: () {},
-              ),
-              _buildListTile(
-                icon: Icons.credit_card,
-                title: local.manageSubscription,
-                onTap: () => Navigator.pushNamed(context, '/subscription'),
-              ),
-
-              const SizedBox(height: 32),
-
-              // === More Settings Section ===
-              _buildSectionTitle(local.moreSettings),
-              const SizedBox(height: 12),
-              _buildListTile(
-                icon: Icons.security,
-                title: local.accountSecurity,
-                onTap: () {},
-              ),
-              _buildListTile(
-                icon: Icons.help_outline,
-                title: local.helpPrivacy,
-                onTap: () {},
-              ),
-
-              const SizedBox(height: 50),
-
-              // === Log out Button ===
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () {
-                    // TODO: Handle logout
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, '/login', (route) => false);
-                  },
                   child: Text(
-                    local.logOut,
+                    local.profile,
+                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
                     style: const TextStyle(
-                      color: AppColors.accentRed,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF275878),
                     ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
-            ],
+                // 2. Profile Content Section
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  child: Column(
+                    children: [
+                      // User Info (Tappable - Navigates to User Profile)
+                      InkWell(
+                        onTap: () =>
+                            Navigator.pushNamed(context, '/user-profile'),
+                        borderRadius: BorderRadius.circular(15),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            textDirection: isArabic
+                                ? TextDirection.rtl
+                                : TextDirection.ltr,
+                            children: [
+                              const CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(
+                                    'https://randomuser.me/api/portraits/men/32.jpg'),
+                              ),
+                              const SizedBox(width: 15),
+                              Column(
+                                crossAxisAlignment: isArabic
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Mahmoud Ahmed",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold)),
+                                  Text(local.signInterpreter,
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 14)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Menu Items with Logic
+                      _buildMenuItem(
+                        Icons.person_outline,
+                        local.personalInfo,
+                        isArabic,
+                        () => Navigator.pushNamed(context, '/user-profile'),
+                      ),
+                      _buildMenuItem(
+                        Icons.lock_outline,
+                        "Change Password", // Add this to your ARB if needed
+                        isArabic,
+                        () => Navigator.pushNamed(context, '/reset-password'),
+                      ),
+                      _buildMenuItem(
+                        Icons.card_membership,
+                        "Manage Subscription", // Add this to your ARB if needed
+                        isArabic,
+                        () => Navigator.pushNamed(context, '/subscription'),
+                      ),
+                      _buildMenuItem(
+                        Icons.logout,
+                        local.logout,
+                        isArabic,
+                        () {
+                          // Logout Logic: Clear tokens and pop to login
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/login', (route) => false);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primaryBlue,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildListTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.symmetric(vertical: 6),
+  Widget _buildMenuItem(
+      IconData icon, String title, bool isArabic, VoidCallback onTap) {
+    return Directionality(
+      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
-          child: Icon(icon, color: AppColors.primaryBlue, size: 22),
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        leading: Icon(icon, color: const Color(0xFF275878), size: 24),
         title: Text(
           title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        trailing: Icon(
+          isArabic ? Icons.chevron_left : Icons.chevron_right,
+          color: Colors.grey.shade400,
+          size: 20,
+        ),
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

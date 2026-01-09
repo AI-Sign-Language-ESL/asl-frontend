@@ -192,7 +192,7 @@ class HomeScreen extends StatelessWidget {
               elevation: 0,
             ),
             child: Text(
-              local.startTranslating, // [cite: 5, 12]
+              local.startTranslating,
               style: const TextStyle(
                   color: primaryWhite,
                   fontSize: 18,

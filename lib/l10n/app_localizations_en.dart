@@ -288,7 +288,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waitingOutput => 'Waiting for output..';
 
   @override
+  String get textOrAudioOutput => 'Text or resulting audio';
+
+  @override
   String get typeOrSpeak => 'type or speak...';
+
+  @override
+  String get startCamera => 'start camera';
+
+  @override
+  String get cameraOff => 'Camera is off';
 
   @override
   String get cameraNotAvailable => 'Camera not available';
@@ -301,4 +310,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orSignUpWith => 'Or Sign up with';
+
+  @override
+  String get personalInfo => 'Personal Information';
+
+  @override
+  String get translationHistory => 'Translation History';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get privacySettings => 'Privacy Settings';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get signInterpreter => 'Sign Language Interpreter';
 }

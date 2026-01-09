@@ -100,5 +100,11 @@
   "cameraNotAvailable": "Camera not available",
   "enterTextToSign": "Enter text to convert to sign language",
   "typeYourMessage": "Type your message here...",
-  "orSignUpWith": "Or Sign up with"
+  "orSignUpWith": "Or Sign up with",
+  "personalInfo": "Personal Information",
+  "translationHistory": "Translation History",
+  "notifications": "Notifications",
+  "privacySettings": "Privacy Settings",
+  "logout": "Logout",
+  "signInterpreter": "Sign Language Interpreter"
 }
