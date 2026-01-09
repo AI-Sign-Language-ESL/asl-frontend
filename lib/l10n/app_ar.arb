@@ -100,5 +100,11 @@
   "cameraOff": "تفعيل الكاميرا",
   "startCamera": "تفعيل الكاميرا",
   "enterTextToSign": "أدخل النص لتحويله إلى لغة الإشارة",
-  "typeYourMessage": "اكتب رسالتك هنا..."
+  "typeYourMessage": "اكتب رسالتك هنا...",
+  "personalInfo": "المعلومات الشخصية",
+  "translationHistory": "سجل الترجمة",
+  "notifications": "الإشعارات",
+  "privacySettings": "إعدادات الخصوصية",
+  "logout": "تسجيل الخروج",
+  "signInterpreter": "مترجم لغة إشارة"
 }

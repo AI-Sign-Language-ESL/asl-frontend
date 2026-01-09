@@ -288,10 +288,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get waitingOutput => 'في انتظار الإخراج..';
 
   @override
+  String get textOrAudioOutput => 'النص أو الصوت الناتج';
+
+  @override
   String get typeOrSpeak => 'اكتب أو تحدث...';
 
   @override
-  String get cameraNotAvailable => 'الكاميرا غير متوفرة';
+  String get startCamera => 'تفعيل الكاميرا';
+
+  @override
+  String get cameraOff => 'تفعيل الكاميرا';
+
+  @override
+  String get cameraNotAvailable => 'الكاميرا غير متاحة';
 
   @override
   String get enterTextToSign => 'أدخل النص لتحويله إلى لغة الإشارة';
@@ -301,4 +310,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orSignUpWith => 'أو سجل باستخدام';
+
+  @override
+  String get personalInfo => 'المعلومات الشخصية';
+
+  @override
+  String get translationHistory => 'سجل الترجمة';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get privacySettings => 'إعدادات الخصوصية';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get signInterpreter => 'مترجم لغة إشارة';
 }
