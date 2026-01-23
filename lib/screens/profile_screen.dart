@@ -16,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       endDrawer: CustomSidebar(
-        selectedIndex: 4,
+        selectedIndex: 5,
         onItemTapped: (index) {
           Navigator.pop(context);
         },
