@@ -46,38 +46,40 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (isArabic)
-                    const Text(
-                      'تَفَاهُمٌ',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF275878),
-                        height: 1.1,
-                      ),
-                      textAlign: TextAlign.right,
-                    )
-                  else
-                    Image.asset(
-                      'assets/TAFAHOM.png',
-                      width: 120,
-                      height: 40,
-                      fit: BoxFit.contain,
+                  // Left spacer to balance the menu icon
+                  const SizedBox(width: 32),
+
+                  // Centered Logo / Text
+                  Expanded(
+                    child: Center(
+                      child: isArabic
+                          ? const Text(
+                              'تَفَاهُمٌ',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF275878),
+                                height: 1.1,
+                              ),
+                              textAlign: TextAlign.center,
+                            )
+                          : Image.asset(
+                              'assets/TAFAHOM.png',
+                              width: 120,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
                     ),
-                  Row(
-                    children: [
-                      const Icon(Icons.notifications,
-                          color: Color(0xFFD4AF37), size: 28),
-                      const SizedBox(width: 10),
-                      IconButton(
-                        icon: const Icon(Icons.menu,
-                            color: Colors.black, size: 32),
-                        onPressed: () {
-                          // 3. Open the drawer using the scaffold key
-                          _scaffoldKey.currentState?.openDrawer();
-                        },
-                      ),
-                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.menu,
+                      color: Colors.black,
+                      size: 32,
+                    ),
+                    onPressed: () {
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
                   ),
                 ],
               ),
@@ -119,8 +121,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  // ... (Keep your _buildMainCard and _buildDialectsCard methods exactly as they were)
 
   Widget _buildMainCard(
       BuildContext context, AppLocalizations local, bool isArabic) {
