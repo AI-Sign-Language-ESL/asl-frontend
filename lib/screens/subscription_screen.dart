@@ -1,4 +1,3 @@
-// lib/screens/subscription_screen.dart
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
@@ -17,6 +16,16 @@ class SubscriptionScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.primaryBlue,
         elevation: 0,
+        // Added the leading property to customize back navigation
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Navigates to home and removes the subscription screen from the stack
+            Navigator.pushReplacementNamed(context, '/home');
+            // Note: If you don't use named routes, use:
+            // Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
