@@ -72,36 +72,36 @@ Make sure you have:
 - Android Emulator or physical device
 - ASL Backend API running
 
-Check Flutter installation:
+### Check Flutter installation:
 
 ```sh
 flutter doctor
-'''
-###⚙️ Installation
+```
+### ⚙️ Installation
 
 1. Clone the repository
-'''sh
+```sh
 git clone https://github.com/AI-Sign-Language-ESL/asl-frontend.git
-'''
-2. Navigate to the project directory
-'''sh
+```
+3. Navigate to the project directory
+```sh
 cd asl-frontend
-'''
-3. Install Flutter dependencies
-'''sh
+```
+5. Install Flutter dependencies
+```sh
 flutter pub get
-'''
+```
 
 ### Run the app
 
 1. For mobile:
-'''sh
+```sh
 flutter run
-'''
-2. For web:
-'''sh
+```
+3. For web:
+```sh
 flutter run -d chrome
-'''
+```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 🔧 Usage
 🔤 Text Translation
