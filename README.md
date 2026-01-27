@@ -1,18 +1,127 @@
-# tafahom
+<a id="readme-top"></a>
 
-A new Flutter project.
+<div align="center">
+  <a href="https://github.com/AI-Sign-Language-ESL/asl-frontend">
+    <img src="https://raw.githubusercontent.com/AI-Sign-Language-ESL/asl-frontend/main/assets/logo.png"
+         alt="ASL Frontend Logo"
+         height="150"
+         style="border-radius: 12px">
+  </a>
 
-## Getting Started
+  <h2 align="center">ASL Flutter App</h2>
 
-This project is a starting point for a Flutter application.
+  <p align="center">
+    Cross-platform Flutter application for Arabic Sign Language translation 🤟📱
+    <p align="center">
+      <img alt="GitHub License" src="https://img.shields.io/github/license/AI-Sign-Language-ESL/asl-frontend">
+      <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.x-blue">
+      <img alt="Dart" src="https://img.shields.io/badge/Dart-3.x-blue">
+      <img alt="GitHub issues" src="https://img.shields.io/github/issues/AI-Sign-Language-ESL/asl-frontend">
+    </p>
 
-A few resources to get you started if this is your first Flutter project:
+    <a href="#getting-started">Getting Started</a>
+    ·
+    <a href="https://github.com/AI-Sign-Language-ESL/asl-frontend/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/AI-Sign-Language-ESL/asl-frontend/issues">Request Feature</a>
+  </p>
+</div>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📌 About The Project
 
-# asl-frontend
+**ASL Flutter App** is the frontend client for the **ASL / Tafahom API**, designed to provide an intuitive and accessible interface for Arabic Sign Language translation.
+
+The app allows users to:
+- Translate **text → sign language**
+- Translate **voice → sign language**
+- Translate **sign video → text**
+- Translate **sign video → voice**
+- Use **real-time streaming translation** via WebSockets
+
+The app is built using **Flutter**, enabling deployment on **Android, iOS, and Web** from a single codebase.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
+
+## 🚀 Key Features
+
+- 📱 **Cross-platform** (Android, iOS, Web)
+- 🤟 **Sign → Text** translation
+- 🔤 **Text → Sign** translation
+- 🎙️ **Voice input support**
+- 🎥 **Camera & video upload**
+- 📡 **Live WebSocket streaming**
+- 🔐 **JWT Authentication & Google Sign-In**
+- 🎨 **Modern, accessible UI**
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
+
+<a id="getting-started"></a>
+
+## 🛠️ Getting Started
+
+Follow these steps to run the Flutter app locally.
+
+---
+
+### 📦 Prerequisites
+
+Make sure you have:
+
+- Flutter **3.x+**
+- Dart **3.x**
+- Android Studio / VS Code
+- Android Emulator or physical device
+- ASL Backend API running
+
+Check Flutter installation:
+
+```sh
+flutter doctor
+⚙️ Installation
+Clone the repository
+
+git clone https://github.com/AI-Sign-Language-ESL/asl-frontend.git
+cd asl-frontend
+Install Flutter dependencies
+
+flutter pub get
+
+⚠️ Do NOT push .env to GitHub
+✔ Add it to .gitignore
+
+Run the app
+
+For mobile:
+
+flutter run
+
+For web:
+
+flutter run -d chrome
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+🔧 Usage
+🔤 Text Translation
+Enter Arabic text and receive:
+
+Gloss
+
+Sign video
+
+🎙️ Voice Translation
+Speak Arabic and receive sign translation.
+
+🎥 Sign Video Translation
+Upload or record sign language video to receive:
+
+Text
+
+Voice output
+
+📡 Live Streaming
+Enable live translation using WebSocket connection for continuous recognition.
