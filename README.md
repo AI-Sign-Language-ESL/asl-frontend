@@ -2,8 +2,8 @@
 
 <div align="center">
   <a href="https://github.com/AI-Sign-Language-ESL/asl-frontend">
-    <img src="https://raw.githubusercontent.com/AI-Sign-Language-ESL/asl-frontend/main/assets/logo.png"
-         alt="ASL Frontend Logo"
+    <img src="https://avatars.githubusercontent.com/u/228776460?s=400&u=c69294e3b9a90eed4ef31dc37ee3ced57c2add89&v=4"
+         alt="TAFAHOM Logo"
          height="150"
          style="border-radius: 12px">
   </a>
@@ -17,14 +17,7 @@
       <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.x-blue">
       <img alt="Dart" src="https://img.shields.io/badge/Dart-3.x-blue">
       <img alt="GitHub issues" src="https://img.shields.io/github/issues/AI-Sign-Language-ESL/asl-frontend">
-    </p>
-
-    <a href="#getting-started">Getting Started</a>
-    ·
-    <a href="https://github.com/AI-Sign-Language-ESL/asl-frontend/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/AI-Sign-Language-ESL/asl-frontend/issues">Request Feature</a>
-  </p>
+   
 </div>
 
 ---
@@ -63,7 +56,7 @@ The app is built using **Flutter**, enabling deployment on **Android, iOS, and W
 
 <a id="getting-started"></a>
 
-## 🛠️ Getting Started
+### 🛠️ Getting Started
 
 Follow these steps to run the Flutter app locally.
 
@@ -83,27 +76,32 @@ Check Flutter installation:
 
 ```sh
 flutter doctor
-⚙️ Installation
-Clone the repository
+'''
+###⚙️ Installation
 
+1. Clone the repository
+'''sh
 git clone https://github.com/AI-Sign-Language-ESL/asl-frontend.git
+'''
+2. Navigate to the project directory
+'''sh
 cd asl-frontend
-Install Flutter dependencies
-
+'''
+3. Install Flutter dependencies
+'''sh
 flutter pub get
+'''
 
-⚠️ Do NOT push .env to GitHub
-✔ Add it to .gitignore
+### Run the app
 
-Run the app
-
-For mobile:
-
+1. For mobile:
+'''sh
 flutter run
-
-For web:
-
+'''
+2. For web:
+'''sh
 flutter run -d chrome
+'''
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 🔧 Usage
 🔤 Text Translation
