@@ -14,86 +14,116 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isDarkMode = false;
-  // Define the requested underline color
   static const Color underlineColor = Color(0xFFD5EBF5);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final localeProvider = Provider.of<LocaleProvider>(context);
-    bool isArabic = localeProvider.locale.languageCode == 'ar';
+    final bool isArabic = localeProvider.locale.languageCode == 'ar';
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      endDrawer: CustomSidebar(
-        selectedIndex: 5,
-        onItemTapped: (index) {},
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: isArabic
-            ? const Text('تَفَاهُمٌ',
-                style: TextStyle(
-                    fontSize: 33,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF275878)))
-            : Image.asset('assets/TAFAHOM.png', width: 120, height: 30),
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.black, size: 30),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
+      drawer: isArabic
+          ? null
+          : CustomSidebar(
+              selectedIndex: 6,
+              onItemTapped: (index) {},
             ),
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            padding: const EdgeInsets.only(
-                bottom: 30), // Vertical padding for bottom items
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(color: const Color(0xFFD5EBF5), width: 3),
+      endDrawer: isArabic
+          ? CustomSidebar(
+              selectedIndex: 6,
+              onItemTapped: (index) {},
+            )
+          : null,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ✅ Custom top bar — same pattern as home screen
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: isArabic
+                    ? [
+                        // Arabic: hamburger LEFT → logo center → spacer RIGHT
+                        IconButton(
+                          icon: const Icon(Icons.menu,
+                              color: Colors.black, size: 32),
+                          onPressed: () =>
+                              _scaffoldKey.currentState?.openEndDrawer(),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: const Text(
+                              'تَفَاهُمٌ',
+                              style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF275878)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 48),
+                      ]
+                    : [
+                        // English: spacer LEFT → logo center → hamburger RIGHT
+                        const SizedBox(width: 48),
+                        Expanded(
+                          child: Center(
+                            child: Image.asset('assets/TAFAHOM.png',
+                                width: 120, height: 40, fit: BoxFit.contain),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.menu,
+                              color: Colors.black, size: 32),
+                          onPressed: () =>
+                              _scaffoldKey.currentState?.openDrawer(),
+                        ),
+                      ],
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment:
-                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                // Title with Underline across the container width
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(24, 30, 24, 15),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: underlineColor, width: 2),
-                    ),
-                  ),
-                  child: Text(
-                    local.settings,
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF275878),
-                    ),
-                  ),
-                ),
 
-                // Rows with padding to keep them away from the border
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 25),
-                      _buildRow(
+            // ✅ Settings content
+            Container(
+              margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+              padding: const EdgeInsets.only(bottom: 30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+                border: Border.all(color: const Color(0xFFD5EBF5), width: 3),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(24, 30, 24, 15),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(color: underlineColor, width: 2)),
+                    ),
+                    child: Text(
+                      local.settings,
+                      textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                      style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF275878)),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 25),
+                        _buildRow(
                           local.appLanguage,
                           isArabic,
                           ToggleButtons(
@@ -116,11 +146,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               Text("EN",
                                   style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.bold))
+                                      fontWeight: FontWeight.bold)),
                             ],
-                          )),
-                      const SizedBox(height: 20),
-                      _buildRow(
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildRow(
                           local.appTheme,
                           isArabic,
                           ToggleButtons(
@@ -134,28 +165,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 setState(() => isDarkMode = index == 1),
                             children: const [
                               Icon(Icons.light_mode, size: 16),
-                              Icon(Icons.dark_mode, size: 16)
+                              Icon(Icons.dark_mode, size: 16),
                             ],
-                          )),
-                      const SizedBox(height: 25),
-                      _buildRow(
-                        local.subscriptionLower,
-                        isArabic,
-                        Text(
-                          local.oneMonthLeft,
-                          style: const TextStyle(
-                              color: Color(0xFF275878),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 25),
+                        _buildRow(
+                          local.subscriptionLower,
+                          isArabic,
+                          Text(
+                            local.oneMonthLeft,
+                            style: const TextStyle(
+                                color: Color(0xFF275878),
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
