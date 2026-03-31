@@ -178,6 +178,8 @@ class MainNavigatorState extends State<MainNavigator> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    final isRtl =
+        Directionality.of(context) == TextDirection.rtl; // 👈 add this
 
     final List<Widget> _screens = [
       HomeScreen(
@@ -193,13 +195,25 @@ class MainNavigatorState extends State<MainNavigator> {
 
     return Scaffold(
       body: _screens[_currentIndex],
-      drawer: CustomSidebar(
-        selectedIndex: _currentIndex,
-        onItemTapped: (index) {
-          setState(() => _currentIndex = index);
-          Navigator.pop(context);
-        },
-      ),
+      // 👇 Replace the old drawer: line with these two lines
+      drawer: isRtl
+          ? null
+          : CustomSidebar(
+              selectedIndex: _currentIndex,
+              onItemTapped: (index) {
+                setState(() => _currentIndex = index);
+                Navigator.pop(context);
+              },
+            ),
+      endDrawer: isRtl
+          ? CustomSidebar(
+              selectedIndex: _currentIndex,
+              onItemTapped: (index) {
+                setState(() => _currentIndex = index);
+                Navigator.pop(context);
+              },
+            )
+          : null,
     );
   }
 }
