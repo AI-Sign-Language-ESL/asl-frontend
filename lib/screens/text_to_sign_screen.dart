@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../core/constants/colors.dart';
 import 'custom_sidebar.dart';
 import '../widgets/translation_mode_toggle.dart';
+import '../main.dart'; // ← Import this to access LocaleProvider
 
 class TextToSignScreen extends StatefulWidget {
   const TextToSignScreen({super.key});
@@ -18,7 +20,6 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
 
   bool _httpLoading = false;
   bool _isListening = false;
-  String selectedLanguage = 'ASE';
   bool isRealPerson = true;
 
   static const Color frameColor = Color(0xFFD5EBF5);
@@ -55,39 +56,61 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     setState(() => _httpLoading = false);
   }
 
+  // Updated Language Picker - Now changes the whole app
   Widget _buildLanguagePicker() {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+
     return PopupMenuButton<String>(
-      onSelected: (value) => setState(() => selectedLanguage = value),
       offset: const Offset(0, 50),
       padding: EdgeInsets.zero,
       icon: Container(
         padding: const EdgeInsets.all(6),
         decoration: const BoxDecoration(
-            color: Color(0xFF275878), shape: BoxShape.circle),
+          color: Color(0xFF275878),
+          shape: BoxShape.circle,
+        ),
         child: const Icon(Icons.language, color: Colors.white, size: 20),
       ),
       itemBuilder: (context) => [
         const PopupMenuItem(
-            value: 'ASE',
-            child: Row(children: [
+          value: 'en',
+          child: Row(
+            children: [
               Text("🇺🇸"),
               SizedBox(width: 10),
-              Text('English')
-            ])),
+              Text('English'),
+            ],
+          ),
+        ),
         const PopupMenuItem(
-            value: 'AR',
-            child: Row(children: [
+          value: 'ar',
+          child: Row(
+            children: [
               Text("🇪🇬"),
               SizedBox(width: 10),
-              Text('العربية')
-            ])),
+              Text('العربية'),
+            ],
+          ),
+        ),
       ],
+      onSelected: (value) {
+        final newLocale =
+            value == 'ar' ? const Locale('ar') : const Locale('en');
+        localeProvider.setLocale(newLocale);
+
+        // Optional: Small delay + rebuild current screen for smoother transition
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) setState(() {});
+        });
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    // Get current locale from Provider (this makes the screen react to language changes)
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final bool isArabic = localeProvider.locale.languageCode == 'ar';
 
     return Scaffold(
       key: _scaffoldKey,
@@ -101,9 +124,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ Custom top bar — same pattern as home screen
-            // Arabic: [hamburger] [langPicker] [  logo  ] [  spacer  ]
-            // English: [  spacer  ] [  logo  ] [langPicker] [hamburger]
+            // Custom Top Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
@@ -122,9 +143,10 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
                             child: const Text(
                               'تَفَاهُمٌ',
                               style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF275878)),
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF275878),
+                              ),
                             ),
                           ),
                         ),
@@ -134,8 +156,12 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
                         const SizedBox(width: 48),
                         Expanded(
                           child: Center(
-                            child: Image.asset('assets/TAFAHOM.png',
-                                width: 120, height: 40, fit: BoxFit.contain),
+                            child: Image.asset(
+                              'assets/TAFAHOM.png',
+                              width: 120,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                         _buildLanguagePicker(),
@@ -194,9 +220,10 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
                                   ? "بانتظار المجسم..."
                                   : "Waiting for Character...")),
                       style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500),
+                        fontSize: 18,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -209,6 +236,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     );
   }
 
+  // Keep your existing _buildInputBar and _buildSubToggle methods unchanged
   Widget _buildInputBar(bool isArabic) {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -224,8 +252,11 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
                 color: _isListening ? Colors.red : const Color(0xFF275878),
                 shape: BoxShape.circle,
               ),
-              child: Icon(_isListening ? Icons.stop : Icons.mic,
-                  color: Colors.white, size: 24),
+              child: Icon(
+                _isListening ? Icons.stop : Icons.mic,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -266,7 +297,9 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       height: 40,
       width: 260,
       decoration: BoxDecoration(
-          color: inactiveToggleColor, borderRadius: BorderRadius.circular(20)),
+        color: inactiveToggleColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Stack(
         children: [
           AnimatedAlign(
@@ -276,8 +309,9 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
             child: Container(
               width: 130,
               decoration: BoxDecoration(
-                  color: activeToggleColor,
-                  borderRadius: BorderRadius.circular(20)),
+                color: activeToggleColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
           ),
           Row(
