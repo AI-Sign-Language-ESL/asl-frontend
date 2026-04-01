@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:math';
@@ -6,6 +7,7 @@ import 'dart:async';
 import '../core/constants/colors.dart';
 import 'custom_sidebar.dart';
 import '../widgets/translation_mode_toggle.dart';
+import '../main.dart'; // ← Required for LocaleProvider
 
 class SignToTextScreen extends StatefulWidget {
   const SignToTextScreen({super.key});
@@ -20,7 +22,6 @@ class _SignToTextScreenState extends State<SignToTextScreen>
 
   CameraController? _cameraController;
   bool _cameraLoading = false;
-  String selectedLanguage = 'en';
 
   String _recognizedText =
       "Hello, this is a demonstration of sign translation. This box is scrollable and will display the text generated from sign language input captured by the camera above. You can also play this text using the audio controls below.";
@@ -42,6 +43,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     )..addListener(() {
         if (_isPlaying) setState(() {});
       });
+
     _initTts();
   }
 
@@ -73,6 +75,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
 
   Future<void> _speak() async {
     if (_recognizedText.isEmpty) return;
+
     if (_isPlaying) {
       await _tts.stop();
       _stopPlayback();
@@ -102,8 +105,10 @@ class _SignToTextScreenState extends State<SignToTextScreen>
       setState(() => _cameraLoading = true);
       final cameras = await availableCameras();
       _cameraController = CameraController(
-          cameras.first, ResolutionPreset.medium,
-          enableAudio: false);
+        cameras.first,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
       await _cameraController!.initialize();
       if (mounted) setState(() {});
     } catch (e) {
@@ -113,53 +118,67 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     }
   }
 
-  String _getLocalizedText(BuildContext context, String key) {
-    bool isArabic = Localizations.localeOf(context).languageCode == 'ar' ||
-        selectedLanguage == 'AR';
-    final Map<String, Map<String, String>> t = {
-      'cameraOff': {'en': 'Camera is off', 'ar': 'الكاميرا متوقفة'},
-      'startCamera': {'en': 'Start Camera', 'ar': 'تشغيل الكاميرا'},
-      'loading': {'en': 'Loading...', 'ar': 'جاري التحميل...'},
-      'generatedText': {'en': 'Generated text', 'ar': 'النص المُنشأ'},
-    };
-    return t[key]?[isArabic ? 'ar' : 'en'] ?? '';
-  }
-
+  // Updated Language Picker
   Widget _buildLanguagePicker() {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+
     return PopupMenuButton<String>(
-      onSelected: (value) => setState(() => selectedLanguage = value),
       offset: const Offset(0, 50),
       padding: EdgeInsets.zero,
       icon: Container(
         padding: const EdgeInsets.all(6),
         decoration: const BoxDecoration(
-            color: Color(0xFF275878), shape: BoxShape.circle),
+          color: Color(0xFF275878),
+          shape: BoxShape.circle,
+        ),
         child: const Icon(Icons.language, color: Colors.white, size: 20),
       ),
       itemBuilder: (context) => [
         const PopupMenuItem(
-            value: 'ASE',
-            child: Row(children: [
-              Text("🇺🇸"),
-              SizedBox(width: 10),
-              Text('English')
-            ])),
+          value: 'en',
+          child: Row(
+              children: [Text("🇺🇸"), SizedBox(width: 10), Text('English')]),
+        ),
         const PopupMenuItem(
-            value: 'AR',
-            child: Row(children: [
-              Text("🇪🇬"),
-              SizedBox(width: 10),
-              Text('العربية')
-            ])),
+          value: 'ar',
+          child: Row(
+              children: [Text("🇪🇬"), SizedBox(width: 10), Text('العربية')]),
+        ),
       ],
+      onSelected: (value) {
+        final newLocale =
+            value == 'ar' ? const Locale('ar') : const Locale('en');
+        localeProvider.setLocale(newLocale);
+
+        // Optional smooth refresh
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) setState(() {});
+        });
+      },
     );
+  }
+
+  // Updated localized text using Provider instead of local variable
+  String _getLocalizedText(BuildContext context, String key) {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final bool isArabic = localeProvider.locale.languageCode == 'ar';
+
+    final Map<String, Map<String, String>> translations = {
+      'cameraOff': {'en': 'Camera is off', 'ar': 'الكاميرا متوقفة'},
+      'startCamera': {'en': 'Start Camera', 'ar': 'تشغيل الكاميرا'},
+      'loading': {'en': 'Loading...', 'ar': 'جاري التحميل...'},
+      'generatedText': {'en': 'Generated text', 'ar': 'النص المُنشأ'},
+    };
+
+    return translations[key]?[isArabic ? 'ar' : 'en'] ?? key;
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool isArabic =
-        Localizations.localeOf(context).languageCode == 'ar' ||
-            selectedLanguage == 'AR';
+    // Listen to locale changes from Provider
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final bool isArabic = localeProvider.locale.languageCode == 'ar';
+
     const Color backgroundBlue = Color(0xFFD5EBF5);
 
     return Scaffold(
@@ -174,9 +193,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ Custom top bar — same pattern as home screen
-            // Arabic: [hamburger] [langPicker] [  logo  ] [  spacer  ]
-            // English: [  spacer  ] [  logo  ] [langPicker] [hamburger]
+            // Custom Top Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
@@ -195,9 +212,10 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                             child: const Text(
                               'تَفَاهُمٌ',
                               style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF275878)),
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF275878),
+                              ),
                             ),
                           ),
                         ),
@@ -207,8 +225,12 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                         const SizedBox(width: 48),
                         Expanded(
                           child: Center(
-                            child: Image.asset('assets/TAFAHOM.png',
-                                width: 120, height: 40, fit: BoxFit.contain),
+                            child: Image.asset(
+                              'assets/TAFAHOM.png',
+                              width: 120,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                         _buildLanguagePicker(),
@@ -233,7 +255,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
             Expanded(
               child: Column(
                 children: [
-                  // Camera box
+                  // Camera Box
                   Expanded(
                     flex: 6,
                     child: Container(
@@ -254,8 +276,9 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                                         size: 60, color: Colors.black),
                                     const SizedBox(height: 12),
                                     Text(
-                                        _getLocalizedText(context, 'cameraOff'),
-                                        style: const TextStyle(fontSize: 17)),
+                                      _getLocalizedText(context, 'cameraOff'),
+                                      style: const TextStyle(fontSize: 17),
+                                    ),
                                     const SizedBox(height: 20),
                                     ElevatedButton(
                                       onPressed:
@@ -288,7 +311,8 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                     ),
                   ),
                   const SizedBox(height: 15),
-                  // Text box
+
+                  // Generated Text Box
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -315,9 +339,10 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                                   ? _getLocalizedText(context, 'generatedText')
                                   : _recognizedText,
                               style: const TextStyle(
-                                  fontSize: 18,
-                                  color: Color(0xFF275878),
-                                  height: 1.4),
+                                fontSize: 18,
+                                color: Color(0xFF275878),
+                                height: 1.4,
+                              ),
                               textAlign:
                                   isArabic ? TextAlign.right : TextAlign.left,
                               textDirection: isArabic
@@ -330,7 +355,8 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Audio box
+
+                  // Audio Controls
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                     padding: const EdgeInsets.symmetric(
@@ -352,8 +378,6 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                             color: AppColors.primaryBlue,
                             size: 40,
                           ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -381,10 +405,13 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text(_formatDuration(_secondsElapsed),
-                            style: const TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500)),
+                        Text(
+                          _formatDuration(_secondsElapsed),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         const Icon(Icons.volume_up, color: Colors.grey),
                       ],
