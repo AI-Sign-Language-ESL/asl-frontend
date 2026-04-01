@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
           locale: localeProvider.locale,
           supportedLocales: AppLocalizations.supportedLocales,
 
-          // ✅ CORRECT localization delegates for intl-based localization
+          // CORRECT localization delegates for intl-based localization
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -119,7 +119,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
 
-          initialRoute: '/splash',
+          initialRoute: '/',
           routes: {
             '/splash': (_) => const SplashScreen(),
             '/login': (_) => const LoginScreen(),
@@ -195,7 +195,6 @@ class MainNavigatorState extends State<MainNavigator> {
 
     return Scaffold(
       body: _screens[_currentIndex],
-      // 👇 Replace the old drawer: line with these two lines
       drawer: isRtl
           ? null
           : CustomSidebar(
