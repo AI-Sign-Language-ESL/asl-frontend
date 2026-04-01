@@ -30,6 +30,7 @@ dependencies:
   speech_to_text: ^7.3.0
   flutter_tts: ^4.2.2
   image_picker: ^1.0.7
+  confetti: ^0.7.0
 
 dev_dependencies:
   flutter_test:
