@@ -4,7 +4,18 @@ import '../core/constants/colors.dart';
 import 'custom_sidebar.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  /// The display name coming from the sign-in / sign-up response.
+  final String userName;
+
+  /// True when the signed-in account is an organisation account.
+  /// Controls which profile detail screen is opened.
+  final bool isOrganization;
+
+  const ProfileScreen({
+    Key? key,
+    required this.userName,
+    this.isOrganization = false,
+  }) : super(key: key);
 
   static const Color underlineColor = Color(0xFFD5EBF5);
   static final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -33,14 +44,13 @@ class ProfileScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ Custom top bar — same pattern as home screen
+            // ── Top bar ──────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: isArabic
                     ? [
-                        // Arabic: hamburger LEFT → logo center → spacer RIGHT
                         IconButton(
                           icon: const Icon(Icons.menu,
                               color: Colors.black, size: 32),
@@ -61,7 +71,6 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(width: 48),
                       ]
                     : [
-                        // English: spacer LEFT → logo center → hamburger RIGHT
                         const SizedBox(width: 48),
                         Expanded(
                           child: Center(
@@ -79,7 +88,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            // ✅ Profile content
+            // ── Profile content ──────────────────────────────────────────────
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
@@ -93,6 +102,7 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // Section header
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.fromLTRB(24, 25, 24, 15),
@@ -111,14 +121,20 @@ class ProfileScreen extends StatelessWidget {
                               color: Color(0xFF275878)),
                         ),
                       ),
+
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 20),
                         child: Column(
                           children: [
+                            // ── Avatar row (dynamic name, no subtitle) ────────
                             InkWell(
-                              onTap: () =>
-                                  Navigator.pushNamed(context, '/user-profile'),
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                isOrganization
+                                    ? '/org-profile'
+                                    : '/user-profile',
+                              ),
                               borderRadius: BorderRadius.circular(15),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -133,49 +149,65 @@ class ProfileScreen extends StatelessWidget {
                                           'https://randomuser.me/api/portraits/men/32.jpg'),
                                     ),
                                     const SizedBox(width: 15),
-                                    Column(
-                                      crossAxisAlignment: isArabic
-                                          ? CrossAxisAlignment.end
-                                          : CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Mahmoud Ahmed",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold)),
-                                        Text(local.signInterpreter,
-                                            style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 14)),
-                                      ],
+                                    // Only the name – subtitle removed
+                                    Text(
+                                      userName,
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
+
                             const SizedBox(height: 20),
+
+                            // ── Personal Information ──────────────────────────
+                            // Routes to org-profile or user-profile depending on
+                            // the account type passed from the sign-in flow.
                             _buildMenuItem(
-                                Icons.person_outline,
-                                local.personalInfo,
-                                isArabic,
-                                () => Navigator.pushNamed(
-                                    context, '/user-profile')),
+                              Icons.person_outline,
+                              local.personalInfo,
+                              isArabic,
+                              () => Navigator.pushNamed(
+                                context,
+                                isOrganization
+                                    ? '/org-profile'
+                                    : '/user-profile',
+                              ),
+                            ),
+
+                            // ── Change Password ───────────────────────────────
+                            // Pushes the reset-password screen directly.
+                            // The reset-password screen is responsible for
+                            // pushing /reset-sent, and reset-sent pops back
+                            // to /profile when done.
                             _buildMenuItem(
-                                Icons.lock_outline,
-                                "Change Password",
-                                isArabic,
-                                () => Navigator.pushNamed(
-                                    context, '/reset-password')),
+                              Icons.lock_outline,
+                              "Change Password",
+                              isArabic,
+                              () => Navigator.pushNamed(
+                                  context, '/reset-password'),
+                            ),
+
+                            // ── Manage Subscription ───────────────────────────
                             _buildMenuItem(
-                                Icons.card_membership,
-                                "Manage Subscription",
-                                isArabic,
-                                () => Navigator.pushNamed(
-                                    context, '/subscription')),
-                            _buildMenuItem(Icons.logout, local.logout, isArabic,
-                                () {
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/login', (route) => false);
-                            }),
+                              Icons.card_membership,
+                              "Manage Subscription",
+                              isArabic,
+                              () =>
+                                  Navigator.pushNamed(context, '/subscription'),
+                            ),
+
+                            // ── Logout ────────────────────────────────────────
+                            _buildMenuItem(
+                              Icons.logout,
+                              local.logout,
+                              isArabic,
+                              () => Navigator.pushNamedAndRemoveUntil(
+                                  context, '/login', (route) => false),
+                            ),
                           ],
                         ),
                       ),

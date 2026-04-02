@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ Custom top bar — same pattern as home screen
+            //Custom top bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
@@ -87,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            // ✅ Settings content
+            // Settings content
             Container(
               margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               padding: const EdgeInsets.only(bottom: 30),
