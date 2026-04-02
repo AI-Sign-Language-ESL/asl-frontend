@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../main.dart'; // For LocaleProvider
 
 class SplashScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class SplashScreen extends StatelessWidget {
           if (isArabic)
             Positioned.fill(
               child: Image.asset(
-                'assets/ar_background.png', // Add your background image here
+                'assets/ar_background.png',
                 fit: BoxFit.cover,
               ),
             ),
@@ -31,7 +32,7 @@ class SplashScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 20),
 
-                // Language switch button - centered pill shape
+                // Language switch button
                 Center(
                   child: Container(
                     decoration: BoxDecoration(
@@ -80,12 +81,11 @@ class SplashScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 0.5),
 
-                // TAFAHOM PNG/Text with thin underline
+                // TAFAHOM Text with underline
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (isArabic)
-                      // Arabic text version
                       const Text(
                         'تَفَاهُمٌ',
                         style: TextStyle(
@@ -97,7 +97,6 @@ class SplashScreen extends StatelessWidget {
                         textDirection: TextDirection.rtl,
                       )
                     else
-                      // English image version
                       ClipRect(
                         child: Align(
                           alignment: Alignment.center,
@@ -120,7 +119,7 @@ class SplashScreen extends StatelessWidget {
 
                 const Spacer(flex: 1),
 
-                // Tagline with proper Arabic text rendering
+                // ✨ Sparkling Tagline ✨
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
@@ -129,19 +128,38 @@ class SplashScreen extends StatelessWidget {
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
-                      // Ensure proper Arabic text rendering
-                      fontFamily:
-                          null, // Use system default for proper diacritics
+                      height: 1.3,
                     ),
                     textAlign: TextAlign.center,
                     textDirection:
                         isArabic ? TextDirection.rtl : TextDirection.ltr,
-                  ),
+                  )
+                      .animate(
+                        onPlay: (controller) =>
+                            controller.repeat(reverse: true),
+                      )
+                      .shimmer(
+                        duration: const Duration(milliseconds: 3600),
+                        color: const Color(0xFFFFD700), // Golden sparkle
+                        angle: 0,
+                      )
+                      .then(delay: const Duration(milliseconds: 100))
+                      .shimmer(
+                        duration: const Duration(milliseconds: 4000),
+                        color: Colors.white.withOpacity(0.85),
+                        angle: 45,
+                      )
+                      .scale(
+                        begin: const Offset(1.0, 1.0),
+                        end: const Offset(1.04, 1.04),
+                        duration: const Duration(milliseconds: 5000),
+                        curve: Curves.easeInOut,
+                      ),
                 ),
 
                 const Spacer(flex: 1),
 
-// Get Started Button with dynamic arrow positioning
+                // Get Started Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: SizedBox(
