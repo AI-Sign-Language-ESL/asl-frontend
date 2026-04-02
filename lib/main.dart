@@ -189,7 +189,9 @@ class MainNavigatorState extends State<MainNavigator> {
       SignToTextScreen(),
       DatasetContributionScreen(),
       SubscriptionScreen(),
-      ProfileScreen(),
+      ProfileScreen(
+        userName: '',
+      ),
       SettingsScreen(),
     ];
 

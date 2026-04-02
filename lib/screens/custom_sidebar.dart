@@ -140,7 +140,9 @@ class CustomSidebar extends StatelessWidget {
           case 5:
             _safeNavigate(
               context,
-              const ProfileScreen(),
+              const ProfileScreen(
+                userName: '',
+              ),
               index,
             );
             break;
