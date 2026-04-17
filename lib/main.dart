@@ -1,9 +1,12 @@
-// lib/main.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+
+// 🔥 ADD THIS
+import 'services/api_service.dart';
+
 import 'screens/custom_sidebar.dart';
 import 'screens/dataset_contribution_screen.dart';
 import 'screens/home_screen.dart';
@@ -23,7 +26,7 @@ import 'screens/text_to_sign_screen.dart';
 import 'screens/user_profile_screen.dart';
 import 'screens/user_signup_screen.dart';
 
-/// LocaleProvider for language switching
+/// LocaleProvider
 class LocaleProvider extends ChangeNotifier {
   Locale _locale = const Locale('en');
 
@@ -35,7 +38,7 @@ class LocaleProvider extends ChangeNotifier {
   }
 }
 
-/// UserProvider – now with isLoggedIn flag
+/// UserProvider (keep it — but no longer used for login logic)
 class UserProvider extends ChangeNotifier {
   String? username;
   bool isOrg = false;
@@ -56,7 +59,14 @@ class UserProvider extends ChangeNotifier {
   }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // ✅ REQUIRED
+
+  ApiService.init();
+
+  // ✅ LOAD TOKEN FROM STORAGE
+  await ApiService.loadTokensFromStorage();
+
   runApp(
     MultiProvider(
       providers: [
@@ -82,7 +92,6 @@ class MyApp extends StatelessWidget {
           locale: localeProvider.locale,
           supportedLocales: AppLocalizations.supportedLocales,
 
-          // CORRECT localization delegates for intl-based localization
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -129,14 +138,16 @@ class MyApp extends StatelessWidget {
             '/reset_password': (_) => const ResetPasswordScreen(),
             '/reset_sent': (_) => const ResetSentScreen(),
             '/set_new_password': (_) => const SetNewPasswordScreen(),
-            '/home': (_) => const MainNavigator(),
+
+            '/main': (_) => const MainNavigator(),
+
             '/home': (context) => HomeScreen(
                   username: "User",
                   usernameLower: 'user',
                 ),
+
             '/sign-to-text': (context) => const SignToTextScreen(),
             '/text-to-sign': (context) => const TextToSignScreen(),
-            '/main': (_) => const MainNavigator(),
             '/user_profile': (_) => const UserProfileScreen(),
             '/org_profile': (_) => const OrganizationProfileScreen(),
             '/subscription': (_) => SubscriptionScreen(),
@@ -149,22 +160,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Auto route based on login state
+/// Auth Wrapper (still works same)
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-
-    if (userProvider.isLoggedIn) {
-      return const MainNavigator();
-    }
     return const SplashScreen();
   }
 }
 
-/// Main app with sidebar
+/// Main Navigator (UNCHANGED)
 class MainNavigator extends StatefulWidget {
   const MainNavigator({Key? key}) : super(key: key);
 
@@ -178,8 +184,7 @@ class MainNavigatorState extends State<MainNavigator> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final isRtl =
-        Directionality.of(context) == TextDirection.rtl; // 👈 add this
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     final List<Widget> _screens = [
       HomeScreen(

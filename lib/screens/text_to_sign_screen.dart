@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:video_player/video_player.dart';
+
 import '../core/constants/colors.dart';
 import 'custom_sidebar.dart';
 import '../widgets/translation_mode_toggle.dart';
-import '../main.dart'; // ← Import this to access LocaleProvider
+import '../services/to_sign_service.dart';
+import '../services/speech_to_text_service.dart';
 
 class TextToSignScreen extends StatefulWidget {
   const TextToSignScreen({super.key});
@@ -14,13 +15,20 @@ class TextToSignScreen extends StatefulWidget {
 }
 
 class _TextToSignScreenState extends State<TextToSignScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _textController = TextEditingController();
-  final SpeechToText _speechToText = SpeechToText();
+  final FocusNode _textFocusNode = FocusNode();
 
-  bool _httpLoading = false;
+  final SignTranslationService _translationService = SignTranslationService();
+  final SpeechToTextService _sttService = SpeechToTextService();
+
+  VideoPlayerController? _videoController;
+
   bool _isListening = false;
+  bool _httpLoading = false;
   bool isRealPerson = true;
+
+  // 🔥 NEW: manual language control
+  bool _isArabicSelected = true;
 
   static const Color frameColor = Color(0xFFD5EBF5);
   static const Color activeToggleColor = Color(0xFF98A8B4);
@@ -32,262 +40,226 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     _initSpeech();
   }
 
-  void _initSpeech() async {
-    await _speechToText.initialize();
-    setState(() {});
+  Future<void> _initSpeech() async {
+    await _sttService.init();
   }
 
-  void _startListening() async {
-    await _speechToText.listen(onResult: (result) {
-      setState(() => _textController.text = result.recognizedWords);
-    });
-    setState(() => _isListening = true);
-  }
+  // ================= 🎤 SPEECH =================
 
-  void _stopListening() async {
-    await _speechToText.stop();
-    setState(() => _isListening = false);
-  }
-
-  Future<void> _sendTextToSign() async {
-    if (_textController.text.trim().isEmpty) return;
-    setState(() => _httpLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _httpLoading = false);
-  }
-
-  // Updated Language Picker - Now changes the whole app
-  Widget _buildLanguagePicker() {
-    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-
-    return PopupMenuButton<String>(
-      offset: const Offset(0, 50),
-      padding: EdgeInsets.zero,
-      icon: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: const BoxDecoration(
-          color: Color(0xFF275878),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(Icons.language, color: Colors.white, size: 20),
-      ),
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'en',
-          child: Row(
-            children: [
-              Text("🇺🇸"),
-              SizedBox(width: 10),
-              Text('English'),
-            ],
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'ar',
-          child: Row(
-            children: [
-              Text("🇪🇬"),
-              SizedBox(width: 10),
-              Text('العربية'),
-            ],
-          ),
-        ),
-      ],
-      onSelected: (value) {
-        final newLocale =
-            value == 'ar' ? const Locale('ar') : const Locale('en');
-        localeProvider.setLocale(newLocale);
-
-        // Optional: Small delay + rebuild current screen for smoother transition
-        Future.delayed(const Duration(milliseconds: 100), () {
-          if (mounted) setState(() {});
+  void _startListening() {
+    _sttService.startListening(
+      localeId: _isArabicSelected ? 'ar_EG' : 'en_US',
+      onResult: (text) {
+        setState(() {
+          _textController.text = text;
+          _textController.selection = TextSelection.fromPosition(
+            TextPosition(offset: text.length),
+          );
         });
       },
     );
+
+    setState(() => _isListening = true);
+  }
+
+  void _stopListening() {
+    _sttService.stopListening();
+    setState(() => _isListening = false);
+  }
+
+  // ================= 🔁 TEXT → SIGN =================
+
+  Future<void> _sendTextToSign() async {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _httpLoading = true;
+      _videoController?.dispose();
+      _videoController = null;
+    });
+
+    try {
+      final videoUrl =
+          await _translationService.translateTextToSign(text: text);
+
+      _videoController =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+
+      await _videoController!.initialize();
+      await _videoController!.play();
+
+      setState(() {});
+    } catch (e) {
+      debugPrint('TRANSLATION ERROR: $e');
+    } finally {
+      setState(() => _httpLoading = false);
+    }
   }
 
   @override
+  void dispose() {
+    _videoController?.dispose();
+    _textController.dispose();
+    _textFocusNode.dispose();
+    super.dispose();
+  }
+
+  // ================= UI =================
+
+  @override
   Widget build(BuildContext context) {
-    // Get current locale from Provider (this makes the screen react to language changes)
-    final localeProvider = Provider.of<LocaleProvider>(context);
-    final bool isArabic = localeProvider.locale.languageCode == 'ar';
+    final bool isArabicUI =
+        Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      drawer: isArabic
-          ? null
-          : CustomSidebar(selectedIndex: 1, onItemTapped: (_) {}),
-      endDrawer: isArabic
-          ? CustomSidebar(selectedIndex: 1, onItemTapped: (_) {})
-          : null,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Custom Top Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: isArabic
-                    ? [
-                        IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.black, size: 32),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openEndDrawer(),
-                        ),
-                        _buildLanguagePicker(),
-                        Expanded(
-                          child: Center(
-                            child: const Text(
-                              'تَفَاهُمٌ',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xFF275878),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 48),
-                      ]
-                    : [
-                        const SizedBox(width: 48),
-                        Expanded(
-                          child: Center(
-                            child: Image.asset(
-                              'assets/TAFAHOM.png',
-                              width: 120,
-                              height: 40,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        _buildLanguagePicker(),
-                        IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.black, size: 32),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openDrawer(),
-                        ),
-                      ],
-              ),
-            ),
+      drawer: CustomSidebar(selectedIndex: 1, onItemTapped: (_) {}),
+      appBar: _buildAppBar(isArabicUI),
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          TranslationModeToggle(
+            isSignToText: false,
+            onSignToText: () =>
+                Navigator.pushReplacementNamed(context, '/sign-to-text'),
+            onTextToSign: () {},
+          ),
+          const SizedBox(height: 15),
 
-            TranslationModeToggle(
-              isSignToText: false,
-              onSignToText: () =>
-                  Navigator.pushReplacementNamed(context, '/sign-to-text'),
-              onTextToSign: () {},
-            ),
-            const SizedBox(height: 15),
-            _buildSubToggle(isArabic),
-            const SizedBox(height: 15),
+          // 🔥 NEW LANGUAGE TOGGLE
+          _buildLanguageToggle(),
 
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: frameColor, width: 4),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_httpLoading)
-                      const CircularProgressIndicator(
-                          strokeWidth: 6, color: frameColor)
-                    else
-                      Icon(
-                        isRealPerson
-                            ? Icons.person
-                            : Icons.face_retouching_natural,
-                        size: 60,
-                        color: frameColor,
-                      ),
-                    const SizedBox(height: 25),
-                    Text(
-                      _httpLoading
-                          ? (isArabic ? "جاري العمل..." : "Processing...")
-                          : (isRealPerson
-                              ? (isArabic
-                                  ? "بانتظار الشخص الحقيقي..."
-                                  : "Waiting for Real Person...")
-                              : (isArabic
-                                  ? "بانتظار المجسم..."
-                                  : "Waiting for Character...")),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            _buildInputBar(isArabic),
-          ],
-        ),
+          const SizedBox(height: 10),
+          _buildSubToggle(isArabicUI),
+          const SizedBox(height: 15),
+          Expanded(child: _buildVideoFrame()),
+          _buildInputBar(isArabicUI),
+        ],
       ),
     );
   }
 
-  // Keep your existing _buildInputBar and _buildSubToggle methods unchanged
-  Widget _buildInputBar(bool isArabic) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-        children: [
-          GestureDetector(
-            onTap: _isListening ? _stopListening : _startListening,
-            child: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: _isListening ? Colors.red : const Color(0xFF275878),
-                shape: BoxShape.circle,
+  // ================= 🔥 LANGUAGE TOGGLE =================
+
+  Widget _buildLanguageToggle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ChoiceChip(
+          label: const Text('🇪🇬 Arabic'),
+          selected: _isArabicSelected,
+          onSelected: (_) {
+            setState(() => _isArabicSelected = true);
+          },
+        ),
+        const SizedBox(width: 10),
+        ChoiceChip(
+          label: const Text('🇺🇸 English'),
+          selected: !_isArabicSelected,
+          onSelected: (_) {
+            setState(() => _isArabicSelected = false);
+          },
+        ),
+      ],
+    );
+  }
+
+  // ================= UI PARTS =================
+
+  AppBar _buildAppBar(bool isArabic) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: true,
+      title: isArabic
+          ? const Text(
+              'تَفَاهُمٌ',
+              style: TextStyle(
+                fontSize: 33,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF275878),
               ),
-              child: Icon(
-                _isListening ? Icons.stop : Icons.mic,
-                color: Colors.white,
-                size: 24,
+            )
+          : Image.asset('assets/TAFAHOM.png', width: 120),
+    );
+  }
+
+  Widget _buildVideoFrame() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: frameColor, width: 4),
+      ),
+      child: Center(
+        child: _httpLoading
+            ? const CircularProgressIndicator()
+            : (_videoController != null &&
+                    _videoController!.value.isInitialized)
+                ? AspectRatio(
+                    aspectRatio: _videoController!.value.aspectRatio,
+                    child: VideoPlayer(_videoController!),
+                  )
+                : Icon(
+                    isRealPerson ? Icons.person : Icons.face,
+                    size: 70,
+                    color: frameColor,
+                  ),
+      ),
+    );
+  }
+
+  Widget _buildInputBar(bool isArabic) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          textDirection:
+              isArabic ? TextDirection.rtl : TextDirection.ltr,
+          children: [
+            GestureDetector(
+              onTap: () => _isListening
+                  ? _stopListening()
+                  : _startListening(),
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  color:
+                      _isListening ? Colors.red : AppColors.primaryBlue,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isListening ? Icons.stop : Icons.mic,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.grey.shade300, width: 1.5),
-              ),
+            const SizedBox(width: 12),
+            Expanded(
               child: TextField(
                 controller: _textController,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                focusNode: _textFocusNode,
+                textDirection:
+                    isArabic ? TextDirection.rtl : TextDirection.ltr,
+                textAlign:
+                    isArabic ? TextAlign.right : TextAlign.left,
                 decoration: InputDecoration(
-                  hintText: _isListening
-                      ? (isArabic ? "جاري الاستماع..." : "Listening...")
-                      : (isArabic ? "اكتب او تحدث..." : "type or speak..."),
-                  border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  hintText:
+                      isArabic ? 'تحدث أو اكتب...' : 'Speak or type...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.send_rounded,
-                        color: Color(0xFF275878)),
+                    icon: const Icon(Icons.send),
                     onPressed: _sendTextToSign,
                   ),
                 ),
-                onSubmitted: (_) => _sendTextToSign(),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -318,15 +290,15 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
                   onTap: () => setState(() => isRealPerson = true),
                   child: Center(
                     child: Text(
-                      isArabic ? "شخص حقيقي" : "Real person",
+                      isArabic ? 'شخص حقيقي' : 'Real person',
                       style: TextStyle(
-                        color: isRealPerson ? Colors.white : Colors.black54,
+                        color: isRealPerson
+                            ? Colors.white
+                            : Colors.black54,
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
                       ),
                     ),
                   ),
@@ -334,15 +306,15 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
               ),
               Expanded(
                 child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
                   onTap: () => setState(() => isRealPerson = false),
                   child: Center(
                     child: Text(
-                      isArabic ? "مجسم" : "Character",
+                      isArabic ? 'مجسم' : 'Character',
                       style: TextStyle(
-                        color: !isRealPerson ? Colors.white : Colors.black54,
+                        color: !isRealPerson
+                            ? Colors.white
+                            : Colors.black54,
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
                       ),
                     ),
                   ),
