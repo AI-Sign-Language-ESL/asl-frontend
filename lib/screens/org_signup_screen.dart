@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 
 class OrgSignupScreen extends StatefulWidget {
   const OrgSignupScreen({super.key});
@@ -21,6 +22,7 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -34,6 +36,42 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    setState(() => _isLoading = true);
+
+    try {
+      await AuthService.registerOrganization(
+        username: _usernameController.text.trim(),
+        organizationName: _organizationNameController.text.trim(),
+        activity: _organizationActivityController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        jobTitle: _jobTitleController.text.trim(),
+      );
+
+      // ✅ navigate ONLY after backend success
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/main',
+        (_) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -61,11 +99,10 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 70), // Space for back button
-
+                    const SizedBox(height: 70),
                     if (isArabic) ...[
                       Image.asset(
-                        'assets/logo.png',
+                        'assets/logo1.png',
                         width: 180,
                         height: 180,
                       ),
@@ -97,7 +134,6 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                       ),
                       const SizedBox(height: 40),
                     ],
-
                     _buildField(
                       controller: _usernameController,
                       hint: isArabic ? 'اسم المستخدم' : 'Username',
@@ -133,7 +169,6 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                       hint: isArabic ? 'البريد الإلكتروني' : 'Email',
                     ),
                     const SizedBox(height: 20),
-
                     _buildPasswordField(
                       controller: _passwordController,
                       hint: isArabic ? 'كلمة السر' : 'Password',
@@ -142,7 +177,6 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
                     const SizedBox(height: 20),
-
                     _buildPasswordField(
                       controller: _confirmPasswordController,
                       hint: isArabic ? 'تأكيد كلمة السر' : 'Confirm password',
@@ -150,104 +184,98 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                       onToggle: () =>
                           setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
-
                     const SizedBox(height: 40),
-
                     SizedBox(
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Validate that all fields are filled
-                          if (_usernameController.text.trim().isEmpty ||
-                              _firstNameController.text.trim().isEmpty ||
-                              _lastNameController.text.trim().isEmpty ||
-                              _organizationNameController.text.trim().isEmpty ||
-                              _organizationActivityController.text
-                                  .trim()
-                                  .isEmpty ||
-                              _jobTitleController.text.trim().isEmpty ||
-                              _emailController.text.trim().isEmpty ||
-                              _passwordController.text.trim().isEmpty ||
-                              _confirmPasswordController.text.trim().isEmpty) {
-                            // Show error message if any field is empty
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isArabic
-                                      ? 'يرجى ملء جميع الحقول'
-                                      : 'Please fill all fields',
-                                ),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                            return;
-                          }
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                // KEEP ALL YOUR VALIDATION EXACTLY
+                                if (_usernameController.text.trim().isEmpty ||
+                                    _firstNameController.text.trim().isEmpty ||
+                                    _lastNameController.text.trim().isEmpty ||
+                                    _organizationNameController.text
+                                        .trim()
+                                        .isEmpty ||
+                                    _organizationActivityController.text
+                                        .trim()
+                                        .isEmpty ||
+                                    _jobTitleController.text.trim().isEmpty ||
+                                    _emailController.text.trim().isEmpty ||
+                                    _passwordController.text.trim().isEmpty ||
+                                    _confirmPasswordController.text
+                                        .trim()
+                                        .isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        isArabic
+                                            ? 'يرجى ملء جميع الحقول'
+                                            : 'Please fill all fields',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                          // Check if passwords match
-                          if (_passwordController.text !=
-                              _confirmPasswordController.text) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isArabic
-                                      ? 'كلمات المرور غير متطابقة'
-                                      : 'Passwords do not match',
-                                ),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                            return;
-                          }
+                                if (_passwordController.text !=
+                                    _confirmPasswordController.text) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        isArabic
+                                            ? 'كلمات المرور غير متطابقة'
+                                            : 'Passwords do not match',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                          // Optional: Basic email validation
-                          if (!_emailController.text.contains('@')) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isArabic
-                                      ? 'يرجى إدخال بريد إلكتروني صالح'
-                                      : 'Please enter a valid email',
-                                ),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                            return;
-                          }
+                                if (!_emailController.text.contains('@')) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        isArabic
+                                            ? 'يرجى إدخال بريد إلكتروني صالح'
+                                            : 'Please enter a valid email',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                          // All validations passed - navigate to home screen
-                          // TODO: Organization signup logic
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/main',
-                            (_) => false,
-                          );
-                        },
+                                _submit();
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF275878),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: Text(
-                          isArabic ? 'تسجيل' : 'Sign Up',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                isArabic ? 'تسجيل' : 'Sign Up',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     ),
-
                     const SizedBox(height: 40),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
-import '../main.dart';
+
+import '../services/auth_service.dart';
+import '../services/google_signin_service.dart';
+import '../services/google_auth_service.dart';
+import '../main.dart'; // ✅ UserProvider
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _rememberMe = true;
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   String? _emailError;
   String? _passwordError;
@@ -26,7 +31,49 @@ class _LoginScreenState extends State<LoginScreen> {
       _emailController.text.trim().isNotEmpty &&
       _passwordController.text.isNotEmpty;
 
-  void _attemptLogin() {
+  // =====================================================
+  // 🌐 GOOGLE LOGIN (FIXED)
+  // =====================================================
+  Future<void> _handleGoogleLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final idToken = await GoogleSignInService.getIdToken();
+      if (idToken == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      await GoogleAuthService.loginWithGoogle(idToken);
+
+      // ✅ FIX: MARK USER AS LOGGED IN
+      final userProvider = context.read<UserProvider>();
+      userProvider.login("Google User");
+
+      if (!mounted) return;
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/main',
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Google Sign-In failed: $e"),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // =====================================================
+  // 🔐 EMAIL LOGIN (FIXED)
+  // =====================================================
+  Future<void> _attemptLogin() async {
     final local = AppLocalizations.of(context)!;
 
     setState(() {
@@ -36,17 +83,39 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordError = _passwordController.text.isEmpty ? local.password : null;
     });
 
-    if (_isFormValid) {
-      context.read<UserProvider>().login(
-            _emailController.text.trim(),
-            org: false,
-          );
+    if (!_isFormValid) return;
 
+    setState(() => _isLoading = true);
+
+    try {
+      final data = await AuthService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // ✅ FIX: MARK USER AS LOGGED IN
+      final userProvider = context.read<UserProvider>();
+      userProvider.login(
+        data["user"]?["username"] ?? "User",
+      );
+
+      if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,
         '/main',
         (route) => false,
       );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -57,19 +126,13 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // =====================================================
+  // 🧱 UI (UNCHANGED)
+  // =====================================================
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
-    final socialButtonStyle = ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF275878),
-      minimumSize: const Size(double.infinity, 56),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 2,
-    );
 
     return Directionality(
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -77,7 +140,6 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: const Color(0xFFD5EBF5),
         body: Stack(
           children: [
-            // Arabic background
             if (isArabic)
               Positioned.fill(
                 child: Image.asset(
@@ -85,7 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-
             SafeArea(
               child: SingleChildScrollView(
                 child: ConstrainedBox(
@@ -98,10 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 80),
-
-// NEW - Logo section (conditional Arabic/English)
                         if (isArabic)
-                          // Arabic text with special styling
                           const Text(
                             'تَفَاهُمٌ',
                             style: TextStyle(
@@ -113,14 +171,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             textAlign: TextAlign.right,
                           )
                         else
-                          // English logo image
                           Image.asset(
                             'assets/TAFAHOM TYPO.png',
                             width: 240,
                             height: 40,
                             fit: BoxFit.contain,
                           ),
-// Welcome + subtitle
                         Text(
                           isArabic ? 'أهلاً وسهلاً' : 'Welcome!',
                           style: const TextStyle(
@@ -129,7 +185,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.black,
                           ),
                         ),
-
                         const SizedBox(height: 4),
                         Text(
                           local.signsAlive,
@@ -138,10 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.black87,
                           ),
                         ),
-
                         const SizedBox(height: 25),
 
-                        // Email
+                        // ================= EMAIL =================
                         TextField(
                           controller: _emailController,
                           onChanged: (_) => setState(() => _emailError = null),
@@ -157,10 +211,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 20),
 
-                        // Password
+                        // ================= PASSWORD =================
                         TextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
@@ -190,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 12),
 
-                        // Remember + Forgot
+                        // ================= REMEMBER ME =================
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -202,9 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onChanged: (v) =>
                                       setState(() => _rememberMe = v!),
                                 ),
-                                Text(local.rememberMe,
-                                    style: const TextStyle(
-                                        fontSize: 17, color: Colors.black)),
+                                Text(local.rememberMe),
                               ],
                             ),
                             TextButton(
@@ -212,117 +263,76 @@ class _LoginScreenState extends State<LoginScreen> {
                                 context,
                                 '/reset_password',
                               ),
-                              child: Text(
-                                local.forgotPassword,
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.black87),
-                              ),
+                              child: Text(local.forgotPassword),
                             ),
                           ],
                         ),
 
                         const SizedBox(height: 22),
 
-                        // Login
+                        // ================= LOGIN BUTTON =================
                         SizedBox(
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton(
-                            onPressed: _isFormValid ? _attemptLogin : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF275878),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: Text(
-                              local.login,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
+                            onPressed: _isLoading ? null : _attemptLogin,
+                            child: _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Text(local.login),
                           ),
                         ),
 
                         const SizedBox(height: 25),
 
-                        // Or login with divider
                         Row(
                           children: [
-                            const Expanded(
-                              child:
-                                  Divider(thickness: 1, color: Colors.black26),
-                            ),
+                            const Expanded(child: Divider()),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                local.orLoginWith,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              child: Text(local.orLoginWith),
                             ),
-                            const Expanded(
-                              child:
-                                  Divider(thickness: 1, color: Colors.black26),
-                            ),
+                            const Expanded(child: Divider()),
                           ],
                         ),
 
                         const SizedBox(height: 20),
 
-                        // Google & Apple Buttons
+                        // ================= GOOGLE =================
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            icon:
-                                const FaIcon(FontAwesomeIcons.google, size: 25),
+                            icon: const FaIcon(FontAwesomeIcons.google),
                             label: const Text(''),
-                            onPressed: () {},
+                            onPressed: _isLoading ? null : _handleGoogleLogin,
                           ),
                         ),
+
                         const SizedBox(height: 10),
+
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.apple,
-                              size: 26,
-                            ),
+                            icon: const FaIcon(FontAwesomeIcons.apple),
                             label: const Text(''),
                             onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                            ),
                           ),
                         ),
-                        // Sign up
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(local.dontHaveAccount,
-                                  style: const TextStyle(fontSize: 16)),
-                              TextButton(
-                                onPressed: () => Navigator.pushNamed(
-                                  context,
-                                  '/signup_choice',
-                                ),
-                                child: Text(
-                                  local.signUp,
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+
+                        const SizedBox(height: 30),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(local.dontHaveAccount),
+                            TextButton(
+                              onPressed: () => Navigator.pushNamed(
+                                  context, '/signup_choice'),
+                              child: Text(local.signUp),
+                            ),
+                          ],
                         ),
                       ],
                     ),

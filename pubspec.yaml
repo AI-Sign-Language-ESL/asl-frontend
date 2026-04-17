@@ -14,24 +14,45 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
+  intl: ^0.20.2
 
-  intl: ^0.20.2   # ✅ REQUIRED for flutter gen-l10n
+  # 🔥 Networking
+  dio: ^5.4.0
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
 
-  camera: ^0.11.3
-  cupertino_icons: ^1.0.2
+  # 🔥 State
   provider: ^6.0.0
+
+  # 🔥 UI
+  cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.0
   font_awesome_flutter: ^10.0.0
-  flutter_gen: ^5.12.0
-  firebase_auth: ^4.10.0
-  firebase_core: ^2.24.0
-  permission_handler: ^12.0.1
+  flutter_animate: ^4.5.0
   avatar_glow: ^3.0.1
+  confetti: ^0.7.0
+
+  # 🔥 Auth
+  google_sign_in: ^6.1.5
+
+  # 🔥 Media (CRITICAL)
+  camera: ^0.11.3
+  image_picker: ^1.0.7
+  permission_handler: ^12.0.1
+  flutter_sound: ^9.30.0
+  path_provider: ^2.1.5
+  video_player: ^2.10.1
+
+  # 🔥 Speech (CORE)
   speech_to_text: ^7.3.0
   flutter_tts: ^4.2.2
-  image_picker: ^1.0.7
-  confetti: ^0.7.0
-  flutter_animate: ^4.5.0
+
+  # 🔥 Firebase
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.10.0
+
+  # 🔥 Codegen
+  flutter_gen: ^5.12.0
 
 dev_dependencies:
   flutter_test:
@@ -48,4 +69,3 @@ flutter:
     - assets/TAFAHOM TYPO.png
     - assets/ar_background.png
     - assets/TAFAHOM.png
-    

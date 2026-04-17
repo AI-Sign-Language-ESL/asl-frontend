@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:confetti/confetti.dart';
 import '../core/constants/colors.dart';
 import 'custom_sidebar.dart';
+import '../services/dataset_service.dart'; // ✅ ADDED
 
 class DatasetContributionScreen extends StatefulWidget {
   const DatasetContributionScreen({Key? key}) : super(key: key);
@@ -24,6 +25,10 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
   );
 
   final TextEditingController _meaningController = TextEditingController();
+
+  // ✅ NEW
+  final DatasetService _datasetService = DatasetService();
+  bool _isLoading = false;
 
   // Animation for glowing effect
   late AnimationController _glowController;
@@ -50,9 +55,8 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
     super.dispose();
   }
 
-  // Show options: Record or Gallery
   Future<void> _showVideoSourceOptions() async {
-    if (_isVideoSelected) return; // Prevent re-selection after success
+    if (_isVideoSelected) return;
 
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
@@ -122,54 +126,81 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
     }
   }
 
+  // ✅ FIXED (CONNECTED TO BACKEND)
   Future<void> _submitContribution() async {
     if (_pickedVideo == null || _meaningController.text.trim().isEmpty) return;
 
-    _confettiController.play();
+    setState(() => _isLoading = true);
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 80),
-            const SizedBox(height: 20),
-            Text(
-              Localizations.localeOf(context).languageCode == 'ar'
-                  ? "شكراً لمساهمتك!"
-                  : "Thank you for your contribution!",
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              Localizations.localeOf(context).languageCode == 'ar'
-                  ? "تم إرسال فيديوك بنجاح"
-                  : "Your video has been submitted successfully",
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
+    try {
+      await _datasetService.submitContribution(
+        word: _meaningController.text.trim(),
+        videoPath: _pickedVideo!.path,
+      );
+
+      setState(() => _isLoading = false);
+
+      _confettiController.play();
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 80),
+              const SizedBox(height: 20),
+              Text(
+                Localizations.localeOf(context).languageCode == 'ar'
+                    ? "شكراً لمساهمتك!"
+                    : "Thank you for your contribution!",
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                Localizations.localeOf(context).languageCode == 'ar'
+                    ? "تم إرسال فيديوك بنجاح"
+                    : "Your video has been submitted successfully",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _resetForm();
+              },
+              child: Text(
+                Localizations.localeOf(context).languageCode == 'ar'
+                    ? "حسناً"
+                    : "OK",
+                style: const TextStyle(fontSize: 18, color: Color(0xFF275878)),
+              ),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _resetForm();
-            },
-            child: Text(
-              Localizations.localeOf(context).languageCode == 'ar'
-                  ? "حسناً"
-                  : "OK",
-              style: const TextStyle(fontSize: 18, color: Color(0xFF275878)),
-            ),
+      );
+    } catch (e) {
+      setState(() => _isLoading = false);
+
+      debugPrint("Submit Error: $e");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            Localizations.localeOf(context).languageCode == 'ar'
+                ? "حدث خطأ أثناء الإرسال"
+                : "Failed to submit contribution",
           ),
-        ],
-      ),
-    );
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _resetForm() {
@@ -226,6 +257,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
       body: SafeArea(
         child: Stack(
           children: [
+            // 🔥 EVERYTHING BELOW THIS IS 100% YOUR ORIGINAL UI — UNCHANGED
             Column(
               children: [
                 // Top Bar
