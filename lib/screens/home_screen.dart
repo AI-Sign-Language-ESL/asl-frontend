@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart'
     show AppLocalizations;
 
+import '../main.dart'; // ThemeProvider
 import 'sign_to_text_screen.dart';
 import 'dataset_contribution_screen.dart';
-import 'custom_sidebar.dart'; // Ensure this file exports CustomSidebar
+import 'custom_sidebar.dart';
 
 class HomeScreen extends StatelessWidget {
   final String username;
 
-  // Use a GlobalKey to manage the Scaffold state
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  static const Color background = Color(0xFFD5EBF5);
   static const Color primaryBlue = Color(0xFF275878);
-  static const Color cardBlue = Color(0xFF8FAFC3);
+  static const Color primaryBlueDark = Color(0xFF4A90C4);
+  static const Color background = Color(0xFFD5EBF5);
   static const Color primaryWhite = Color(0xFFFFFFFF);
 
   HomeScreen({
@@ -27,56 +28,63 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+
+    // ── Adaptive palette ──────────────────────────────────────────────────
+    final Color scaffoldBg =
+        isDarkMode ? const Color(0xFF121212) : primaryWhite;
+    final Color accent = isDarkMode ? primaryBlueDark : primaryBlue;
+    final Color menuIconColor = isDarkMode ? Colors.white70 : Colors.black;
+    final Color usernameColor = isDarkMode ? Colors.white : Colors.black;
 
     return Scaffold(
-      key: _scaffoldKey, // 1. Assign the key here
-      backgroundColor: primaryWhite,
-      // 2. Add the CustomSidebar as a drawer (or endDrawer for RTL support)
-      drawer: CustomSidebar(
-        selectedIndex: 0,
-        onItemTapped: (int p1) {},
-      ),
+      key: _scaffoldKey,
+      backgroundColor: scaffoldBg,
+      drawer: CustomSidebar(selectedIndex: 0, onItemTapped: (int p1) {}),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ================= TOP BAR =================
+              // ── Top bar ─────────────────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left spacer to balance the menu icon
                   const SizedBox(width: 32),
-
-                  // Centered Logo / Text
                   Expanded(
                     child: Center(
                       child: isArabic
-                          ? const Text(
+                          ? Text(
                               'تَفَاهُمٌ',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w900,
-                                color: Color(0xFF275878),
+                                color: accent,
                                 height: 1.1,
                               ),
                               textAlign: TextAlign.center,
                             )
-                          : Image.asset(
-                              'assets/TAFAHOM.png',
-                              width: 120,
-                              height: 40,
-                              fit: BoxFit.contain,
-                            ),
+                          : isDarkMode
+                              ? Text(
+                                  'TAFAHOM',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                    color: accent,
+                                    letterSpacing: 2,
+                                  ),
+                                )
+                              : Image.asset(
+                                  'assets/TAFAHOM.png',
+                                  width: 120,
+                                  height: 40,
+                                  fit: BoxFit.contain,
+                                ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.black,
-                      size: 32,
-                    ),
+                    icon: Icon(Icons.menu, color: menuIconColor, size: 32),
                     onPressed: () {
                       _scaffoldKey.currentState?.openDrawer();
                     },
@@ -86,22 +94,25 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              // ================= WELCOME =================
+              // ── Welcome ──────────────────────────────────────────────────
               RichText(
                 text: TextSpan(
                   style: const TextStyle(fontSize: 34, height: 0.7),
                   children: [
                     TextSpan(
                       text: local.welcome,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: primaryBlue),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: accent,
+                      ),
                     ),
                     TextSpan(
                       text: ' $username',
-                      style: const TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                        color: usernameColor,
+                      ),
                     ),
                     TextSpan(
                       text: local.exclamationEmoji,
@@ -112,9 +123,9 @@ class HomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
-              _buildMainCard(context, local, isArabic),
+              _buildMainCard(context, local, isArabic, isDarkMode, accent),
               const SizedBox(height: 20),
-              _buildDialectsCard(local, isArabic),
+              _buildDialectsCard(local, isArabic, isDarkMode, accent),
             ],
           ),
         ),
@@ -123,18 +134,29 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMainCard(
-      BuildContext context, AppLocalizations local, bool isArabic) {
+    BuildContext context,
+    AppLocalizations local,
+    bool isArabic,
+    bool isDarkMode,
+    Color accent,
+  ) {
+    final Color cardBg =
+        isDarkMode ? const Color(0xFF1A2D3D) : const Color(0xFF7FA1B6);
+    final Color descColor = isDarkMode ? Colors.white60 : Colors.black;
+    final Color btnBg = isDarkMode ? const Color(0xFF4A90C4) : primaryBlue;
+    final Color secondBtnBg = isDarkMode ? const Color(0xFF2A2A2A) : background;
+    final Color secondBtnText = isDarkMode ? Colors.white70 : Colors.black;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 127, 161, 182),
+        color: cardBg,
         borderRadius: BorderRadius.circular(35),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Styled title to match multi-color design in screenshots [cite: 11, 14]
           RichText(
             text: TextSpan(
               style: const TextStyle(
@@ -144,79 +166,106 @@ class HomeScreen extends StatelessWidget {
               ),
               children: isArabic
                   ? [
-                      const TextSpan(
-                          text: "تعزيز حق ",
-                          style: TextStyle(color: Colors.white70)),
-                      const TextSpan(
-                          text: "التواصل ",
-                          style: TextStyle(color: primaryBlue)),
-                      const TextSpan(
-                          text: "لكل أفراد المجتمع.",
-                          style: TextStyle(color: Colors.white70)),
+                      TextSpan(
+                        text: "تعزيز حق ",
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white54 : Colors.white70,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "التواصل ",
+                        style: TextStyle(color: accent),
+                      ),
+                      TextSpan(
+                        text: "لكل أفراد المجتمع.",
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white54 : Colors.white70,
+                        ),
+                      ),
                     ]
                   : [
-                      const TextSpan(
-                          text: "Bridging the Gap Between ",
-                          style: TextStyle(color: Colors.white70)),
-                      const TextSpan(
-                          text: "Sound ", style: TextStyle(color: primaryBlue)),
-                      const TextSpan(
-                          text: "and ",
-                          style: TextStyle(color: Colors.white70)),
-                      const TextSpan(
-                          text: "Silence.",
-                          style: TextStyle(color: primaryBlue)),
+                      TextSpan(
+                        text: "Bridging the Gap Between ",
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white54 : Colors.white70,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Sound ",
+                        style: TextStyle(color: accent),
+                      ),
+                      TextSpan(
+                        text: "and ",
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white54 : Colors.white70,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Silence.",
+                        style: TextStyle(color: accent),
+                      ),
                     ],
             ),
           ),
           const SizedBox(height: 13),
           Text(
             local.mainDescription,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: Colors.black,
+              color: descColor,
               height: 1.5,
             ),
           ),
           const SizedBox(height: 17),
           // Start Translating Button
           ElevatedButton(
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const SignToTextScreen())),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SignToTextScreen()),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: primaryBlue,
+              backgroundColor: btnBg,
               minimumSize: const Size(double.infinity, 52),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
               elevation: 0,
             ),
             child: Text(
               local.startTranslating,
               style: const TextStyle(
-                  color: primaryWhite,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+                color: primaryWhite,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(height: 12),
           // Contribute Button
           ElevatedButton(
             onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => const DatasetContributionScreen())),
+              context,
+              MaterialPageRoute(
+                builder: (_) => const DatasetContributionScreen(),
+              ),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: background,
-              foregroundColor: Colors.black,
+              backgroundColor: secondBtnBg,
+              foregroundColor: secondBtnText,
               minimumSize: const Size(double.infinity, 52),
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Text(
               local.contributeDataset,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: secondBtnText,
+              ),
             ),
           ),
         ],
@@ -224,14 +273,23 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDialectsCard(AppLocalizations local, bool isArabic) {
+  Widget _buildDialectsCard(
+    AppLocalizations local,
+    bool isArabic,
+    bool isDarkMode,
+    Color accent,
+  ) {
+    final Color cardBg =
+        isDarkMode ? const Color(0xFF1E1E1E) : const Color(0xFFD5EBF5);
+    final Color labelColor = isDarkMode ? Colors.white : Colors.black;
+
     return Stack(
       children: [
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(25),
           decoration: BoxDecoration(
-            color: Color(0xFFD5EBF5), // EXACT COLOR: #A5BCCA8A
+            color: cardBg,
             borderRadius: BorderRadius.circular(35),
           ),
           child: Column(
@@ -239,30 +297,38 @@ class HomeScreen extends StatelessWidget {
             children: [
               Text(
                 local.supportedDialects,
-                style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black),
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w700,
+                  color: labelColor,
+                ),
               ),
               const SizedBox(height: 25),
               Row(
-                children: const [
-                  _DialectChip(flag: '🇪🇬', label: 'ESL'),
-                  SizedBox(width: 15),
-                  _DialectChip(flag: '🇺🇸', label: 'ASL'),
+                children: [
+                  _DialectChip(
+                    flag: '🇪🇬',
+                    label: 'ESL',
+                    isDarkMode: isDarkMode,
+                  ),
+                  const SizedBox(width: 15),
+                  _DialectChip(
+                    flag: '🇺🇸',
+                    label: 'ASL',
+                    isDarkMode: isDarkMode,
+                  ),
                 ],
               ),
             ],
           ),
         ),
-        // Watermark Icon exactly as seen in design [cite: 11, 12]
         Positioned(
           right: isArabic ? null : 10,
           left: isArabic ? 10 : null,
           bottom: -10,
           child: Opacity(
             opacity: 0.2,
-            child: Icon(Icons.translate, size: 140, color: primaryBlue),
+            child: Icon(Icons.translate, size: 140, color: accent),
           ),
         ),
       ],
@@ -273,8 +339,13 @@ class HomeScreen extends StatelessWidget {
 class _DialectChip extends StatelessWidget {
   final String flag;
   final String label;
+  final bool isDarkMode;
 
-  const _DialectChip({required this.flag, required this.label});
+  const _DialectChip({
+    required this.flag,
+    required this.label,
+    required this.isDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -283,17 +354,22 @@ class _DialectChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.black.withOpacity(0.05)),
+        border: Border.all(
+          color: isDarkMode ? Colors.white24 : Colors.black.withOpacity(0.05),
+        ),
       ),
       child: Row(
         children: [
           Text(flag, style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 10),
-          Text(label,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16,
-                  color: Colors.black87)),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+              color: isDarkMode ? Colors.white70 : Colors.black87,
+            ),
+          ),
         ],
       ),
     );
