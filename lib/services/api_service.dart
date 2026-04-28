@@ -12,7 +12,7 @@ class ApiService {
   static void init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: "https://tafahom.io", // ✅ IMPORTANT
+        baseUrl: "https://api.tafahom.io", // ✅ IMPORTANT
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {

@@ -8,9 +8,9 @@ class AuthService {
   // 🌍 BASE URLS
   // =====================================================
   static const String authBaseUrl =
-      "https://tafahom.io/api/v1/authentication";
+      "https://api.tafahom.io/api/v1/authentication";
   static const String usersBaseUrl =
-      "https://tafahom.io/api/v1/users";
+      "https://api.tafahom.io/api/v1/users";
 
   static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
