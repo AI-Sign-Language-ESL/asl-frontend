@@ -1,6 +1,7 @@
 // lib/screens/reset_password_screen.dart
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -12,14 +13,16 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _emailController = TextEditingController();
   String? _emailError;
+  bool _isLoading = false;
 
   bool get _isEmailValid =>
       _emailController.text.trim().isNotEmpty &&
       _emailController.text.trim().contains('@');
 
-  void _attemptReset() {
+  Future<void> _sendCode() async {
     final local = AppLocalizations.of(context)!;
 
+    // Validate first
     setState(() {
       if (_emailController.text.trim().isEmpty) {
         _emailError = local.emailAddress ?? 'البريد الإلكتروني مطلوب';
@@ -30,8 +33,36 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       }
     });
 
-    if (_isEmailValid) {
-      Navigator.pushNamed(context, '/reset_sent');
+    if (!_isEmailValid) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Call the backend to send the reset code to the email.
+      // AuthService.sendPasswordResetCode should POST to your reset endpoint.
+      await AuthService.sendPasswordResetCode(
+        email: _emailController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      // Pass the email to the next screen so it can display it and resend
+      Navigator.pushNamed(
+        context,
+        '/reset_sent',
+        arguments: {'email': _emailController.text.trim()},
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -52,7 +83,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         backgroundColor: const Color(0xFFD5EBF5),
         body: Stack(
           children: [
-            // Arabic background pattern
             if (isArabic)
               Positioned.fill(
                 child: Image.asset(
@@ -101,7 +131,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       // Description
                       Text(
                         isArabic
-                            ? 'سنرسل لك رابطاً على بريدك الإلكتروني لإعادة تعيين كلمة السر'
+                            ? 'سنرسل لك رمزاً على بريدك الإلكتروني لإعادة تعيين كلمة السر'
                             : local.willEmailLink,
                         style: const TextStyle(
                           fontSize: 18,
@@ -113,7 +143,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       const SizedBox(height: 48),
 
-                      // Email field with validation
+                      // Email field
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -152,36 +182,41 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       const SizedBox(height: 40),
 
-                      // Send button - DISABLED until email is valid
+                      // Send code button
                       SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _isEmailValid ? _attemptReset : null,
+                          onPressed:
+                              (_isEmailValid && !_isLoading) ? _sendCode : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _isEmailValid
                                 ? const Color(0xFF275878)
-                                : const Color(0xFFCBD5DD), // disabled gray
+                                : const Color(0xFFCBD5DD),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
                             elevation: _isEmailValid ? 2 : 0,
                           ),
-                          child: Text(
-                            isArabic ? 'إرسال' : local.sendResetLink,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color:
-                                  _isEmailValid ? Colors.white : Colors.black54,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : Text(
+                                  isArabic ? 'إرسال الرمز' : 'Send Code',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: _isEmailValid
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                       ),
 
                       const Spacer(),
 
-                      // Back to login link
+                      // Back to login
                       Center(
                         child: GestureDetector(
                           onTap: () => Navigator.pushNamed(context, '/login'),

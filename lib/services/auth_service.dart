@@ -7,10 +7,8 @@ class AuthService {
   // =====================================================
   // 🌍 BASE URLS
   // =====================================================
-  static const String authBaseUrl =
-      "https://tafahom.io/api/v1/authentication";
-  static const String usersBaseUrl =
-      "https://tafahom.io/api/v1/users";
+  static const String authBaseUrl = "https://tafahom.io/api/v1/authentication";
+  static const String usersBaseUrl = "https://tafahom.io/api/v1/users";
 
   static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
@@ -242,7 +240,9 @@ class AuthService {
   // =====================================================
   // 🔑 PASSWORD RESET
   // =====================================================
-  static Future<void> requestPasswordReset(String email) async {
+
+  /// Send password reset code to user's email
+  static Future<void> sendPasswordResetCode({required String email}) async {
     final response = await http.post(
       Uri.parse("$authBaseUrl/password/reset/"),
       headers: _jsonHeaders,
@@ -250,25 +250,60 @@ class AuthService {
     );
 
     if (response.statusCode != 200) {
-      throw "Failed to send reset email";
+      final data = _decode(response);
+      throw data["detail"] ?? "Failed to send reset code";
     }
   }
 
-  static Future<void> confirmPasswordReset({
+  /// Verify the 6-digit code
+  static Future<String?> verifyPasswordResetCode({
+    required String email,
+    required String code,
+  }) async {
+    final response = await http.post(
+      Uri.parse(
+          "$authBaseUrl/password/reset/verify/"), // Adjust if your backend uses different endpoint
+      headers: _jsonHeaders,
+      body: jsonEncode({
+        "email": email,
+        "code": code,
+      }),
+    );
+
+    final data = _decode(response);
+
+    if (response.statusCode != 200) {
+      throw data["detail"] ?? "Invalid or expired code";
+    }
+
+    // Return reset token if provided by backend
+    return data["reset_token"] ?? data["token"] ?? "";
+  }
+
+  /// Confirm new password after verification
+  static Future<void> setNewPassword({
+    required String email,
     required String token,
+    required String code,
     required String newPassword,
+    required String confirmPassword,
   }) async {
     final response = await http.post(
       Uri.parse("$authBaseUrl/password/reset/confirm/"),
       headers: _jsonHeaders,
       body: jsonEncode({
+        "email": email,
         "token": token,
+        "code": code,
         "new_password": newPassword,
+        "confirm_password": confirmPassword,
       }),
     );
 
+    final data = _decode(response);
+
     if (response.statusCode != 200) {
-      throw "Password reset failed";
+      throw data["detail"] ?? "Failed to reset password";
     }
   }
 
@@ -283,7 +318,7 @@ class AuthService {
   }
 
   // =====================================================
-  // 🔐 TOKEN STORAGE (🔥 ONLY CHANGE HERE)
+  // 🔐 TOKEN STORAGE
   // =====================================================
   static Future<void> _saveTokens({
     required String access,
@@ -301,7 +336,6 @@ class AuthService {
   // =====================================================
   static Map<String, dynamic> _decode(http.Response response) {
     if (response.body.isEmpty) return {};
-    return jsonDecode(utf8.decode(response.bodyBytes))
-        as Map<String, dynamic>;
+    return jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
   }
 }
