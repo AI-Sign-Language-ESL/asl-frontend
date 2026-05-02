@@ -23,7 +23,7 @@ class SignTranslationService {
     } catch (e) {
       print("to-sign backend failed: $e");
 
-      return "https://www.tafahom.io/media/generated/test_fallback.mp4";
+      return "https://www.api.tafahom.io/media/generated/test_fallback.mp4";
     }
   }
 }
