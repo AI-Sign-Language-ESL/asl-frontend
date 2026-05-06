@@ -7,7 +7,7 @@ import 'dart:async';
 import '../core/constants/colors.dart';
 import 'custom_sidebar.dart';
 import '../widgets/translation_mode_toggle.dart';
-import '../main.dart'; // ← Required for LocaleProvider
+import '../main.dart'; // LocaleProvider + ThemeProvider
 
 class SignToTextScreen extends StatefulWidget {
   const SignToTextScreen({super.key});
@@ -118,39 +118,56 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     }
   }
 
-  // Updated Language Picker
-  Widget _buildLanguagePicker() {
+  Widget _buildLanguagePicker(bool isDarkMode) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final Color iconBg =
+        isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
 
     return PopupMenuButton<String>(
       offset: const Offset(0, 50),
       padding: EdgeInsets.zero,
+      color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
       icon: Container(
         padding: const EdgeInsets.all(6),
-        decoration: const BoxDecoration(
-          color: Color(0xFF275878),
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
         child: const Icon(Icons.language, color: Colors.white, size: 20),
       ),
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'en',
           child: Row(
-              children: [Text("🇺🇸"), SizedBox(width: 10), Text('English')]),
+            children: [
+              const Text("🇺🇸"),
+              const SizedBox(width: 10),
+              Text(
+                'English',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white70 : Colors.black87,
+                ),
+              ),
+            ],
+          ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'ar',
           child: Row(
-              children: [Text("🇪🇬"), SizedBox(width: 10), Text('العربية')]),
+            children: [
+              const Text("🇪🇬"),
+              const SizedBox(width: 10),
+              Text(
+                'العربية',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white70 : Colors.black87,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
       onSelected: (value) {
         final newLocale =
             value == 'ar' ? const Locale('ar') : const Locale('en');
         localeProvider.setLocale(newLocale);
-
-        // Optional smooth refresh
         Future.delayed(const Duration(milliseconds: 100), () {
           if (mounted) setState(() {});
         });
@@ -158,7 +175,6 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     );
   }
 
-  // Updated localized text using Provider instead of local variable
   String _getLocalizedText(BuildContext context, String key) {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
     final bool isArabic = localeProvider.locale.languageCode == 'ar';
@@ -175,15 +191,31 @@ class _SignToTextScreenState extends State<SignToTextScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Listen to locale changes from Provider
     final localeProvider = Provider.of<LocaleProvider>(context);
     final bool isArabic = localeProvider.locale.languageCode == 'ar';
+    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
 
-    const Color backgroundBlue = Color(0xFFD5EBF5);
+    // ── Adaptive palette ──────────────────────────────────────────────────
+    final Color scaffoldBg =
+        isDarkMode ? const Color(0xFF121212) : AppColors.primaryWhite;
+    final Color accentColor =
+        isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
+    final Color boxBg = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+    final Color boxBorder =
+        isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFD5EBF5);
+    final Color audioBorder =
+        isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
+    final Color cameraIconColor = isDarkMode ? Colors.white38 : Colors.black;
+    final Color recognizedTextColor =
+        isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
+    final Color menuIconColor = isDarkMode ? Colors.white70 : Colors.black;
+    final Color timerColor = isDarkMode ? Colors.grey.shade500 : Colors.grey;
+    final Color waveInactiveColor =
+        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade400;
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: AppColors.primaryWhite,
+      backgroundColor: scaffoldBg,
       drawer: isArabic
           ? null
           : CustomSidebar(selectedIndex: 2, onItemTapped: (_) {}),
@@ -193,7 +225,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // Custom Top Bar
+            // ── Top bar ──────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
@@ -201,42 +233,58 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                 children: isArabic
                     ? [
                         IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.black, size: 32),
+                          icon: Icon(
+                            Icons.menu,
+                            color: menuIconColor,
+                            size: 32,
+                          ),
                           onPressed: () =>
                               _scaffoldKey.currentState?.openEndDrawer(),
                         ),
-                        _buildLanguagePicker(),
                         Expanded(
                           child: Center(
-                            child: const Text(
+                            child: Text(
                               'تَفَاهُمٌ',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w900,
-                                color: Color(0xFF275878),
+                                color: accentColor,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48),
+                        _buildLanguagePicker(isDarkMode),
+                        const SizedBox(width: 4),
                       ]
                     : [
                         const SizedBox(width: 48),
                         Expanded(
                           child: Center(
-                            child: Image.asset(
-                              'assets/TAFAHOM.png',
-                              width: 120,
-                              height: 40,
-                              fit: BoxFit.contain,
-                            ),
+                            child: isDarkMode
+                                ? Text(
+                                    'TAFAHOM',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w900,
+                                      color: accentColor,
+                                      letterSpacing: 2,
+                                    ),
+                                  )
+                                : Image.asset(
+                                    'assets/TAFAHOM.png',
+                                    width: 120,
+                                    height: 40,
+                                    fit: BoxFit.contain,
+                                  ),
                           ),
                         ),
-                        _buildLanguagePicker(),
+                        _buildLanguagePicker(isDarkMode),
                         IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.black, size: 32),
+                          icon: Icon(
+                            Icons.menu,
+                            color: menuIconColor,
+                            size: 32,
+                          ),
                           onPressed: () =>
                               _scaffoldKey.currentState?.openDrawer(),
                         ),
@@ -255,15 +303,15 @@ class _SignToTextScreenState extends State<SignToTextScreen>
             Expanded(
               child: Column(
                 children: [
-                  // Camera Box
+                  // ── Camera box ───────────────────────────────────────
                   Expanded(
                     flex: 6,
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: boxBg,
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: backgroundBlue, width: 2.5),
+                        border: Border.all(color: boxBorder, width: 2.5),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(25),
@@ -272,35 +320,52 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.camera_alt_outlined,
-                                        size: 60, color: Colors.black),
+                                    Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 60,
+                                      color: cameraIconColor,
+                                    ),
                                     const SizedBox(height: 12),
                                     Text(
                                       _getLocalizedText(context, 'cameraOff'),
-                                      style: const TextStyle(fontSize: 17),
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: isDarkMode
+                                            ? Colors.white54
+                                            : Colors.black87,
+                                      ),
                                     ),
                                     const SizedBox(height: 20),
                                     ElevatedButton(
                                       onPressed:
                                           _cameraLoading ? null : _startCamera,
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primaryBlue,
+                                        backgroundColor: accentColor,
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 30, vertical: 12),
+                                          horizontal: 30,
+                                          vertical: 12,
+                                        ),
                                         shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(35)),
+                                          borderRadius: BorderRadius.circular(
+                                            35,
+                                          ),
+                                        ),
                                       ),
                                       child: Text(
                                         _cameraLoading
                                             ? _getLocalizedText(
-                                                context, 'loading')
+                                                context,
+                                                'loading',
+                                              )
                                             : _getLocalizedText(
-                                                context, 'startCamera'),
+                                                context,
+                                                'startCamera',
+                                              ),
                                         style: const TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -312,16 +377,16 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                   ),
                   const SizedBox(height: 15),
 
-                  // Generated Text Box
+                  // ── Generated text box ───────────────────────────────
                   Expanded(
                     flex: 2,
                     child: Container(
                       width: double.infinity,
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: boxBg,
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: backgroundBlue, width: 2.5),
+                        border: Border.all(color: boxBorder, width: 2.5),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(25),
@@ -336,11 +401,14 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                             physics: const ClampingScrollPhysics(),
                             child: Text(
                               _recognizedText.isEmpty
-                                  ? _getLocalizedText(context, 'generatedText')
+                                  ? _getLocalizedText(
+                                      context,
+                                      'generatedText',
+                                    )
                                   : _recognizedText,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
-                                color: Color(0xFF275878),
+                                color: recognizedTextColor,
                                 height: 1.4,
                               ),
                               textAlign:
@@ -356,16 +424,17 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                   ),
                   const SizedBox(height: 20),
 
-                  // Audio Controls
+                  // ── Audio controls ───────────────────────────────────
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: boxBg,
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                          color: const Color(0xFF275878), width: 1.5),
+                      border: Border.all(color: audioBorder, width: 1.5),
                     ),
                     child: Row(
                       children: [
@@ -375,7 +444,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                             _isPlaying
                                 ? Icons.stop_circle_rounded
                                 : Icons.play_circle_fill,
-                            color: AppColors.primaryBlue,
+                            color: accentColor,
                             size: 40,
                           ),
                         ),
@@ -395,8 +464,8 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                                   height: height,
                                   decoration: BoxDecoration(
                                     color: _isPlaying
-                                        ? AppColors.primaryBlue
-                                        : Colors.grey.shade400,
+                                        ? accentColor
+                                        : waveInactiveColor,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 );
@@ -407,13 +476,13 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                         const SizedBox(width: 10),
                         Text(
                           _formatDuration(_secondsElapsed),
-                          style: const TextStyle(
-                            color: Colors.grey,
+                          style: TextStyle(
+                            color: timerColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(Icons.volume_up, color: Colors.grey),
+                        Icon(Icons.volume_up, color: timerColor),
                       ],
                     ),
                   ),
