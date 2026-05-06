@@ -13,7 +13,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool isDarkMode = false;
   static const Color underlineColor = Color(0xFFD5EBF5);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -21,65 +20,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final localeProvider = Provider.of<LocaleProvider>(context);
+    // ── Consume ThemeProvider ─────────────────────────────────────────────
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final bool isDarkMode = themeProvider.isDarkMode;
     final bool isArabic = localeProvider.locale.languageCode == 'ar';
+
+    // ── Adaptive colours ──────────────────────────────────────────────────
+    final Color scaffoldBg =
+        isDarkMode ? const Color(0xFF121212) : Colors.white;
+    final Color cardBg = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+    final Color cardBorder =
+        isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFD5EBF5);
+    final Color titleColor =
+        isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
+    final Color labelColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final Color dividerColor =
+        isDarkMode ? const Color(0xFF2C2C2C) : underlineColor;
+    final Color menuIconColor = isDarkMode ? Colors.white70 : Colors.black;
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: scaffoldBg,
       drawer: isArabic
           ? null
-          : CustomSidebar(
-              selectedIndex: 6,
-              onItemTapped: (index) {},
-            ),
+          : CustomSidebar(selectedIndex: 6, onItemTapped: (index) {}),
       endDrawer: isArabic
-          ? CustomSidebar(
-              selectedIndex: 6,
-              onItemTapped: (index) {},
-            )
+          ? CustomSidebar(selectedIndex: 6, onItemTapped: (index) {})
           : null,
       body: SafeArea(
         child: Column(
           children: [
-            //Custom top bar
+            // ── Top bar ──────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: isArabic
                     ? [
-                        // Arabic: hamburger LEFT → logo center → spacer RIGHT
                         IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.black, size: 32),
+                          icon: Icon(
+                            Icons.menu,
+                            color: menuIconColor,
+                            size: 32,
+                          ),
                           onPressed: () =>
                               _scaffoldKey.currentState?.openEndDrawer(),
                         ),
                         Expanded(
                           child: Center(
-                            child: const Text(
+                            child: Text(
                               'تَفَاهُمٌ',
                               style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF275878)),
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                color: titleColor,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 48),
                       ]
                     : [
-                        // English: spacer LEFT → logo center → hamburger RIGHT
                         const SizedBox(width: 48),
                         Expanded(
                           child: Center(
-                            child: Image.asset('assets/TAFAHOM.png',
-                                width: 120, height: 40, fit: BoxFit.contain),
+                            child: isDarkMode
+                                ? Text(
+                                    'TAFAHOM',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w900,
+                                      color: titleColor,
+                                      letterSpacing: 2,
+                                    ),
+                                  )
+                                : Image.asset(
+                                    'assets/TAFAHOM.png',
+                                    width: 120,
+                                    height: 40,
+                                    fit: BoxFit.contain,
+                                  ),
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.black, size: 32),
+                          icon: Icon(
+                            Icons.menu,
+                            color: menuIconColor,
+                            size: 32,
+                          ),
                           onPressed: () =>
                               _scaffoldKey.currentState?.openDrawer(),
                         ),
@@ -87,14 +115,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            // Settings content
+            // ── Settings card ─────────────────────────────────────────────
             Container(
               margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               padding: const EdgeInsets.only(bottom: 30),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: const Color(0xFFD5EBF5), width: 3),
+                border: Border.all(color: cardBorder, width: 3),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -102,83 +130,124 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
+                  // Section header
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(24, 30, 24, 15),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       border: Border(
-                          bottom: BorderSide(color: underlineColor, width: 2)),
+                        bottom: BorderSide(color: dividerColor, width: 2),
+                      ),
                     ),
                     child: Text(
                       local.settings,
                       textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                      style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF275878)),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: titleColor,
+                      ),
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       children: [
                         const SizedBox(height: 25),
+
+                        // ── Language toggle ──────────────────────────────
                         _buildRow(
                           local.appLanguage,
                           isArabic,
+                          labelColor,
                           ToggleButtons(
                             borderRadius: BorderRadius.circular(30),
                             selectedColor: Colors.white,
-                            fillColor: const Color(0xFF275878),
+                            fillColor: titleColor,
+                            color: labelColor,
+                            borderColor: isDarkMode
+                                ? const Color(0xFF3A3A3A)
+                                : Colors.grey.shade300,
+                            selectedBorderColor: titleColor,
                             constraints: const BoxConstraints(
-                                minHeight: 32, minWidth: 50),
+                              minHeight: 32,
+                              minWidth: 50,
+                            ),
                             isSelected: [isArabic, !isArabic],
                             onPressed: (index) {
-                              localeProvider.setLocale(index == 0
-                                  ? const Locale('ar')
-                                  : const Locale('en'));
+                              localeProvider.setLocale(
+                                index == 0
+                                    ? const Locale('ar')
+                                    : const Locale('en'),
+                              );
                             },
                             children: const [
-                              Text("AR",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold)),
-                              Text("EN",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold)),
+                              Text(
+                                "AR",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "EN",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 20),
+
+                        // ── Theme toggle ─────────────────────────────────
+                        // Now wired to ThemeProvider so the whole app reacts
                         _buildRow(
                           local.appTheme,
                           isArabic,
+                          labelColor,
                           ToggleButtons(
                             borderRadius: BorderRadius.circular(30),
                             selectedColor: Colors.white,
-                            fillColor: const Color(0xFF275878),
+                            fillColor: titleColor,
+                            color: labelColor,
+                            borderColor: isDarkMode
+                                ? const Color(0xFF3A3A3A)
+                                : Colors.grey.shade300,
+                            selectedBorderColor: titleColor,
                             constraints: const BoxConstraints(
-                                minHeight: 32, minWidth: 50),
+                              minHeight: 32,
+                              minWidth: 50,
+                            ),
                             isSelected: [!isDarkMode, isDarkMode],
-                            onPressed: (index) =>
-                                setState(() => isDarkMode = index == 1),
+                            onPressed: (index) {
+                              // index 0 = light, index 1 = dark
+                              themeProvider.toggleDarkMode(index == 1);
+                            },
                             children: const [
                               Icon(Icons.light_mode, size: 16),
                               Icon(Icons.dark_mode, size: 16),
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 25),
+
+                        // ── Subscription row ─────────────────────────────
                         _buildRow(
                           local.subscriptionLower,
                           isArabic,
+                          labelColor,
                           Text(
                             local.oneMonthLeft,
-                            style: const TextStyle(
-                                color: Color(0xFF275878),
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: titleColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -193,13 +262,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildRow(String label, bool isArabic, Widget trailing) {
+  Widget _buildRow(
+    String label,
+    bool isArabic,
+    Color labelColor,
+    Widget trailing,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
+            color: labelColor,
+          ),
+        ),
         trailing,
       ],
     );
