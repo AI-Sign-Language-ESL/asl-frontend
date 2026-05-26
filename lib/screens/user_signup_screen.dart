@@ -7,7 +7,7 @@ import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
-import '../main.dart'; // UserProvider
+import '../providers/auth/auth_provider.dart';
 
 class UserSignupScreen extends StatefulWidget {
   const UserSignupScreen({super.key});
@@ -54,8 +54,8 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
 
       await GoogleAuthService.loginWithGoogle(idToken);
 
-      final userProvider = context.read<UserProvider>();
-      userProvider.login("Google User");
+      final userProvider = context.read<AuthProvider>();
+      userProvider.login(name: "Google User");
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
@@ -105,9 +105,9 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
         confirmPassword: _confirmPasswordController.text, // ✅ FIX
       );
 
-      final userProvider = context.read<UserProvider>();
+      final userProvider = context.read<AuthProvider>();
       userProvider.login(
-        data["user"]?["username"] ?? _usernameController.text.trim(),
+        name: data["user"]?["username"] ?? _usernameController.text.trim(),
       );
 
       if (!mounted) return;

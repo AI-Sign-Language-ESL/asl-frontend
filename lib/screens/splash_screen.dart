@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../main.dart'; // For LocaleProvider
+import '../providers/locale/app_locale_provider.dart';
 import '../services/api_service.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,24 +14,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _autoRouteIfLoggedIn();
-  }
-
-  Future<void> _autoRouteIfLoggedIn() async {
-    // Let the gorgeous shimmer animation play for 3 seconds
-    await Future.delayed(const Duration(seconds: 3));
-    
-    if (!mounted) return;
-
-    if (ApiService.accessToken != null) {
-      // Automatically route exactly like YouTube/Instagram jump to feed!
-      Navigator.pushReplacementNamed(context, '/main');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
@@ -70,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          Provider.of<LocaleProvider>(context, listen: false)
+                          Provider.of<AppLocaleProvider>(context, listen: false)
                               .setLocale(
                             isArabic ? const Locale('en') : const Locale('ar'),
                           );
@@ -219,7 +201,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 // Continue as guest
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/home');
+                    Navigator.pushReplacementNamed(context, '/main');
                   },
                   child: Text(
                     local.continueAsGuest,

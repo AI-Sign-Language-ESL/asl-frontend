@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/constants/colors.dart';
-import '../main.dart'; // ThemeProvider
+import '../providers/theme/app_theme_provider.dart';
 
 class TranslationModeToggle extends StatelessWidget {
   final bool isSignToText;
@@ -35,7 +35,7 @@ class TranslationModeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRTL = Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     // Adaptive colours
     final Color containerBg =

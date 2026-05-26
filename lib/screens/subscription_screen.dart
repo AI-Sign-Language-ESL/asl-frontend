@@ -2,34 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
-import '../main.dart'; // ThemeProvider
-import 'custom_sidebar.dart';
+import '../providers/theme/app_theme_provider.dart';
+import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class SubscriptionScreen extends StatelessWidget {
-  const SubscriptionScreen({Key? key}) : super(key: key);
-
-  Widget _buildHamburger(bool isArabic) {
-    return Builder(
-      builder: (context) => IconButton(
-        icon: Icon(
-          Icons.menu,
-          color: context.watch<ThemeProvider>().isDarkMode
-              ? Colors.white70
-              : Colors.black,
-          size: 30,
-        ),
-        onPressed: () => isArabic
-            ? Scaffold.of(context).openEndDrawer()
-            : Scaffold.of(context).openDrawer(),
-      ),
-    );
-  }
+  final VoidCallback? onMenuTap;
+  const SubscriptionScreen({Key? key, this.onMenuTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     // ── Adaptive palette ──────────────────────────────────────────────────
     final Color scaffoldBg =
@@ -38,26 +22,19 @@ class SubscriptionScreen extends StatelessWidget {
         isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
     final Color appBarBg = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
     final Color subTitleColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final Color menuIconColor = isDarkMode ? Colors.white70 : Colors.black87;
 
     return Scaffold(
       backgroundColor: scaffoldBg,
-      drawer: isArabic
-          ? null
-          : CustomSidebar(
-              selectedIndex: 4,
-              onItemTapped: (index) => _handleNavigation(context, index),
-            ),
-      endDrawer: isArabic
-          ? CustomSidebar(
-              selectedIndex: 4,
-              onItemTapped: (index) => _handleNavigation(context, index),
-            )
-          : null,
       appBar: AppBar(
         backgroundColor: appBarBg,
         elevation: 0,
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        leading: ModernHamburgerIcon(
+          color: menuIconColor,
+          size: 26,
+          onTap: onMenuTap ?? () {},
+        ),
         title: isArabic
             ? Text(
                 'تَفَاهُمٌ',
@@ -83,15 +60,6 @@ class SubscriptionScreen extends StatelessWidget {
                     height: 30,
                     fit: BoxFit.contain,
                   ),
-        leading: isArabic
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [const SizedBox(width: 8), _buildHamburger(isArabic)],
-              )
-            : null,
-        actions: isArabic
-            ? [const SizedBox(width: 12)]
-            : [_buildHamburger(isArabic), const SizedBox(width: 12)],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -130,34 +98,6 @@ class SubscriptionScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _handleNavigation(BuildContext context, int index) {
-    Navigator.pop(context);
-    Future.delayed(const Duration(milliseconds: 250), () {
-      switch (index) {
-        case 0:
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-          break;
-        case 1:
-          Navigator.pushReplacementNamed(context, '/text_to_sign');
-          break;
-        case 2:
-          Navigator.pushReplacementNamed(context, '/sign_to_text');
-          break;
-        case 3:
-          Navigator.pushReplacementNamed(context, '/dataset-contribution');
-          break;
-        case 4:
-          break;
-        case 5:
-          Navigator.pushReplacementNamed(context, '/profile');
-          break;
-        case 6:
-          Navigator.pushReplacementNamed(context, '/settings');
-          break;
-      }
-    });
   }
 
   Widget _buildPlanCard(

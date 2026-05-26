@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 
 import '../core/constants/colors.dart';
-import '../main.dart'; // ThemeProvider
+import '../providers/theme/app_theme_provider.dart';
 import 'home_screen.dart';
 import 'sign_to_text_screen.dart';
 import 'dataset_contribution_screen.dart';
@@ -36,7 +36,7 @@ class CustomSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     final Color sidebarBg =
         isDarkMode ? const Color(0xFF0D1F2D) : AppColors.primaryBlue;
