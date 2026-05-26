@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
-import '../core/constants/colors.dart';
-import '../main.dart'; // ThemeProvider
-import 'custom_sidebar.dart';
+import '../providers/theme/app_theme_provider.dart';
+import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String userName;
   final bool isOrganization;
+  final VoidCallback? onMenuTap;
 
   const ProfileScreen({
     Key? key,
     required this.userName,
     this.isOrganization = false,
+    this.onMenuTap,
   }) : super(key: key);
 
   static final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -22,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     // ── Adaptive palette ──────────────────────────────────────────────────
     final Color scaffoldBg =
@@ -42,18 +43,6 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: scaffoldBg,
-      drawer: isArabic
-          ? null
-          : CustomSidebar(
-              selectedIndex: 5,
-              onItemTapped: (index) => Navigator.pop(context),
-            ),
-      endDrawer: isArabic
-          ? CustomSidebar(
-              selectedIndex: 5,
-              onItemTapped: (index) => Navigator.pop(context),
-            )
-          : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -64,14 +53,10 @@ class ProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: isArabic
                     ? [
-                        IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: menuIconColor,
-                            size: 32,
-                          ),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openEndDrawer(),
+                        ModernHamburgerIcon(
+                          color: menuIconColor,
+                          size: 28,
+                          onTap: onMenuTap ?? () {},
                         ),
                         Expanded(
                           child: Center(
@@ -88,7 +73,11 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(width: 48),
                       ]
                     : [
-                        const SizedBox(width: 48),
+                        ModernHamburgerIcon(
+                          color: menuIconColor,
+                          size: 28,
+                          onTap: onMenuTap ?? () {},
+                        ),
                         Expanded(
                           child: Center(
                             child: isDarkMode
@@ -109,15 +98,7 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: menuIconColor,
-                            size: 32,
-                          ),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openDrawer(),
-                        ),
+                        const SizedBox(width: 48),
                       ],
               ),
             ),

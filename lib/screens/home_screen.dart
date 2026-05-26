@@ -3,129 +3,87 @@ import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart'
     show AppLocalizations;
 
-import '../main.dart'; // ThemeProvider
+import '../providers/theme/app_theme_provider.dart';
+import '../providers/auth/auth_provider.dart';
+import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 import 'sign_to_text_screen.dart';
+import 'text_to_sign_screen.dart';
 import 'dataset_contribution_screen.dart';
-import 'custom_sidebar.dart';
+import 'subscription_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String username;
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final VoidCallback? onMenuTap;
 
   static const Color primaryBlue = Color(0xFF275878);
   static const Color primaryBlueDark = Color(0xFF4A90C4);
-  static const Color background = Color(0xFFD5EBF5);
   static const Color primaryWhite = Color(0xFFFFFFFF);
 
   HomeScreen({
     super.key,
     required this.username,
     required String usernameLower,
+    this.onMenuTap,
   });
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  }
 
   @override
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
-    final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
+    final authProvider = context.watch<AuthProvider>();
 
-    // ── Adaptive palette ──────────────────────────────────────────────────
-    final Color scaffoldBg =
-        isDarkMode ? const Color(0xFF121212) : primaryWhite;
-    final Color accent = isDarkMode ? primaryBlueDark : primaryBlue;
-    final Color menuIconColor = isDarkMode ? Colors.white70 : Colors.black;
-    final Color usernameColor = isDarkMode ? Colors.white : Colors.black;
+    final scaffoldBg = isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final accent = isDarkMode ? const Color(0xFF60A5FA) : primaryBlue;
+    final cardBg = isDarkMode ? const Color(0xFF1E293B) : primaryWhite;
+    final textPrimary = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final textSecondary = isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final menuIconColor = isDarkMode ? Colors.white70 : Colors.black87;
 
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: scaffoldBg,
-      drawer: CustomSidebar(selectedIndex: 0, onItemTapped: (int p1) {}),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Top bar ─────────────────────────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 32),
-                  Expanded(
-                    child: Center(
-                      child: isArabic
-                          ? Text(
-                              'تَفَاهُمٌ',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                color: accent,
-                                height: 1.1,
-                              ),
-                              textAlign: TextAlign.center,
-                            )
-                          : isDarkMode
-                              ? Text(
-                                  'TAFAHOM',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w900,
-                                    color: accent,
-                                    letterSpacing: 2,
-                                  ),
-                                )
-                              : Image.asset(
-                                  'assets/TAFAHOM.png',
-                                  width: 120,
-                                  height: 40,
-                                  fit: BoxFit.contain,
-                                ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.menu, color: menuIconColor, size: 32),
-                    onPressed: () {
-                      _scaffoldKey.currentState?.openDrawer();
-                    },
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 10),
-
-              // ── Welcome ──────────────────────────────────────────────────
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 34, height: 0.7),
-                  children: [
-                    TextSpan(
-                      text: local.welcome,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: accent,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' $username',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                        color: usernameColor,
-                      ),
-                    ),
-                    TextSpan(
-                      text: local.exclamationEmoji,
-                      style: const TextStyle(fontSize: 25),
-                    ),
-                  ],
+              _buildHeader(menuIconColor, isDarkMode, accent),
+              const SizedBox(height: 24),
+              _buildGreeting(context, textPrimary, textSecondary, accent, isDarkMode),
+              const SizedBox(height: 28),
+              Text(
+                'Quick Actions',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimary,
+                  letterSpacing: -0.3,
                 ),
               ),
-
+              const SizedBox(height: 16),
+              _buildQuickActions(context, accent, cardBg, textPrimary, textSecondary),
+              const SizedBox(height: 28),
+              Text(
+                'Features',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimary,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildFeatures(context, cardBg, textPrimary, textSecondary, accent, isDarkMode),
+              const SizedBox(height: 24),
+              _buildBanner(context, accent, isDarkMode),
               const SizedBox(height: 20),
-              _buildMainCard(context, local, isArabic, isDarkMode, accent),
-              const SizedBox(height: 20),
-              _buildDialectsCard(local, isArabic, isDarkMode, accent),
             ],
           ),
         ),
@@ -133,241 +91,487 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMainCard(
-    BuildContext context,
-    AppLocalizations local,
-    bool isArabic,
-    bool isDarkMode,
-    Color accent,
-  ) {
-    final Color cardBg =
-        isDarkMode ? const Color(0xFF1A2D3D) : const Color(0xFF7FA1B6);
-    final Color descColor = isDarkMode ? Colors.white60 : Colors.black;
-    final Color btnBg = isDarkMode ? const Color(0xFF4A90C4) : primaryBlue;
-    final Color secondBtnBg = isDarkMode ? const Color(0xFF2A2A2A) : background;
-    final Color secondBtnText = isDarkMode ? Colors.white70 : Colors.black;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(25),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(35),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              style: const TextStyle(
-                fontSize: 35,
-                fontWeight: FontWeight.w900,
-                height: 1.2,
-              ),
-              children: isArabic
-                  ? [
-                      TextSpan(
-                        text: "تعزيز حق ",
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white54 : Colors.white70,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "التواصل ",
-                        style: TextStyle(color: accent),
-                      ),
-                      TextSpan(
-                        text: "لكل أفراد المجتمع.",
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white54 : Colors.white70,
-                        ),
-                      ),
-                    ]
-                  : [
-                      TextSpan(
-                        text: "Bridging the Gap Between ",
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white54 : Colors.white70,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "Sound ",
-                        style: TextStyle(color: accent),
-                      ),
-                      TextSpan(
-                        text: "and ",
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white54 : Colors.white70,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "Silence.",
-                        style: TextStyle(color: accent),
-                      ),
-                    ],
+  Widget _buildHeader(Color menuIconColor, bool isDarkMode, Color accent) {
+    return Row(
+      children: [
+        ModernHamburgerIcon(
+          color: menuIconColor,
+          size: 28,
+          onTap: onMenuTap ?? () {},
+        ),
+        const Spacer(),
+        Icon(
+          Icons.notifications_none_rounded,
+          color: menuIconColor,
+          size: 26,
+        ),
+        const SizedBox(width: 12),
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF2563EB), Color(0xFF4A90C4)],
             ),
+            shape: BoxShape.circle,
           ),
-          const SizedBox(height: 13),
-          Text(
-            local.mainDescription,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: descColor,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 17),
-          // Start Translating Button
-          ElevatedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SignToTextScreen()),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: btnBg,
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
+          child: Center(
             child: Text(
-              local.startTranslating,
+              username.isNotEmpty ? username[0].toUpperCase() : 'U',
               style: const TextStyle(
                 color: primaryWhite,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          // Contribute Button
-          ElevatedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const DatasetContributionScreen(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGreeting(
+    BuildContext context,
+    Color textPrimary,
+    Color textSecondary,
+    Color accent,
+    bool isDarkMode,
+  ) {
+    final local = AppLocalizations.of(context)!;
+    final greetingKey = _getGreeting();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          local.welcome,
+          style: TextStyle(
+            fontSize: 16,
+            color: textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                '$username!',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: textPrimary,
+                  letterSpacing: -0.5,
+                  height: 1.2,
+                ),
               ),
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: secondBtnBg,
-              foregroundColor: secondBtnText,
-              minimumSize: const Size(double.infinity, 52),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF10B981), Color(0xFF059669)],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.circle, color: primaryWhite, size: 8),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Free',
+                    style: const TextStyle(
+                      color: primaryWhite,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Text(
-              local.contributeDataset,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: secondBtnText,
-              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActions(
+    BuildContext context,
+    Color accent,
+    Color cardBg,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 14,
+      crossAxisSpacing: 14,
+      childAspectRatio: 1.1,
+      children: [
+        _ActionCard(
+          icon: Icons.translate_rounded,
+          title: 'Text to Sign',
+          subtitle: 'Type & translate',
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TextToSignScreen()),
+          ),
+        ),
+        _ActionCard(
+          icon: Icons.sign_language_rounded,
+          title: 'Sign to Text',
+          subtitle: 'Camera translation',
+          gradient: const LinearGradient(
+            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SignToTextScreen()),
+          ),
+        ),
+        _ActionCard(
+          icon: Icons.cloud_upload_rounded,
+          title: 'Contribute',
+          subtitle: 'Add dataset videos',
+          gradient: const LinearGradient(
+            colors: [Color(0xFF059669), Color(0xFF047857)],
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const DatasetContributionScreen()),
+          ),
+        ),
+        _ActionCard(
+          icon: Icons.workspace_premium_rounded,
+          title: 'Premium',
+          subtitle: 'Unlock all features',
+          gradient: const LinearGradient(
+            colors: [Color(0xFFD97706), Color(0xFFB45309)],
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeatures(
+    BuildContext context,
+    Color cardBg,
+    Color textPrimary,
+    Color textSecondary,
+    Color accent,
+    bool isDarkMode,
+  ) {
+    return Column(
+      children: [
+        _FeatureRow(
+          icon: Icons.language_rounded,
+          iconColor: const Color(0xFF2563EB),
+          title: 'Multi-Language Support',
+          description: 'Translate between sign language and text in real-time',
+          cardBg: cardBg,
+          textPrimary: textPrimary,
+          textSecondary: textSecondary,
+          isDarkMode: isDarkMode,
+        ),
+        const SizedBox(height: 12),
+        _FeatureRow(
+          icon: Icons.camera_alt_rounded,
+          iconColor: const Color(0xFF7C3AED),
+          title: 'Real-Time Recognition',
+          description: 'Advanced AI-powered sign language detection',
+          cardBg: cardBg,
+          textPrimary: textPrimary,
+          textSecondary: textSecondary,
+          isDarkMode: isDarkMode,
+        ),
+        const SizedBox(height: 12),
+        _FeatureRow(
+          icon: Icons.group_rounded,
+          iconColor: const Color(0xFF059669),
+          title: 'Community Driven',
+          description: 'Help improve the dataset by contributing videos',
+          cardBg: cardBg,
+          textPrimary: textPrimary,
+          textSecondary: textSecondary,
+          isDarkMode: isDarkMode,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBanner(
+    BuildContext context,
+    Color accent,
+    bool isDarkMode,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDarkMode
+              ? [const Color(0xFF1E40AF), const Color(0xFF1E3A8A)]
+              : [const Color(0xFF2563EB), const Color(0xFF1D4ED8)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2563EB).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Upgrade to Premium',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: primaryWhite,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Unlock unlimited translations and premium features',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryWhite,
+                    foregroundColor: const Color(0xFF2563EB),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.workspace_premium_rounded,
+              color: primaryWhite,
+              size: 32,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildDialectsCard(
-    AppLocalizations local,
-    bool isArabic,
-    bool isDarkMode,
-    Color accent,
-  ) {
-    final Color cardBg =
-        isDarkMode ? const Color(0xFF1E1E1E) : const Color(0xFFD5EBF5);
-    final Color labelColor = isDarkMode ? Colors.white : Colors.black;
+class _ActionCard extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Gradient gradient;
+  final VoidCallback onTap;
 
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(25),
+  const _ActionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  State<_ActionCard> createState() => _ActionCardState();
+}
+
+class _ActionCardState extends State<_ActionCard> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.96 : 1,
+        duration: const Duration(milliseconds: 150),
+        child: Container(
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(35),
+            gradient: widget.gradient,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: widget.gradient.colors.first.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                local.supportedDialects,
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w700,
-                  color: labelColor,
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  widget.icon,
+                  color: Colors.white,
+                  size: 24,
                 ),
               ),
-              const SizedBox(height: 25),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _DialectChip(
-                    flag: '🇪🇬',
-                    label: 'ESL',
-                    isDarkMode: isDarkMode,
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                    ),
                   ),
-                  const SizedBox(width: 15),
-                  _DialectChip(
-                    flag: '🇺🇸',
-                    label: 'ASL',
-                    isDarkMode: isDarkMode,
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.subtitle,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
         ),
-        Positioned(
-          right: isArabic ? null : 10,
-          left: isArabic ? 10 : null,
-          bottom: -10,
-          child: Opacity(
-            opacity: 0.2,
-            child: Icon(Icons.translate, size: 140, color: accent),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
-class _DialectChip extends StatelessWidget {
-  final String flag;
-  final String label;
+class _FeatureRow extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String description;
+  final Color cardBg;
+  final Color textPrimary;
+  final Color textSecondary;
   final bool isDarkMode;
 
-  const _DialectChip({
-    required this.flag,
-    required this.label,
+  const _FeatureRow({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.description,
+    required this.cardBg,
+    required this.textPrimary,
+    required this.textSecondary,
     required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(15),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDarkMode ? Colors.white24 : Colors.black.withOpacity(0.05),
+          color: textSecondary.withOpacity(0.08),
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Text(flag, style: const TextStyle(fontSize: 22)),
-          const SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-              color: isDarkMode ? Colors.white70 : Colors.black87,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: iconColor, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimary,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: textSecondary,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

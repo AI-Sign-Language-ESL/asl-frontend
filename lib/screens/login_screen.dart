@@ -7,7 +7,7 @@ import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
-import '../main.dart'; // ✅ UserProvider
+import '../providers/auth/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -47,8 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
       await GoogleAuthService.loginWithGoogle(idToken);
 
       // ✅ FIX: MARK USER AS LOGGED IN
-      final userProvider = context.read<UserProvider>();
-      userProvider.login("Google User");
+      final userProvider = context.read<AuthProvider>();
+      userProvider.login(name: "Google User");
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
@@ -94,9 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // ✅ FIX: MARK USER AS LOGGED IN
-      final userProvider = context.read<UserProvider>();
+      final userProvider = context.read<AuthProvider>();
       userProvider.login(
-        data["user"]?["username"] ?? "User",
+        name: data["user"]?["username"] ?? "User",
       );
 
       if (!mounted) return;

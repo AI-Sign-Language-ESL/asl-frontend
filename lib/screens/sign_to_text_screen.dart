@@ -5,12 +5,14 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:math';
 import 'dart:async';
 import '../core/constants/colors.dart';
-import 'custom_sidebar.dart';
 import '../widgets/translation_mode_toggle.dart';
-import '../main.dart'; // LocaleProvider + ThemeProvider
+import '../providers/locale/app_locale_provider.dart';
+import '../features/sidebar/widgets/modern_hamburger_icon.dart';
+import '../providers/theme/app_theme_provider.dart';
 
 class SignToTextScreen extends StatefulWidget {
-  const SignToTextScreen({super.key});
+  final VoidCallback? onMenuTap;
+  const SignToTextScreen({super.key, this.onMenuTap});
 
   @override
   State<SignToTextScreen> createState() => _SignToTextScreenState();
@@ -119,7 +121,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
   }
 
   Widget _buildLanguagePicker(bool isDarkMode) {
-    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final localeProvider = Provider.of<AppLocaleProvider>(context, listen: false);
     final Color iconBg =
         isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
 
@@ -176,7 +178,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
   }
 
   String _getLocalizedText(BuildContext context, String key) {
-    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final localeProvider = Provider.of<AppLocaleProvider>(context, listen: false);
     final bool isArabic = localeProvider.locale.languageCode == 'ar';
 
     final Map<String, Map<String, String>> translations = {
@@ -191,9 +193,9 @@ class _SignToTextScreenState extends State<SignToTextScreen>
 
   @override
   Widget build(BuildContext context) {
-    final localeProvider = Provider.of<LocaleProvider>(context);
+    final localeProvider = Provider.of<AppLocaleProvider>(context);
     final bool isArabic = localeProvider.locale.languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     // ── Adaptive palette ──────────────────────────────────────────────────
     final Color scaffoldBg =
@@ -216,12 +218,6 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: scaffoldBg,
-      drawer: isArabic
-          ? null
-          : CustomSidebar(selectedIndex: 2, onItemTapped: (_) {}),
-      endDrawer: isArabic
-          ? CustomSidebar(selectedIndex: 2, onItemTapped: (_) {})
-          : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -232,62 +228,22 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: isArabic
                     ? [
-                        IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: menuIconColor,
-                            size: 32,
-                          ),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openEndDrawer(),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              'تَفَاهُمٌ',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                color: accentColor,
-                              ),
-                            ),
-                          ),
-                        ),
                         _buildLanguagePicker(isDarkMode),
                         const SizedBox(width: 4),
+                        ModernHamburgerIcon(
+                          color: accentColor,
+                          size: 28,
+                          onTap: widget.onMenuTap ?? () {},
+                        ),
                       ]
                     : [
-                        const SizedBox(width: 48),
-                        Expanded(
-                          child: Center(
-                            child: isDarkMode
-                                ? Text(
-                                    'TAFAHOM',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w900,
-                                      color: accentColor,
-                                      letterSpacing: 2,
-                                    ),
-                                  )
-                                : Image.asset(
-                                    'assets/TAFAHOM.png',
-                                    width: 120,
-                                    height: 40,
-                                    fit: BoxFit.contain,
-                                  ),
-                          ),
+                        ModernHamburgerIcon(
+                          color: accentColor,
+                          size: 28,
+                          onTap: widget.onMenuTap ?? () {},
                         ),
+                        const SizedBox(width: 4),
                         _buildLanguagePicker(isDarkMode),
-                        IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: menuIconColor,
-                            size: 32,
-                          ),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openDrawer(),
-                        ),
                       ],
               ),
             ),

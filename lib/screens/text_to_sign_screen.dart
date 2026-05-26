@@ -1,16 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 import '../core/constants/colors.dart';
-import 'custom_sidebar.dart';
 import '../widgets/translation_mode_toggle.dart';
-import '../services/to_sign_service.dart';
 import '../services/speech_to_text_service.dart';
-import '../main.dart'; // ThemeProvider + LocaleProvider
+import '../providers/theme/app_theme_provider.dart';
+import '../providers/locale/app_locale_provider.dart';
+import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class TextToSignScreen extends StatefulWidget {
-  const TextToSignScreen({super.key});
+  final VoidCallback? onMenuTap;
+  const TextToSignScreen({super.key, this.onMenuTap});
 
   @override
   State<TextToSignScreen> createState() => _TextToSignScreenState();
@@ -21,10 +24,9 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
   final FocusNode _textFocusNode = FocusNode();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final SignTranslationService _translationService = SignTranslationService();
   final SpeechToTextService _sttService = SpeechToTextService();
 
-  VideoPlayerController? _videoController;
+  UnityWidgetController? _unityWidgetController;
 
   bool _isListening = false;
   bool _httpLoading = false;
@@ -41,6 +43,10 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
 
   Future<void> _initSpeech() async {
     await _sttService.init();
+  }
+
+  void onUnityCreated(UnityWidgetController controller) {
+    _unityWidgetController = controller;
   }
 
   void _startListening() {
@@ -67,29 +73,18 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
-    setState(() {
-      _httpLoading = true;
-      _videoController?.dispose();
-      _videoController = null;
-    });
+    List<String> words = text.split(" ");
+    String json = jsonEncode(words);
 
-    try {
-      final videoUrl =
-          await _translationService.translateTextToSign(text: text);
-      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-      await _videoController!.initialize();
-      await _videoController!.play();
-      if (mounted) setState(() {});
-    } catch (e) {
-      debugPrint('TRANSLATION ERROR: $e');
-    } finally {
-      if (mounted) setState(() => _httpLoading = false);
-    }
+    _unityWidgetController?.postMessage(
+      "tpose",
+      "ReceiveAnimations",
+      json,
+    );
   }
 
   @override
   void dispose() {
-    _videoController?.dispose();
     _textController.dispose();
     _textFocusNode.dispose();
     super.dispose();
@@ -97,7 +92,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
 
   // ── Language picker popup — same style as SignToTextScreen ────────────────
   Widget _buildLanguagePicker(bool isDarkMode) {
-    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    final localeProvider = Provider.of<AppLocaleProvider>(context, listen: false);
     final Color iconBg =
         isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
 
@@ -151,14 +146,13 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
   Widget build(BuildContext context) {
     final bool isArabicUI =
         Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     // ── Adaptive palette ──────────────────────────────────────────────────
     final Color scaffoldBg =
         isDarkMode ? const Color(0xFF121212) : Colors.white;
     final Color accentColor =
         isDarkMode ? const Color(0xFF4A90C4) : AppColors.primaryBlue;
-    final Color menuIconColor = isDarkMode ? Colors.white70 : Colors.black;
 
     // Sub-toggle: outer pill uses primaryBlue family in both modes
     // Active pill is a lighter shade so the selected side is clearly distinct
@@ -182,73 +176,32 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       key: _scaffoldKey,
       backgroundColor: scaffoldBg,
 
-      // Drawer — respects RTL same as other screens
-      drawer: isArabicUI
-          ? null
-          : CustomSidebar(selectedIndex: 1, onItemTapped: (_) {}),
-      endDrawer: isArabicUI
-          ? CustomSidebar(selectedIndex: 1, onItemTapped: (_) {})
-          : null,
-
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top bar (matches sign_to_text layout exactly) ─────────────
+            // ── Top bar ─────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: isArabicUI
                     ? [
-                        // Arabic: hamburger | logo | language-picker
-                        IconButton(
-                          icon:
-                              Icon(Icons.menu, color: menuIconColor, size: 32),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openEndDrawer(),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              'تَفَاهُمٌ',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                color: accentColor,
-                              ),
-                            ),
-                          ),
-                        ),
                         _buildLanguagePicker(isDarkMode),
                         const SizedBox(width: 4),
+                        ModernHamburgerIcon(
+                          color: accentColor,
+                          size: 28,
+                          onTap: widget.onMenuTap ?? () {},
+                        ),
                       ]
                     : [
-                        // English: language-picker | logo | hamburger
+                        ModernHamburgerIcon(
+                          color: accentColor,
+                          size: 28,
+                          onTap: widget.onMenuTap ?? () {},
+                        ),
+                        const SizedBox(width: 4),
                         _buildLanguagePicker(isDarkMode),
-                        Expanded(
-                          child: Center(
-                            child: isDarkMode
-                                ? Text(
-                                    'TAFAHOM',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w900,
-                                      color: accentColor,
-                                      letterSpacing: 2,
-                                    ),
-                                  )
-                                : Image.asset('assets/TAFAHOM.png',
-                                    width: 120,
-                                    height: 40,
-                                    fit: BoxFit.contain),
-                          ),
-                        ),
-                        IconButton(
-                          icon:
-                              Icon(Icons.menu, color: menuIconColor, size: 32),
-                          onPressed: () =>
-                              _scaffoldKey.currentState?.openDrawer(),
-                        ),
                       ],
               ),
             ),
@@ -296,20 +249,12 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: frameColor, width: 4),
       ),
-      child: Center(
-        child: _httpLoading
-            ? CircularProgressIndicator(color: accentColor)
-            : (_videoController != null &&
-                    _videoController!.value.isInitialized)
-                ? AspectRatio(
-                    aspectRatio: _videoController!.value.aspectRatio,
-                    child: VideoPlayer(_videoController!),
-                  )
-                : Icon(
-                    isRealPerson ? Icons.person : Icons.face,
-                    size: 70,
-                    color: frameColor,
-                  ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(26),
+        child: UnityWidget(
+          onUnityCreated: onUnityCreated,
+          useAndroidViewSurface: true,
+        ),
       ),
     );
   }

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:confetti/confetti.dart';
 import 'package:provider/provider.dart';
-import '../core/constants/colors.dart';
-import 'custom_sidebar.dart';
 import '../services/dataset_service.dart';
-import '../main.dart'; // ThemeProvider
+import '../providers/theme/app_theme_provider.dart';
+import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class DatasetContributionScreen extends StatefulWidget {
-  const DatasetContributionScreen({Key? key}) : super(key: key);
+  final VoidCallback? onMenuTap;
+  const DatasetContributionScreen({Key? key, this.onMenuTap}) : super(key: key);
 
   @override
   State<DatasetContributionScreen> createState() =>
@@ -58,7 +58,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
     if (_isVideoSelected) return;
 
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.read<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.read<AppThemeProvider>().isDarkMode;
     final Color sheetBg = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
     final Color iconColor =
         isDarkMode ? const Color(0xFF4A90C4) : const Color(0xFF275878);
@@ -157,7 +157,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
 
       // Capture theme/locale BEFORE the async gap (still valid here because
       // we already passed the mounted check above).
-      final bool isDarkMode = context.read<ThemeProvider>().isDarkMode;
+      final bool isDarkMode = context.read<AppThemeProvider>().isDarkMode;
       final bool isArabic =
           Localizations.localeOf(context).languageCode == 'ar';
 
@@ -256,7 +256,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
   @override
   Widget build(BuildContext context) {
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final bool isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     final Color scaffoldBg =
         isDarkMode ? const Color(0xFF121212) : Colors.white;
@@ -283,12 +283,6 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: scaffoldBg,
-      drawer: isArabic
-          ? null
-          : CustomSidebar(selectedIndex: 3, onItemTapped: (_) {}),
-      endDrawer: isArabic
-          ? CustomSidebar(selectedIndex: 3, onItemTapped: (_) {})
-          : null,
       body: SafeArea(
         child: Stack(
           children: [
@@ -302,11 +296,10 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: isArabic
                         ? [
-                            IconButton(
-                              icon: Icon(Icons.menu,
-                                  color: menuIconColor, size: 32),
-                              onPressed: () =>
-                                  _scaffoldKey.currentState?.openEndDrawer(),
+                            ModernHamburgerIcon(
+                              color: accentColor,
+                              size: 28,
+                              onTap: widget.onMenuTap ?? () {},
                             ),
                             Expanded(
                               child: Center(
@@ -323,7 +316,11 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                             const SizedBox(width: 48),
                           ]
                         : [
-                            const SizedBox(width: 48),
+                            ModernHamburgerIcon(
+                              color: accentColor,
+                              size: 28,
+                              onTap: widget.onMenuTap ?? () {},
+                            ),
                             Expanded(
                               child: Center(
                                 child: isDarkMode
@@ -344,12 +341,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                                       ),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.menu,
-                                  color: menuIconColor, size: 32),
-                              onPressed: () =>
-                                  _scaffoldKey.currentState?.openDrawer(),
-                            ),
+                            const SizedBox(width: 48),
                           ],
                   ),
                 ),
