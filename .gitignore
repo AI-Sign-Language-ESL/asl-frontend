@@ -70,3 +70,5 @@ android/unityLibrary/src/main/jniLibs/
 *.sym.so
 *.dbg.so
 *.o
+# Unity IL2CPP generated output
+android/unityLibrary/src/main/Il2CppOutputProject/
