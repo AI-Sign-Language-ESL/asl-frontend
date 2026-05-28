@@ -60,3 +60,13 @@ android/.gradle/
 *.sym.so
 *.dbg.so
 il2cpp_cache/
+# Unity Android generated files
+android/unityLibrary/build/
+android/unityLibrary/symbols/
+android/unityLibrary/src/main/jniLibs/
+
+# Native binaries
+*.so
+*.sym.so
+*.dbg.so
+*.o
