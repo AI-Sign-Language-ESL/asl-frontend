@@ -389,7 +389,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
   }
 
   Widget _buildSocialButton({
-    required IconData icon,
+    required FaIconData icon,
     required VoidCallback onPressed,
     bool isApple = false,
   }) {

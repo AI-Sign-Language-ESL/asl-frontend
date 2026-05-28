@@ -36,7 +36,7 @@ class OrganizationProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 ),
@@ -48,7 +48,7 @@ class OrganizationProfileScreen extends StatelessWidget {
                   // Avatar
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: AppColors.primaryBlue.withOpacity(0.15),
+                    backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.15),
                     child: Icon(
                       Icons.person,
                       size: 60,

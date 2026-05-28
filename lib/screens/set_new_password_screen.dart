@@ -216,7 +216,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         width: 90,
                         height: 90,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF275878).withOpacity(0.1),
+                          color: const Color(0xFF275878).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(

@@ -13,8 +13,10 @@ class SpeechToTextService {
   }) {
     _speech.listen(
       localeId: localeId,
-      partialResults: true,
-      listenMode: ListenMode.dictation,
+      listenOptions: SpeechListenOptions(
+        partialResults: true,
+        listenMode: ListenMode.dictation,
+      ),
       onResult: (result) {
         onResult(result.recognizedWords);
       },

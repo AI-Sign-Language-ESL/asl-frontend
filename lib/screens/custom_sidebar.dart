@@ -41,8 +41,8 @@ class CustomSidebar extends StatelessWidget {
     final Color sidebarBg =
         isDarkMode ? const Color(0xFF0D1F2D) : AppColors.primaryBlue;
     final Color selectedHighlight = isDarkMode
-        ? Colors.white.withOpacity(0.15)
-        : Colors.white.withOpacity(0.2);
+        ? Colors.white.withValues(alpha: 0.15)
+        : Colors.white.withValues(alpha: 0.2);
     final Color selectedTextColor =
         isDarkMode ? const Color(0xFF7EC8E3) : Colors.yellow;
 

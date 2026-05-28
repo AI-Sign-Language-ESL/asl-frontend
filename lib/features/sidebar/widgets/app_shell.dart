@@ -4,7 +4,6 @@ import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/colors.dart';
 import '../../../providers/sidebar/sidebar_provider.dart';
 import '../../../providers/sidebar/navigation_provider.dart';
-import '../../../providers/theme/app_theme_provider.dart';
 import '../../../providers/auth/auth_provider.dart';
 import 'premium_sidebar.dart';
 
@@ -164,7 +163,7 @@ class _CollapseButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

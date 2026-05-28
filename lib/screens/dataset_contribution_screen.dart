@@ -436,7 +436,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                                     color: _isVideoSelected
                                         ? (isDarkMode
                                             ? Colors.green.shade900
-                                                .withOpacity(0.4)
+                                                .withValues(alpha: 0.4)
                                             : Colors.green.shade50)
                                         : videoBgNormal,
                                     borderRadius: BorderRadius.circular(20),
@@ -450,7 +450,7 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                                         ? [
                                             BoxShadow(
                                               color:
-                                                  Colors.green.withOpacity(0.4),
+                                                  Colors.green.withValues(alpha: 0.4),
                                               blurRadius: _glowAnimation.value,
                                               spreadRadius: 2,
                                             ),

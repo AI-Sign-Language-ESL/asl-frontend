@@ -48,8 +48,8 @@ class ProfileCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
               border: Border.all(
                 color: isDark
-                    ? AppColors.primaryBlueLight.withOpacity(0.15)
-                    : AppColors.primaryBlue.withOpacity(0.08),
+                    ? AppColors.primaryBlueLight.withValues(alpha: 0.15)
+                    : AppColors.primaryBlue.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),

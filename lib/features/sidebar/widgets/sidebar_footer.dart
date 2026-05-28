@@ -182,8 +182,8 @@ class _LogoutButton extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: isDark
-                ? AppColors.accentRed.withOpacity(0.15)
-                : AppColors.accentRed.withOpacity(0.08),
+                ? AppColors.accentRed.withValues(alpha: 0.15)
+                : AppColors.accentRed.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
           child: Row(

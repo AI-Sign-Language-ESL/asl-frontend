@@ -17,49 +17,49 @@ dependencies:
   intl: ^0.20.2
 
   # 🔥 Networking
-  dio: ^5.4.0
-  shared_preferences: ^2.2.2
-  flutter_secure_storage: ^9.0.0
+  dio: ^5.9.0
+  shared_preferences: ^2.5.0
+  flutter_secure_storage: ^9.2.0
 
   # 🔥 State
-  provider: ^6.0.0
-  flutter_bloc: ^8.1.3
+  provider: ^6.1.0
+  flutter_bloc: ^8.1.6
 
   # 🔥 Routing
-  go_router: ^14.0.0
+  go_router: ^14.8.0
 
   # 🔥 UI
-  cupertino_icons: ^1.0.2
-  flutter_svg: ^2.0.0
-  font_awesome_flutter: ^10.0.0
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.2.0
+  font_awesome_flutter: ^11.0.0
   flutter_animate: ^4.5.0
   avatar_glow: ^3.0.1
   confetti: ^0.7.0
   shimmer: ^3.0.0
 
   # 🔥 Auth
-  google_sign_in: ^6.1.5
+  google_sign_in: ^6.3.0
 
   # 🔥 Media (CRITICAL)
-  camera: ^0.11.3
-  image_picker: ^1.0.7
+  camera: ^0.11.4
+  image_picker: ^1.2.1
   permission_handler: ^12.0.1
   flutter_sound: ^9.30.0
   path_provider: ^2.1.5
-  video_player: ^2.10.1
-  webview_flutter: ^4.8.0
+  video_player: ^2.11.0
+  webview_flutter: ^4.13.0
 
   # 🔥 Speech (CORE)
-  speech_to_text: ^7.3.0
-  flutter_tts: ^4.2.2
+  speech_to_text: ^7.4.0
+  flutter_tts: ^4.2.5
 
   # 🔥 Firebase
-  firebase_core: ^2.24.0
-  firebase_auth: ^4.10.0
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.16.0
 
   # 🔥 Codegen
-  flutter_gen: ^5.12.0
-  flutter_unity_widget: ^2022.2.1
+  flutter_gen: ^5.14.0
+  flutter_unity_widget_2: ^6000.1.0 # Unity 6000 fork
 
 dev_dependencies:
   flutter_test:

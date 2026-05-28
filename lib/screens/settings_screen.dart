@@ -106,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
+                              color: primaryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -256,12 +256,12 @@ class _SettingsScreenState extends State<SettingsScreen>
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: textSecondary.withOpacity(0.1),
+          color: textSecondary.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -272,7 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 22),
@@ -326,7 +326,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: textSecondary.withOpacity(0.1),
+          color: textSecondary.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -459,7 +459,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

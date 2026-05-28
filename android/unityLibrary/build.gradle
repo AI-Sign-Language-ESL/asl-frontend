@@ -146,7 +146,7 @@ def buildIl2CppImpl(String workingDir, String configuration, String architecture
     commandLineArgs.add("--data-folder=${workingDir}/src/main/Il2CppOutputProject/Source/il2cppOutput/data")
     commandLineArgs.add("--generatedcppdir=${workingDir}/src/main/Il2CppOutputProject/Source/il2cppOutput")
     commandLineArgs.add("--cachedirectory=${workingDir}/build/il2cpp_${abi}_${configuration}/il2cpp_cache")
-    commandLineArgs.add("--tool-chain-path=" + getProperty("unity.androidNdkPath"))
+    commandLineArgs.add("--tool-chain-path=" + (findProperty("unity.androidNdkPath") ?: project.android.ndkPath))
 
     staticLibraries.each { fileName ->
         commandLineArgs.add("--additional-libraries=${workingDir}/src/main/jniStaticLibs/${abi}/${fileName}")
@@ -159,11 +159,13 @@ def buildIl2CppImpl(String workingDir, String configuration, String architecture
     }
 
     def command = "${workingDir}/src/main/Il2CppOutputProject/IL2CPP/build/deploy/il2cpp${executableExtension}";
+    def ndkPath = findProperty("unity.androidNdkPath") ?: project.android.ndkPath
+    def sdkPath = findProperty("unity.androidSdkPath") ?: getSdkDir()
     execCommand(workingDir, [command, *commandLineArgs], [
-        "ANDROID_SDK_ROOT": getProperty("unity.androidSdkPath"),
-        "ANDROID_NDK_ROOT": getProperty("unity.androidNdkPath"),
-        "NDK_ROOT": getProperty("unity.androidNdkPath"),
-        "ANDROID_NDK_HOME": getProperty("unity.androidNdkPath"),
+        "ANDROID_SDK_ROOT": sdkPath,
+        "ANDROID_NDK_ROOT": ndkPath,
+        "NDK_ROOT": ndkPath,
+        "ANDROID_NDK_HOME": ndkPath,
     ])
 
     def dbgLevel =  project.android.defaultConfig.ndk.debugSymbolLevel;

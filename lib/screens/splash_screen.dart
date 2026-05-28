@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/locale/app_locale_provider.dart';
-import '../services/api_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -152,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       .then(delay: const Duration(milliseconds: 100))
                       .shimmer(
                         duration: const Duration(milliseconds: 4000),
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         angle: 45,
                       )
                       .scale(

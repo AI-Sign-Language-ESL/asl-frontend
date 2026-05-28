@@ -57,7 +57,7 @@ class _PremiumSidebarState extends State<PremiumSidebar> {
         content: Text(
           'Are you sure you want to logout?',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         actions: [
@@ -113,7 +113,7 @@ class _PremiumSidebarState extends State<PremiumSidebar> {
         color: isDark ? AppColors.sidebarBgDark : AppColors.sidebarBgLight,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 24,
             offset: const Offset(0, 0),
           ),

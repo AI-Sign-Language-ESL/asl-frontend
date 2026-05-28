@@ -70,8 +70,8 @@ class _AnimatedNavTileState extends State<AnimatedNavTile> {
           onTap: widget.onTap,
           onHover: (hovered) => setState(() => _isHovered = hovered),
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-          splashColor: activeColor.withOpacity(0.12),
-          highlightColor: activeColor.withOpacity(0.06),
+          splashColor: activeColor.withValues(alpha: 0.12),
+          highlightColor: activeColor.withValues(alpha: 0.06),
           child: Container(
             height: AppDimensions.sidebarItemHeight,
             decoration: BoxDecoration(
@@ -146,8 +146,8 @@ class _AnimatedNavTileState extends State<AnimatedNavTile> {
     if (_isHovered) {
       final brightness = Theme.of(context).brightness;
       return brightness == Brightness.dark
-          ? Colors.white.withOpacity(0.04)
-          : Colors.black.withOpacity(0.03);
+          ? Colors.white.withValues(alpha: 0.04)
+          : Colors.black.withValues(alpha: 0.03);
     }
     return Colors.transparent;
   }

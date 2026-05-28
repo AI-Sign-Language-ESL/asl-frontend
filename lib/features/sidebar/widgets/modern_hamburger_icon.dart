@@ -24,7 +24,7 @@ class ModernHamburgerIcon extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.08),
+            color: iconColor.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(Icons.menu_rounded, color: iconColor, size: size),
