@@ -75,37 +75,59 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
-    if (!isRealPerson) {
-      setState(() => _httpLoading = true);
-      try {
-        final response = await ApiService.dio.post(
-          '/api/v1/translation/unity-sign/',
-          data: {'text': text},
-        );
-        final data = response.data as Map<String, dynamic>;
-        final animations = List<String>.from(data['animations'] ?? []);
-        final jsonPayload = jsonEncode({'animations': animations});
-        _unityWidgetController?.postMessage(
-          "tpose",
-          "ReceiveAnimations",
-          jsonPayload,
-        );
-      } on DioException catch (e) {
-        debugPrint('[TextToSign] API error: ${e.message}');
-      } catch (e) {
-        debugPrint('[TextToSign] Unexpected: $e');
-      } finally {
-        setState(() => _httpLoading = false);
-      }
-    } else {
-      List<String> words = text.split(" ");
-      String json = jsonEncode(words);
-      _unityWidgetController?.postMessage(
-        "tpose",
-        "ReceiveAnimations",
-        json,
+    setState(() => _httpLoading = true);
+    try {
+      final response = await ApiService.dio.post(
+        '/api/v1/translation/unity-sign/',
+        data: {'text': text},
       );
+
+      final dynamic data = response.data;
+      List<String> animations = [];
+
+      if (data is Map<String, dynamic> && data['animations'] is List) {
+        animations = List<String>.from(data['animations'] as List);
+        debugPrint('[TextToSign] Parsed animations from Map: $animations');
+      } else if (data is List) {
+        animations = List<String>.from(data);
+        debugPrint('[TextToSign] Parsed animations from List: $animations');
+      } else {
+        debugPrint('[TextToSign] Unexpected response type: ${data.runtimeType}');
+      }
+
+      final jsonPayload = jsonEncode(animations);
+      debugPrint('[TextToSign] Sending to Unity -> $jsonPayload');
+      _sendToUnity(jsonPayload);
+    } on DioException catch (e) {
+      debugPrint('[TextToSign] Dio error: ${e.message}');
+      if (e.response != null) {
+        debugPrint('[TextToSign] Response ${e.response?.statusCode}: ${e.response?.data}');
+      }
+      if (isRealPerson) {
+        final fallback = text.split(' ');
+        final jsonPayload = jsonEncode(fallback);
+        debugPrint('[TextToSign] Fallback (real person) -> $jsonPayload');
+        _sendToUnity(jsonPayload);
+      }
+    } catch (e, stack) {
+      debugPrint('[TextToSign] Unexpected: $e');
+      debugPrint('[TextToSign] Stack: $stack');
+    } finally {
+      setState(() => _httpLoading = false);
     }
+  }
+
+  void _sendToUnity(String jsonPayload) {
+    if (_unityWidgetController == null) {
+      debugPrint('[TextToSign] Unity controller is null - cannot send');
+      return;
+    }
+    _unityWidgetController!.postMessage(
+      "tpose",
+      "ReceiveAnimations",
+      jsonPayload,
+    );
+    debugPrint('[TextToSign] Sent receiveAnimations to Unity');
   }
 
   @override

@@ -1,4 +1,5 @@
 // lib/screens/login_screen.dart
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -105,11 +106,29 @@ class _LoginScreenState extends State<LoginScreen> {
         '/main',
         (route) => false,
       );
+    } on DioException catch (e) {
+      if (!mounted) return;
+      String msg;
+      if (e.response?.data is Map) {
+        final data = e.response?.data as Map;
+        msg = (data["detail"] ??
+               (data["error"] is Map ? (data["error"] as Map)["message"] : null) ??
+               data.toString()) as String;
+      } else {
+        msg = e.message ?? 'Connection failed';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: Text('$e'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
