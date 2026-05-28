@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'api_service.dart';
 
 class GoogleAuthService {
-  static final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static Future<void> loginWithGoogle(String idToken) async {
     final response = await ApiService.dio.post(

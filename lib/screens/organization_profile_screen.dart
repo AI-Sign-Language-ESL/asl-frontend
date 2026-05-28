@@ -49,7 +49,7 @@ class OrganizationProfileScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.15),
-                    child: Icon(
+                    child: const Icon(
                       Icons.person,
                       size: 60,
                       color: AppColors.primaryBlue,

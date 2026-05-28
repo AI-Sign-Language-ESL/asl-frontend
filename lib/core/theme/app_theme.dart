@@ -9,7 +9,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       fontFamily: 'Cairo',
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primaryBlue,
         secondary: AppColors.primaryBlueLight,
         surface: AppColors.surfaceLight,
@@ -106,7 +106,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: 'Cairo',
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.primaryBlueLight,
         secondary: AppColors.accentBlue,
         surface: AppColors.surfaceDark,

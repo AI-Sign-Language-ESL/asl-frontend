@@ -191,7 +191,7 @@ class _LogoutButton extends StatelessWidget {
                 ? MainAxisAlignment.center
                 : MainAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.logout_rounded,
                 size: AppDimensions.sidebarIconSize,
                 color: AppColors.accentRed,

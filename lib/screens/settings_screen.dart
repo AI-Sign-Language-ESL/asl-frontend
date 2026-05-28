@@ -27,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen>
 
     final scaffoldBg = isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
     final cardBg = isDarkMode ? const Color(0xFF1E293B) : Colors.white;
-    final primaryColor = const Color(0xFF2563EB);
+    const primaryColor = Color(0xFF2563EB);
     final accentColor = isDarkMode ? const Color(0xFF60A5FA) : const Color(0xFF275878);
     final textPrimary = isDarkMode ? Colors.white : const Color(0xFF1E293B);
     final textSecondary = isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
@@ -354,7 +354,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           ),
           if (isLink) ...[
             const SizedBox(width: 4),
-            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: const Color(0xFF2563EB)),
+            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF2563EB)),
           ],
         ],
       ),
@@ -369,7 +369,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   ) {
     final themeProvider = context.watch<AppThemeProvider>();
     final isDark = themeProvider.isDarkMode;
-    final primaryColor = const Color(0xFF2563EB);
+    const primaryColor = Color(0xFF2563EB);
     final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
 
     return Container(

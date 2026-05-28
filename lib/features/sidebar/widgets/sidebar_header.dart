@@ -74,7 +74,7 @@ class _LogoCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
+      child: const Icon(
         Icons.translate_rounded,
         color: AppColors.textWhite,
         size: 22,

@@ -82,8 +82,8 @@ class _CollapsedAvatar extends StatelessWidget {
         Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
               colors: [AppColors.gradientStart, AppColors.gradientEnd],
             ),
             shape: BoxShape.circle,
@@ -99,7 +99,7 @@ class _CollapsedAvatar extends StatelessWidget {
             ),
           ),
         ),
-        if (isOnline) _OnlineDot(dark: true),
+        if (isOnline) const _OnlineDot(dark: true),
       ],
     );
   }
@@ -130,8 +130,8 @@ class _ProfileContent extends StatelessWidget {
             Container(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
                   colors: [AppColors.gradientStart, AppColors.gradientEnd],
                 ),
                 shape: BoxShape.circle,

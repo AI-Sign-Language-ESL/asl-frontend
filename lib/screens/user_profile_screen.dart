@@ -48,7 +48,7 @@ class UserProfileScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 52,
                     backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.15),
-                    child: Icon(
+                    child: const Icon(
                       Icons.person_rounded,
                       size: 64,
                       color: AppColors.primaryBlue,

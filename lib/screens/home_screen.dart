@@ -109,8 +109,8 @@ class HomeScreen extends StatelessWidget {
         Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
               colors: [Color(0xFF2563EB), Color(0xFF4A90C4)],
             ),
             shape: BoxShape.circle,
@@ -174,14 +174,14 @@ class HomeScreen extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.circle, color: primaryWhite, size: 8),
-                  const SizedBox(width: 6),
+                  Icon(Icons.circle, color: primaryWhite, size: 8),
+                  SizedBox(width: 6),
                   Text(
                     'Free',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: primaryWhite,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -338,9 +338,9 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Upgrade to Premium',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: primaryWhite,
