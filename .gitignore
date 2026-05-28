@@ -43,3 +43,20 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+MemoryCaptures/
+
+# Unity Android export
+android/unityLibrary/build/
+android/.gradle/
+
+# IL2CPP
+*.so
+*.sym.so
+*.dbg.so
+il2cpp_cache/
