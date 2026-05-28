@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_unity_widget_2/flutter_unity_widget_2.dart';
 import 'package:provider/provider.dart';
 
 import '../core/constants/colors.dart';
 import '../widgets/translation_mode_toggle.dart';
+import '../services/api_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../providers/theme/app_theme_provider.dart';
 import '../providers/locale/app_locale_provider.dart';
@@ -73,14 +75,37 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
-    List<String> words = text.split(" ");
-    String json = jsonEncode(words);
-
-    _unityWidgetController?.postMessage(
-      "tpose",
-      "ReceiveAnimations",
-      json,
-    );
+    if (!isRealPerson) {
+      setState(() => _httpLoading = true);
+      try {
+        final response = await ApiService.dio.post(
+          '/api/v1/translation/unity-sign/',
+          data: {'text': text},
+        );
+        final data = response.data as Map<String, dynamic>;
+        final animations = List<String>.from(data['animations'] ?? []);
+        final jsonPayload = jsonEncode({'animations': animations});
+        _unityWidgetController?.postMessage(
+          "tpose",
+          "ReceiveAnimations",
+          jsonPayload,
+        );
+      } on DioException catch (e) {
+        debugPrint('[TextToSign] API error: ${e.message}');
+      } catch (e) {
+        debugPrint('[TextToSign] Unexpected: $e');
+      } finally {
+        setState(() => _httpLoading = false);
+      }
+    } else {
+      List<String> words = text.split(" ");
+      String json = jsonEncode(words);
+      _unityWidgetController?.postMessage(
+        "tpose",
+        "ReceiveAnimations",
+        json,
+      );
+    }
   }
 
   @override
