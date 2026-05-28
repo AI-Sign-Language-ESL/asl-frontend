@@ -9,7 +9,7 @@ class SignTranslationService {
   }) async {
     try {
       final response = await dio.post(
-        '/translation/to-sign/',
+        '/translation/unity-sign/',
         data: {'text': text},
         options: Options(
           headers: {
