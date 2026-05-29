@@ -13,8 +13,8 @@ import '../../../screens/text_to_sign_screen.dart';
 import '../../../screens/sign_to_text_screen.dart';
 import '../../../screens/dataset_contribution_screen.dart';
 import '../../../screens/subscription_screen.dart';
-import '../../../screens/profile_screen.dart';
 import '../../../screens/settings_screen.dart';
+import '../../profile_settings/screens/profile_settings_screen.dart';
 
 /// Main app shell that wraps original screens with the premium sidebar.
 ///
@@ -56,9 +56,7 @@ class _AppShellState extends State<AppShell> {
       SignToTextScreen(onMenuTap: onMenuTap),
       DatasetContributionScreen(onMenuTap: onMenuTap),
       SubscriptionScreen(onMenuTap: onMenuTap),
-      ProfileScreen(
-        userName: authProvider.userName ?? 'User',
-        isOrganization: authProvider.isOrg,
+      ProfileSettingsScreen(
         onMenuTap: onMenuTap,
       ),
       SettingsScreen(onMenuTap: onMenuTap),

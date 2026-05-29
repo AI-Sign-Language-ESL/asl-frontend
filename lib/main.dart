@@ -14,6 +14,9 @@ import 'providers/theme/app_theme_provider.dart';
 import 'providers/locale/app_locale_provider.dart';
 import 'providers/sidebar/sidebar_provider.dart';
 import 'providers/sidebar/navigation_provider.dart';
+import 'providers/token/token_provider.dart';
+import 'providers/notification/notification_provider.dart';
+import 'providers/dataset/dataset_provider.dart';
 
 // Screens (legacy)
 import 'screens/login_screen.dart';
@@ -56,6 +59,9 @@ class TafahomApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppLocaleProvider()..init()),
         ChangeNotifierProvider(create: (_) => SidebarProvider()..init()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()..init()),
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => DatasetProvider()),
       ],
       child: const _AppContent(),
     );

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_unity_widget/flutter_unity_widget.dart';
+import 'package:flutter_unity_widget_2/flutter_unity_widget_2.dart';
 import 'package:provider/provider.dart';
 
 import '../core/constants/colors.dart';
@@ -11,6 +11,8 @@ import '../services/api_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../providers/theme/app_theme_provider.dart';
 import '../providers/locale/app_locale_provider.dart';
+import '../providers/token/token_provider.dart';
+import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class TextToSignScreen extends StatefulWidget {
@@ -93,6 +95,23 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
         debugPrint('[TextToSign] Parsed animations from List: $animations');
       } else {
         debugPrint('[TextToSign] Unexpected response type: ${data.runtimeType}');
+      }
+
+      final remaining = data is Map<String, dynamic> ? data['remaining_tokens'] : null;
+      if (remaining != null) {
+        debugPrint('[TextToSign] Tokens remaining: $remaining');
+        context.read<TokenProvider>().fetchBalance();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$remaining tokens remaining'),
+              duration: const Duration(seconds: 2),
+              backgroundColor: remaining is int && remaining < 10
+                  ? Colors.orange
+                  : null,
+            ),
+          );
+        }
       }
 
       final jsonPayload = jsonEncode(animations);
@@ -230,26 +249,25 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: isArabicUI
-                    ? [
-                        _buildLanguagePicker(isDarkMode),
-                        const SizedBox(width: 4),
-                        ModernHamburgerIcon(
+                children: [
+                  isArabicUI
+                      ? _buildLanguagePicker(isDarkMode)
+                      : ModernHamburgerIcon(
                           color: accentColor,
                           size: 28,
                           onTap: widget.onMenuTap ?? () {},
                         ),
-                      ]
-                    : [
-                        ModernHamburgerIcon(
+                  const Spacer(),
+                  const TafahomLogo(height: 26),
+                  const Spacer(),
+                  isArabicUI
+                      ? ModernHamburgerIcon(
                           color: accentColor,
                           size: 28,
                           onTap: widget.onMenuTap ?? () {},
-                        ),
-                        const SizedBox(width: 4),
-                        _buildLanguagePicker(isDarkMode),
-                      ],
+                        )
+                      : _buildLanguagePicker(isDarkMode),
+                ],
               ),
             ),
 

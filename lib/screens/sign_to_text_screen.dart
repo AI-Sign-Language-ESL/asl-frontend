@@ -7,6 +7,7 @@ import 'dart:async';
 import '../core/constants/colors.dart';
 import '../widgets/translation_mode_toggle.dart';
 import '../providers/locale/app_locale_provider.dart';
+import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 import '../providers/theme/app_theme_provider.dart';
 
@@ -225,26 +226,25 @@ class _SignToTextScreenState extends State<SignToTextScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: isArabic
-                    ? [
-                        _buildLanguagePicker(isDarkMode),
-                        const SizedBox(width: 4),
-                        ModernHamburgerIcon(
+                children: [
+                  isArabic
+                      ? _buildLanguagePicker(isDarkMode)
+                      : ModernHamburgerIcon(
                           color: accentColor,
                           size: 28,
                           onTap: widget.onMenuTap ?? () {},
                         ),
-                      ]
-                    : [
-                        ModernHamburgerIcon(
+                  const Spacer(),
+                  const TafahomLogo(height: 26),
+                  const Spacer(),
+                  isArabic
+                      ? ModernHamburgerIcon(
                           color: accentColor,
                           size: 28,
                           onTap: widget.onMenuTap ?? () {},
-                        ),
-                        const SizedBox(width: 4),
-                        _buildLanguagePicker(isDarkMode),
-                      ],
+                        )
+                      : _buildLanguagePicker(isDarkMode),
+                ],
               ),
             ),
 

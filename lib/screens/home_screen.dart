@@ -5,6 +5,9 @@ import 'package:tafahom_english_light/l10n/app_localizations.dart'
 
 import '../providers/theme/app_theme_provider.dart';
 import '../providers/auth/auth_provider.dart';
+import '../providers/notification/notification_provider.dart';
+import '../features/notifications/screens/notifications_screen.dart';
+import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 import 'sign_to_text_screen.dart';
 import 'text_to_sign_screen.dart';
@@ -54,7 +57,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(menuIconColor, isDarkMode, accent),
+              _buildHeader(context, menuIconColor, isDarkMode, accent),
               const SizedBox(height: 24),
               _buildGreeting(context, textPrimary, textSecondary, accent, isDarkMode),
               const SizedBox(height: 28),
@@ -91,7 +94,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(Color menuIconColor, bool isDarkMode, Color accent) {
+  Widget _buildHeader(BuildContext context, Color menuIconColor, bool isDarkMode, Color accent) {
     return Row(
       children: [
         ModernHamburgerIcon(
@@ -100,10 +103,55 @@ class HomeScreen extends StatelessWidget {
           onTap: onMenuTap ?? () {},
         ),
         const Spacer(),
-        Icon(
-          Icons.notifications_none_rounded,
-          color: menuIconColor,
-          size: 26,
+        const TafahomLogo(height: 26),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            context.read<NotificationProvider>().fetchNotifications();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const NotificationsScreen(),
+              ),
+            );
+          },
+          child: Stack(
+            children: [
+              Icon(
+                Icons.notifications_none_rounded,
+                color: menuIconColor,
+                size: 26,
+              ),
+              Positioned(
+                top: 2,
+                right: 2,
+                child: ListenableBuilder(
+                  listenable: context.read<NotificationProvider>(),
+                  builder: (context, _) {
+                    final unread = context.read<NotificationProvider>().unreadCount;
+                    if (unread == 0) return const SizedBox.shrink();
+                    return Container(
+                      width: 14,
+                      height: 14,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$unread',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(width: 12),
         Container(

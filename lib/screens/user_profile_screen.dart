@@ -58,22 +58,21 @@ class UserProfileScreen extends StatelessWidget {
                   const SizedBox(height: 40),
 
                   // First Name
-                  const _UserProfileField(
-                      label: "firstname",
-                      value:
-                          "Value"), // Note: original is hard-coded lower; localize if needed, but kept for design
+                  _UserProfileField(
+                      label: local.firstnameLower,
+                      value: ""),
                   const SizedBox(height: 20),
 
                   // Last Name
-                  const _UserProfileField(label: "lastname", value: "Value"),
+                  _UserProfileField(label: local.lastnameLower, value: ""),
                   const SizedBox(height: 20),
 
                   // Username
-                  const _UserProfileField(label: "username", value: "Value"),
+                  _UserProfileField(label: local.usernameLower, value: ""),
                   const SizedBox(height: 20),
 
                   // Email
-                  const _UserProfileField(label: "Email", value: "Value"),
+                  _UserProfileField(label: local.emailLower, value: ""),
 
                   const SizedBox(height: 30),
                 ],
