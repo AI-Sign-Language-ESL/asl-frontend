@@ -4,6 +4,7 @@ import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../../../providers/theme/app_theme_provider.dart';
 import '../../../providers/locale/app_locale_provider.dart';
 import '../../../features/sidebar/widgets/modern_hamburger_icon.dart';
+import '../widgets/tafahom_logo.dart';
 
 class SettingsScreen extends StatefulWidget {
   final VoidCallback? onMenuTap;
@@ -165,36 +166,13 @@ class _SettingsScreenState extends State<SettingsScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
-        children: isArabic
-            ? [
-                _buildHamburgerButton(menuIconColor),
-                const Spacer(),
-                Text(
-                  'تَفَاهُمٌ',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: accentColor,
-                  ),
-                ),
-                const Spacer(),
-                const SizedBox(width: 40),
-              ]
-            : [
-                _buildHamburgerButton(menuIconColor),
-                const Spacer(),
-                Text(
-                  'TAFAHOM',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: accentColor,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const Spacer(),
-                const SizedBox(width: 40),
-              ],
+        children: [
+          _buildHamburgerButton(menuIconColor),
+          const Spacer(),
+          const TafahomLogo(height: 22),
+          const Spacer(),
+          const SizedBox(width: 40),
+        ],
       ),
     );
   }

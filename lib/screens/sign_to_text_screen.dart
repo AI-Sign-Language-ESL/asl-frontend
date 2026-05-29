@@ -235,7 +235,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                           onTap: widget.onMenuTap ?? () {},
                         ),
                   const Spacer(),
-                  const TafahomLogo(height: 26),
+                  const TafahomLogo(height: 22),
                   const Spacer(),
                   isArabic
                       ? ModernHamburgerIcon(

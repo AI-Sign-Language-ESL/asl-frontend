@@ -70,9 +70,9 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/logo.png
+    - assets/Logo.png
     - assets/icons/envelope_lock.png
     - assets/dial.png
-    - assets/TAFAHOM TYPO.png
     - assets/ar_background.png
-    - assets/TAFAHOM.png
+    - assets/TAFAHOM_TYPO.png
+    - assets/TAFAHOM_TYPO2.png

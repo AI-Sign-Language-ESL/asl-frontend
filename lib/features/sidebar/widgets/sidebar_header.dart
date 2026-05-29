@@ -74,10 +74,14 @@ class _LogoCard extends StatelessWidget {
           ),
         ],
       ),
-      child: const Icon(
-        Icons.translate_rounded,
-        color: AppColors.textWhite,
-        size: 22,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        child: Image.asset(
+          'assets/Logo.png',
+          width: 40,
+          height: 40,
+          fit: BoxFit.contain,
+        ),
       ),
     );
   }
@@ -89,12 +93,13 @@ class _AppNameText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
+    return Text(
       'TAFAHOM',
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w800,
         letterSpacing: -0.5,
+        color: isDark ? Colors.white : const Color(0xFF1E293B),
       ),
     );
   }

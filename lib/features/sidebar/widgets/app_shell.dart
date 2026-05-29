@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/colors.dart';
+import '../../../providers/theme/app_theme_provider.dart';
 import '../../../providers/sidebar/sidebar_provider.dart';
 import '../../../providers/sidebar/navigation_provider.dart';
 import '../../../providers/auth/auth_provider.dart';
@@ -67,6 +68,7 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    context.watch<AppThemeProvider>();
     final sidebarProvider = context.watch<SidebarProvider>();
     final width = MediaQuery.of(context).size.width;
     final isDesktop = width >= AppDimensions.breakpointDesktop;

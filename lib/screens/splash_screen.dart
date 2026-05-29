@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/locale/app_locale_provider.dart';
+import '../providers/theme/app_theme_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,9 +19,10 @@ class _SplashScreenState extends State<SplashScreen> {
     final local = AppLocalizations.of(context)!;
     final currentLocale = Localizations.localeOf(context);
     final isArabic = currentLocale.languageCode == 'ar';
+    final isDark = context.watch<AppThemeProvider>().isDarkMode;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFD5EBF5),
+      backgroundColor: isDark ? Colors.black : const Color(0xFFD5EBF5),
       body: Stack(
         children: [
           // Background image for Arabic mode
@@ -42,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: const Color(0xFF275878),
+                        color: isDark ? Colors.white54 : const Color(0xFF275878),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -63,12 +65,12 @@ class _SplashScreenState extends State<SplashScreen> {
                             vertical: 8,
                           ),
                           child: Text(
-                            isArabic ? 'English' : 'العربية',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Color(0xFF275878),
-                              fontWeight: FontWeight.w600,
-                            ),
+                              isArabic ? 'English' : 'العربية',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: isDark ? Colors.white70 : const Color(0xFF275878),
+                                fontWeight: FontWeight.w600,
+                              ),
                           ),
                         ),
                       ),
@@ -91,12 +93,12 @@ class _SplashScreenState extends State<SplashScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (isArabic)
-                      const Text(
+                      Text(
                         'تَفَاهُمٌ',
                         style: TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF275878),
+                          color: isDark ? Colors.white : const Color(0xFF275878),
                           height: 0.6,
                         ),
                         textDirection: TextDirection.rtl,
@@ -107,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           alignment: Alignment.center,
                           heightFactor: 1,
                           child: Image.asset(
-                            'assets/TAFAHOM TYPO.png',
+                            isDark ? 'assets/TAFAHOM_TYPO2.png' : 'assets/TAFAHOM_TYPO.png',
                             width: 240,
                             fit: BoxFit.contain,
                           ),
@@ -117,7 +119,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     Container(
                       width: 230,
                       height: 1,
-                      color: Colors.black,
+                      color: isDark ? Colors.white24 : Colors.black,
                     ),
                   ],
                 ),
@@ -129,10 +131,10 @@ class _SplashScreenState extends State<SplashScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
                     local.worldUnheard,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: isDark ? Colors.white70 : Colors.black87,
                       height: 1.3,
                     ),
                     textAlign: TextAlign.center,
@@ -164,14 +166,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 const Spacer(flex: 1),
 
-                // Get Started Button
+                // Sign In Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF275878),
+                        backgroundColor: isDark ? const Color(0xFF3B82F6) : const Color(0xFF275878),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -184,7 +186,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            isArabic ? 'ابدأ' : local.getStarted,
+                            'Sign In',
                             style: const TextStyle(
                               fontSize: 21,
                               fontWeight: FontWeight.bold,
@@ -204,9 +206,9 @@ class _SplashScreenState extends State<SplashScreen> {
                   },
                   child: Text(
                     local.continueAsGuest,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 19,
-                      color: Colors.black87,
+                      color: isDark ? Colors.white70 : Colors.black87,
                       fontWeight: FontWeight.w500,
                     ),
                     textDirection:
@@ -221,9 +223,9 @@ class _SplashScreenState extends State<SplashScreen> {
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Text(
                     local.builtBy,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
-                      color: Colors.black87,
+                      color: isDark ? Colors.white54 : Colors.black87,
                     ),
                   ),
                 ),

@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
 import '../providers/auth/auth_provider.dart';
+import '../providers/theme/app_theme_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -152,11 +153,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final isDark = context.watch<AppThemeProvider>().isDarkMode;
+    final bg = isDark ? Colors.black : const Color(0xFFD5EBF5);
+    final textPrimary = isDark ? Colors.white : Colors.black;
+    final textSecondary = isDark ? Colors.white70 : Colors.black87;
+    final inputFill = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final primary = isDark ? const Color(0xFF3B82F6) : const Color(0xFF275878);
+    final dividerColor = isDark ? Colors.white24 : Colors.black26;
 
     return Directionality(
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: const Color(0xFFD5EBF5),
+        backgroundColor: bg,
         body: Stack(
           children: [
             if (isArabic)
@@ -179,37 +187,37 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const SizedBox(height: 80),
                         if (isArabic)
-                          const Text(
+                          Text(
                             'تَفَاهُمٌ',
                             style: TextStyle(
                               fontSize: 48,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF275878),
+                              color: primary,
                               height: 1.1,
                             ),
                             textAlign: TextAlign.right,
                           )
                         else
                           Image.asset(
-                            'assets/TAFAHOM TYPO.png',
+                            isDark ? 'assets/TAFAHOM_TYPO2.png' : 'assets/TAFAHOM_TYPO.png',
                             width: 240,
                             height: 40,
                             fit: BoxFit.contain,
                           ),
                         Text(
                           isArabic ? 'أهلاً وسهلاً' : 'Welcome!',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 55,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black,
+                            color: textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           local.signsAlive,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
-                            color: Colors.black87,
+                            color: textSecondary,
                           ),
                         ),
                         const SizedBox(height: 25),
@@ -221,9 +229,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             hintText: local.enterEmailUsername,
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: inputFill,
                             errorText: _emailError,
-                            prefixIcon: const Icon(Icons.person_outline),
+                            prefixIcon: Icon(Icons.person_outline, color: textSecondary),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -241,14 +249,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             hintText: local.password,
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: inputFill,
                             errorText: _passwordError,
-                            prefixIcon: const Icon(Icons.lock_outline),
+                            prefixIcon: Icon(Icons.lock_outline, color: textSecondary),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility,
+                                color: textSecondary,
                               ),
                               onPressed: () => setState(
                                   () => _obscurePassword = !_obscurePassword),
@@ -270,11 +279,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 Checkbox(
                                   value: _rememberMe,
-                                  activeColor: const Color(0xFF275878),
+                                  activeColor: primary,
                                   onChanged: (v) =>
                                       setState(() => _rememberMe = v!),
                                 ),
-                                Text(local.rememberMe),
+                                Text(local.rememberMe, style: TextStyle(color: textPrimary)),
                               ],
                             ),
                             TextButton(
@@ -294,6 +303,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                             onPressed: _isLoading ? null : _attemptLogin,
                             child: _isLoading
                                 ? const CircularProgressIndicator(
@@ -307,13 +323,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         Row(
                           children: [
-                            const Expanded(child: Divider()),
+                            Expanded(child: Divider(color: dividerColor)),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(local.orLoginWith),
+                              child: Text(local.orLoginWith, style: TextStyle(color: textSecondary)),
                             ),
-                            const Expanded(child: Divider()),
+                            Expanded(child: Divider(color: dividerColor)),
                           ],
                         ),
 
@@ -323,8 +339,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                              foregroundColor: textPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: dividerColor),
+                              ),
+                            ),
                             icon: const FaIcon(FontAwesomeIcons.google),
-                            label: const Text(''),
+                            label: Text(isArabic ? 'Google' : 'Google'),
                             onPressed: _isLoading ? null : _handleGoogleLogin,
                           ),
                         ),
@@ -334,8 +358,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                              foregroundColor: textPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: dividerColor),
+                              ),
+                            ),
                             icon: const FaIcon(FontAwesomeIcons.apple),
-                            label: const Text(''),
+                            label: Text(isArabic ? 'Apple' : 'Apple'),
                             onPressed: () {},
                           ),
                         ),
@@ -345,7 +377,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(local.dontHaveAccount),
+                            Text(local.dontHaveAccount, style: TextStyle(color: textSecondary)),
                             TextButton(
                               onPressed: () => Navigator.pushNamed(
                                   context, '/signup_choice'),

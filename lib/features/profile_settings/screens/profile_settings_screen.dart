@@ -6,17 +6,16 @@ import '../../../providers/auth/auth_provider.dart';
 import '../../../providers/token/token_provider.dart';
 import '../../../providers/dataset/dataset_provider.dart';
 import '../../../providers/notification/notification_provider.dart';
+import '../../../providers/theme/app_theme_provider.dart';
 import '../../../widgets/tafahom_logo.dart';
 import '../../notifications/screens/notifications_screen.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   final VoidCallback? onMenuTap;
-  final bool initialDarkMode;
 
   const ProfileSettingsScreen({
     super.key,
     this.onMenuTap,
-    this.initialDarkMode = false,
   });
 
   @override
@@ -25,9 +24,10 @@ class ProfileSettingsScreen extends StatefulWidget {
 
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
     with TickerProviderStateMixin {
-  late bool isDark;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+
+  bool get isDark => context.read<AppThemeProvider>().isDarkMode;
 
   String _userName = '';
   String _userEmail = '';
@@ -36,7 +36,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
   @override
   void initState() {
     super.initState();
-    isDark = widget.initialDarkMode;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = context.read<AuthProvider>();
       _userName =       auth.userName ?? '';
@@ -61,16 +60,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
     super.dispose();
   }
 
-  void _toggleDarkMode() {
-    setState(() {
-      isDark = !isDark;
-    });
-    _fadeController.reset();
-    _fadeController.forward();
-  }
-
   @override
   Widget build(BuildContext context) {
+    context.watch<AppThemeProvider>();
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth >= 768;
     final bg = isDark ? DashboardColors.darkBackground : DashboardColors.background;
@@ -121,7 +113,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
             onPressed: widget.onMenuTap ?? () {},
           ),
           const Spacer(),
-          const TafahomLogo(height: 28),
+          const TafahomLogo(height: 22),
           const Spacer(),
           GestureDetector(
             onTap: () {
@@ -654,7 +646,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
         isDark ? DashboardColors.darkTextSecondary : DashboardColors.textSecondary;
 
     final settings = [
-      ('Dark Mode', Icons.dark_mode_rounded, null, _toggleDarkMode, true),
+      ('Dark Mode', Icons.dark_mode_rounded, null, () => context.read<AppThemeProvider>().toggleTheme(), true),
       ('Notifications', Icons.notifications_outlined, null, () {}, false),
       ('Language', Icons.language_rounded, 'English', () {}, false),
       ('Privacy', Icons.shield_outlined, null, () {}, false),

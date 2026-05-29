@@ -40,7 +40,7 @@ class SignupChoiceScreen extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     Image.asset(
-                      'assets/TAFAHOM TYPO.png',
+                      'assets/TAFAHOM_TYPO.png',
                       width: 240,
                       height: 40,
                       fit: BoxFit.contain,

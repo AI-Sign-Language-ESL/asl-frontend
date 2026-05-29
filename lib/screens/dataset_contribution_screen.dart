@@ -4,6 +4,7 @@ import 'package:confetti/confetti.dart';
 import 'package:provider/provider.dart';
 import '../services/dataset_service.dart';
 import '../providers/theme/app_theme_provider.dart';
+import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class DatasetContributionScreen extends StatefulWidget {
@@ -322,23 +323,8 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                               onTap: widget.onMenuTap ?? () {},
                             ),
                             Expanded(
-                              child: Center(
-                                child: isDarkMode
-                                    ? Text(
-                                        'TAFAHOM',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w900,
-                                          color: accentColor,
-                                          letterSpacing: 2,
-                                        ),
-                                      )
-                                    : Image.asset(
-                                        'assets/TAFAHOM.png',
-                                        width: 120,
-                                        height: 40,
-                                        fit: BoxFit.contain,
-                                      ),
+                              child: const Center(
+                                 child: TafahomLogo(height: 22),
                               ),
                             ),
                             const SizedBox(width: 48),

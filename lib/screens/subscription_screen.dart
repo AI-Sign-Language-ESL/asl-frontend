@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 import '../providers/theme/app_theme_provider.dart';
+import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
 class SubscriptionScreen extends StatelessWidget {
@@ -35,31 +36,7 @@ class SubscriptionScreen extends StatelessWidget {
           size: 26,
           onTap: onMenuTap ?? () {},
         ),
-        title: isArabic
-            ? Text(
-                'تَفَاهُمٌ',
-                style: TextStyle(
-                  fontSize: 33,
-                  fontWeight: FontWeight.bold,
-                  color: titleColor,
-                ),
-              )
-            : isDarkMode
-                ? Text(
-                    'TAFAHOM',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: titleColor,
-                      letterSpacing: 2,
-                    ),
-                  )
-                : Image.asset(
-                    'assets/TAFAHOM.png',
-                    width: 120,
-                    height: 30,
-                    fit: BoxFit.contain,
-                  ),
+        title: const TafahomLogo(height: 22),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

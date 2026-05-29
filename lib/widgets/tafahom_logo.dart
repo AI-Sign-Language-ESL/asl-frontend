@@ -9,7 +9,7 @@ class TafahomLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Image.asset(
-      isDark ? 'assets/TAFAHOM.png' : 'assets/TAFAHOM TYPO.png',
+      isDark ? 'assets/TAFAHOM_TYPO2.png' : 'assets/TAFAHOM_TYPO.png',
       height: height,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
