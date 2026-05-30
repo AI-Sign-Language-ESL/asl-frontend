@@ -14,7 +14,7 @@ class ProfileScreen extends StatelessWidget {
     required this.userName,
     this.isOrganization = false,
     this.onMenuTap,
-  }) : super(key: key);R
+  }) : super(key: key);
 
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();

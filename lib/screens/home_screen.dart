@@ -104,7 +104,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Expanded(
             child: Center(
-              child: TafahomLogo(height: 22),
+              child: const TafahomLogo(height: 22),
             ),
           ),
           GestureDetector(

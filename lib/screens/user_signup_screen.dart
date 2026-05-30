@@ -61,8 +61,6 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
             userData['username'] as String? ??
             'User',
         email: userData['email'] as String?,
-        picture: userData['picture'] as String?,
-        userId: userData['id'] as int?,
       );
 
       if (!mounted) return;
