@@ -8,6 +8,7 @@ import '../services/auth_service.dart';
 import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
 import '../providers/auth/auth_provider.dart';
+import '../widgets/google_signin_button.dart';
 
 class UserSignupScreen extends StatefulWidget {
   const UserSignupScreen({super.key});
@@ -40,7 +41,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
   }
 
   // =====================================================
-  // 🌐 GOOGLE SIGNUP (UNCHANGED)
+  // 🌐 GOOGLE SIGNUP
   // =====================================================
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
@@ -52,10 +53,17 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
         return;
       }
 
-      await GoogleAuthService.loginWithGoogle(idToken);
+      final userData = await GoogleAuthService.loginWithGoogle(idToken);
 
       final userProvider = context.read<AuthProvider>();
-      userProvider.login(name: "Google User");
+      userProvider.login(
+        name: userData['name'] as String? ??
+            userData['username'] as String? ??
+            'User',
+        email: userData['email'] as String?,
+        picture: userData['picture'] as String?,
+        userId: userData['id'] as int?,
+      );
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
@@ -63,18 +71,28 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
         '/main',
         (_) => false,
       );
+    } on GoogleSignInException catch (e) {
+      if (!mounted) return;
+      _showError(e.userFriendlyMessage);
+    } on GoogleAuthException catch (e) {
+      if (!mounted) return;
+      _showError(e.userFriendlyMessage);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Google Sign-Up failed: $e"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showError('Unable to sign in with Google.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   // =====================================================
@@ -275,9 +293,13 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    _buildSocialButton(
-                      icon: FontAwesomeIcons.google,
-                      onPressed: _isLoading ? () {} : _handleGoogleLogin,
+                    GoogleSignInButton(
+                      isLoading: _isLoading,
+                      label: isArabic ? 'Google' : 'Continue with Google',
+                      loadingLabel: isArabic
+                          ? 'جاري التسجيل...'
+                          : 'Signing in...',
+                      onPressed: _handleGoogleLogin,
                     ),
                     const SizedBox(height: 12),
                     _buildSocialButton(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../../../core/constants/colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../providers/theme/app_theme_provider.dart';
 import '../../../providers/locale/app_locale_provider.dart';
@@ -31,7 +30,7 @@ class SidebarHeader extends StatelessWidget {
             : MainAxisAlignment.start,
         textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         children: [
-          _LogoCard(isDark: isDark),
+          const _LogoCard(),
           if (!isCollapsed) ...[
             const SizedBox(width: AppDimensions.spacingSm),
             _AppNameText(isDark: isDark),
@@ -51,38 +50,15 @@ class SidebarHeader extends StatelessWidget {
 }
 
 class _LogoCard extends StatelessWidget {
-  final bool isDark;
-  const _LogoCard({required this.isDark});
+  const _LogoCard();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Image.asset(
+      'assets/Logo.png',
       width: 40,
       height: 40,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.gradientStart, AppColors.gradientEnd],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryBlue.withValues(alpha: 0.25),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-        child: Image.asset(
-          'assets/Logo.png',
-          width: 40,
-          height: 40,
-          fit: BoxFit.contain,
-        ),
-      ),
+      fit: BoxFit.contain,
     );
   }
 }

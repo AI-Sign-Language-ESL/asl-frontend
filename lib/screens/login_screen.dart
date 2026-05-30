@@ -10,6 +10,9 @@ import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
 import '../providers/auth/auth_provider.dart';
 import '../providers/theme/app_theme_provider.dart';
+import '../widgets/google_signin_button.dart';
+import '../core/network/api_exceptions.dart';
+import '../utils/snackbar_utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -34,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text.isNotEmpty;
 
   // =====================================================
-  // 🌐 GOOGLE LOGIN (FIXED)
+  // 🌐 GOOGLE LOGIN
   // =====================================================
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
@@ -46,11 +49,17 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      await GoogleAuthService.loginWithGoogle(idToken);
+      final userData = await GoogleAuthService.loginWithGoogle(idToken);
 
-      // ✅ FIX: MARK USER AS LOGGED IN
       final userProvider = context.read<AuthProvider>();
-      userProvider.login(name: "Google User");
+      userProvider.login(
+        name: userData['name'] as String? ??
+            userData['username'] as String? ??
+            'User',
+        email: userData['email'] as String?,
+        picture: userData['picture'] as String?,
+        userId: userData['id'] as int?,
+      );
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
@@ -58,18 +67,22 @@ class _LoginScreenState extends State<LoginScreen> {
         '/main',
         (route) => false,
       );
+    } on GoogleSignInException catch (e) {
+      if (!mounted) return;
+      _showError(e.userFriendlyMessage);
+    } on GoogleAuthException catch (e) {
+      if (!mounted) return;
+      _showError(e.userFriendlyMessage);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Google Sign-In failed: $e"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showError('Unable to sign in with Google.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showError(String message) {
+    SnackBarUtils.showError(context, message);
   }
 
   // =====================================================
@@ -107,33 +120,12 @@ class _LoginScreenState extends State<LoginScreen> {
         '/main',
         (route) => false,
       );
-    } on DioException catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
-      String msg;
-      if (e.response?.data is Map) {
-        final data = e.response?.data as Map;
-        msg = (data["detail"] ??
-               (data["error"] is Map ? (data["error"] as Map)["message"] : null) ??
-               data.toString()) as String;
-      } else {
-        msg = e.message ?? 'Connection failed';
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(msg),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      SnackBarUtils.showError(context, e.toString());
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$e'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      SnackBarUtils.showError(context, e.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -336,21 +328,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
 
                         // ================= GOOGLE =================
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                              foregroundColor: textPrimary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: dividerColor),
-                              ),
-                            ),
-                            icon: const FaIcon(FontAwesomeIcons.google),
-                            label: Text(isArabic ? 'Google' : 'Google'),
-                            onPressed: _isLoading ? null : _handleGoogleLogin,
-                          ),
+                        GoogleSignInButton(
+                          isLoading: _isLoading,
+                          label: isArabic ? 'Google' : 'Continue with Google',
+                          loadingLabel: isArabic
+                              ? 'جاري التسجيل...'
+                              : 'Signing in...',
+                          onPressed: _handleGoogleLogin,
                         ),
 
                         const SizedBox(height: 10),

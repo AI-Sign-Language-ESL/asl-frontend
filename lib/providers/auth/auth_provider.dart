@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../services/auth_service.dart';
 
 /// Authentication state provider managing login/logout state
 class AuthProvider extends ChangeNotifier {
@@ -13,13 +14,18 @@ class AuthProvider extends ChangeNotifier {
   bool get isOrg => _isOrg;
   bool get isLoggedIn => _isLoggedIn;
 
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
   /// Initialize auth state from storage
   Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    _isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-    _userName = prefs.getString('user_name');
-    _userEmail = prefs.getString('user_email');
-    _isOrg = prefs.getBool('is_org') ?? false;
+    final String? loggedInStr = await _storage.read(key: 'is_logged_in');
+    _isLoggedIn = loggedInStr == 'true';
+    _userName = await _storage.read(key: 'user_name');
+    _userEmail = await _storage.read(key: 'user_email');
+    
+    final String? isOrgStr = await _storage.read(key: 'is_org');
+    _isOrg = isOrgStr == 'true';
+    
     notifyListeners();
   }
 
@@ -34,11 +40,10 @@ class AuthProvider extends ChangeNotifier {
     _isOrg = org;
     _isLoggedIn = true;
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_logged_in', true);
-    await prefs.setString('user_name', name);
-    if (email != null) await prefs.setString('user_email', email);
-    await prefs.setBool('is_org', org);
+    await _storage.write(key: 'is_logged_in', value: 'true');
+    await _storage.write(key: 'user_name', value: name);
+    if (email != null) await _storage.write(key: 'user_email', value: email);
+    await _storage.write(key: 'is_org', value: org ? 'true' : 'false');
 
     notifyListeners();
   }
@@ -50,11 +55,13 @@ class AuthProvider extends ChangeNotifier {
     _isOrg = false;
     _isLoggedIn = false;
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_logged_in', false);
-    await prefs.remove('user_name');
-    await prefs.remove('user_email');
-    await prefs.remove('is_org');
+    await _storage.delete(key: 'is_logged_in');
+    await _storage.delete(key: 'user_name');
+    await _storage.delete(key: 'user_email');
+    await _storage.delete(key: 'is_org');
+
+    // Make sure we also clear tokens via AuthService
+    await AuthService.logout();
 
     notifyListeners();
   }
@@ -64,9 +71,8 @@ class AuthProvider extends ChangeNotifier {
     if (name != null) _userName = name;
     if (email != null) _userEmail = email;
 
-    final prefs = await SharedPreferences.getInstance();
-    if (name != null) await prefs.setString('user_name', name);
-    if (email != null) await prefs.setString('user_email', email);
+    if (name != null) await _storage.write(key: 'user_name', value: name);
+    if (email != null) await _storage.write(key: 'user_email', value: email);
 
     notifyListeners();
   }
