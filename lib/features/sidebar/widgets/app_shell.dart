@@ -6,6 +6,7 @@ import '../../../providers/theme/app_theme_provider.dart';
 import '../../../providers/sidebar/sidebar_provider.dart';
 import '../../../providers/sidebar/navigation_provider.dart';
 import '../../../providers/auth/auth_provider.dart';
+import '../../../providers/notification/notification_provider.dart';
 import 'premium_sidebar.dart';
 
 // Original screens — imported only for rendering, no circular dependency
@@ -37,6 +38,8 @@ class _AppShellState extends State<AppShell> {
 
   void _onLogout() {
     if (mounted) {
+      context.read<NavigationProvider>().resetToHome();
+      context.read<NotificationProvider>().fetchNotifications();
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/login',
         (route) => false,

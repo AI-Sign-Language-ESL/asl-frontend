@@ -8,7 +8,9 @@ import '../services/auth_service.dart';
 import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
 import '../providers/auth/auth_provider.dart';
+import '../providers/sidebar/navigation_provider.dart';
 import '../widgets/google_signin_button.dart';
+import 'verification_screen.dart';
 
 class UserSignupScreen extends StatefulWidget {
   const UserSignupScreen({super.key});
@@ -56,12 +58,14 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
       final userData = await GoogleAuthService.loginWithGoogle(idToken);
 
       final userProvider = context.read<AuthProvider>();
-      userProvider.login(
+      await userProvider.login(
         name: userData['name'] as String? ??
             userData['username'] as String? ??
             'User',
         email: userData['email'] as String?,
       );
+
+      context.read<NavigationProvider>().resetToHome();
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
@@ -121,15 +125,14 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
         confirmPassword: _confirmPasswordController.text, // ✅ FIX
       );
 
-      final userProvider = context.read<AuthProvider>();
-      userProvider.login(
-        name: data["user"]?["username"] ?? _usernameController.text.trim(),
-      );
+      final email = data["email"] as String? ?? _emailController.text.trim();
 
       if (!mounted) return;
-      Navigator.pushNamedAndRemoveUntil(
+      Navigator.pushAndRemoveUntil(
         context,
-        '/main',
+        MaterialPageRoute(
+          builder: (_) => VerificationScreen(email: email),
+        ),
         (_) => false,
       );
     } catch (e) {

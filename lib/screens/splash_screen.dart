@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 // LOGO
                 Image.asset(
-                  'assets/logo.png',
+                  'assets/Logo.png',
                   width: 230,
                   height: 230,
                 ),
@@ -182,12 +182,12 @@ class _SplashScreenState extends State<SplashScreen> {
                       onPressed: () {
                         Navigator.pushNamed(context, '/login');
                       },
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             'Sign In',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 21,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,

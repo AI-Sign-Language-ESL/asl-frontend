@@ -102,9 +102,9 @@ class HomeScreen extends StatelessWidget {
             size: 28,
             onTap: onMenuTap ?? () {},
           ),
-          Expanded(
+          const Expanded(
             child: Center(
-              child: const TafahomLogo(height: 22),
+              child: TafahomLogo(height: 22),
             ),
           ),
           GestureDetector(

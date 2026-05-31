@@ -9,6 +9,8 @@ import '../services/auth_service.dart';
 import '../services/google_signin_service.dart';
 import '../services/google_auth_service.dart';
 import '../providers/auth/auth_provider.dart';
+import '../providers/notification/notification_provider.dart';
+import '../providers/sidebar/navigation_provider.dart';
 import '../providers/theme/app_theme_provider.dart';
 import '../widgets/google_signin_button.dart';
 import '../core/network/api_exceptions.dart';
@@ -52,12 +54,15 @@ class _LoginScreenState extends State<LoginScreen> {
       final userData = await GoogleAuthService.loginWithGoogle(idToken);
 
       final userProvider = context.read<AuthProvider>();
-      userProvider.login(
+      await userProvider.login(
         name: userData['name'] as String? ??
             userData['username'] as String? ??
             'User',
         email: userData['email'] as String?,
       );
+
+      context.read<NotificationProvider>().fetchNotifications();
+      context.read<NavigationProvider>().resetToHome();
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
@@ -106,11 +111,20 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
-      // ✅ FIX: MARK USER AS LOGGED IN
+      // Fetch profile to get correct username
+      String userName;
+      try {
+        final profile = await AuthService.getProfile();
+        userName = profile["username"] as String? ?? "User";
+      } catch (_) {
+        userName = data["user"]?["username"] as String? ?? "User";
+      }
+
       final userProvider = context.read<AuthProvider>();
-      userProvider.login(
-        name: data["user"]?["username"] ?? "User",
-      );
+      await userProvider.login(name: userName);
+
+      context.read<NotificationProvider>().fetchNotifications();
+      context.read<NavigationProvider>().resetToHome();
 
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(

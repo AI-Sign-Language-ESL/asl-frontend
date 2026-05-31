@@ -309,6 +309,61 @@ class AuthService {
   }
 
   // =====================================================
+  // 📧 RESEND VERIFICATION CODE
+  // =====================================================
+  static Future<Map<String, dynamic>> resendVerificationCode({
+    required String email,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$authBaseUrl/resend-code/"),
+      headers: _jsonHeaders,
+      body: jsonEncode({
+        "email": email,
+      }),
+    );
+
+    final data = _decode(response);
+
+    if (response.statusCode != 200) {
+      throw data["detail"] ?? "Failed to resend code";
+    }
+
+    return data;
+  }
+
+  // =====================================================
+  // ✅ VERIFY EMAIL
+  // =====================================================
+  static Future<Map<String, dynamic>> verifyEmail({
+    required String email,
+    required String code,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$authBaseUrl/verify-email/"),
+      headers: _jsonHeaders,
+      body: jsonEncode({
+        "email": email,
+        "code": code,
+      }),
+    );
+
+    final data = _decode(response);
+
+    if (response.statusCode != 200) {
+      throw data["detail"] ?? "Verification failed";
+    }
+
+    if (data["access"] != null && data["refresh"] != null) {
+      await _saveTokens(
+        access: data["access"],
+        refresh: data["refresh"],
+      );
+    }
+
+    return data;
+  }
+
+  // =====================================================
   // 🚪 LOGOUT
   // =====================================================
   static Future<void> logout() async {

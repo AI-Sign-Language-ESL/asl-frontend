@@ -122,6 +122,13 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       if (e.response != null) {
         debugPrint('[TextToSign] Response ${e.response?.statusCode}: ${e.response?.data}');
       }
+      if (e.response?.statusCode == 403) {
+        final data = e.response?.data;
+        if (data is Map<String, dynamic> && data['detail'] == 'Not enough credits.') {
+          _showInsufficientCreditsDialog(data);
+          return;
+        }
+      }
       if (isRealPerson) {
         final fallback = text.split(' ');
         final jsonPayload = jsonEncode(fallback);
@@ -147,6 +154,41 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       jsonPayload,
     );
     debugPrint('[TextToSign] Sent receiveAnimations to Unity');
+  }
+
+  void _showInsufficientCreditsDialog(Map<String, dynamic> data) {
+    String resetDateStr = '';
+    try {
+      final nextReset = DateTime.parse(data['next_reset'] as String);
+      resetDateStr = '${nextReset.day}/${nextReset.month}';
+    } catch (_) {
+      resetDateStr = 'next week';
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Insufficient Credits'),
+        content: Text(
+          "You've run out of credits. "
+          "Your credits will reset on $resetDateStr. "
+          "Upgrade your plan to get more credits.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.pushNamed(context, '/subscription');
+            },
+            child: const Text('Upgrade'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

@@ -22,6 +22,8 @@ class NotificationTile extends StatelessWidget {
         return Icons.check_circle_rounded;
       case 'contribution_rejected':
         return Icons.cancel_rounded;
+      case 'contribution_submitted':
+        return Icons.cloud_upload_rounded;
       case 'tokens':
         return Icons.token_rounded;
       case 'meeting_invite':
@@ -39,6 +41,8 @@ class NotificationTile extends StatelessWidget {
         return Colors.green;
       case 'contribution_rejected':
         return Colors.red;
+      case 'contribution_submitted':
+        return AppColors.primaryBlue;
       case 'tokens':
         return Colors.amber;
       case 'meeting_invite':

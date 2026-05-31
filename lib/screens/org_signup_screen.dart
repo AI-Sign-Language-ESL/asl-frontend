@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import 'verification_screen.dart';
 
 class OrgSignupScreen extends StatefulWidget {
   const OrgSignupScreen({super.key});
@@ -44,7 +45,7 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await AuthService.registerOrganization(
+      final data = await AuthService.registerOrganization(
         username: _usernameController.text.trim(),
         organizationName: _organizationNameController.text.trim(),
         activity: _organizationActivityController.text.trim(),
@@ -55,10 +56,14 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
         jobTitle: _jobTitleController.text.trim(),
       );
 
+      final email = data["email"] as String? ?? _emailController.text.trim();
+
       // ✅ navigate ONLY after backend success
-      Navigator.pushNamedAndRemoveUntil(
+      Navigator.pushAndRemoveUntil(
         context,
-        '/main',
+        MaterialPageRoute(
+          builder: (_) => VerificationScreen(email: email),
+        ),
         (_) => false,
       );
     } catch (e) {

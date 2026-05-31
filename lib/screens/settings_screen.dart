@@ -112,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ),
                             child: Text(
                               isArabic ? 'شهر واحد متبقي' : '1 month left',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: primaryColor,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 13,

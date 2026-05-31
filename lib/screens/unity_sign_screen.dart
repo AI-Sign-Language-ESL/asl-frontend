@@ -88,6 +88,13 @@ class _UnitySignScreenState extends State<UnitySignScreen> {
       setState(() => _statusMessage = 'Sent to Unity ✓');
     } on DioException catch (e) {
       debugPrint('[UnitySign] API error: ${e.message}');
+      if (e.response?.statusCode == 403) {
+        final responseData = e.response?.data;
+        if (responseData is Map<String, dynamic> && responseData['detail'] == 'Not enough credits.') {
+          _showInsufficientCreditsDialog(responseData);
+          return;
+        }
+      }
       setState(() => _statusMessage = 'API error: ${e.response?.statusCode ?? e.message}');
     } catch (e) {
       debugPrint('[UnitySign] Unexpected error: $e');
@@ -95,6 +102,41 @@ class _UnitySignScreenState extends State<UnitySignScreen> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _showInsufficientCreditsDialog(Map<String, dynamic> data) {
+    String resetDateStr = '';
+    try {
+      final nextReset = DateTime.parse(data['next_reset'] as String);
+      resetDateStr = '${nextReset.day}/${nextReset.month}';
+    } catch (_) {
+      resetDateStr = 'next week';
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Insufficient Credits'),
+        content: Text(
+          "You've run out of credits. "
+          "Your credits will reset on $resetDateStr. "
+          "Upgrade your plan to get more credits.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.pushNamed(context, '/subscription');
+            },
+            child: const Text('Upgrade'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

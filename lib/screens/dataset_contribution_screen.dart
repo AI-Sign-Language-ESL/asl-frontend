@@ -322,8 +322,8 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                               size: 28,
                               onTap: widget.onMenuTap ?? () {},
                             ),
-                            Expanded(
-                              child: const Center(
+                            const Expanded(
+                              child: Center(
                                  child: TafahomLogo(height: 22),
                               ),
                             ),

@@ -32,7 +32,7 @@ class SignupChoiceScreen extends StatelessWidget {
 
                     // Logo area
                     Image.asset(
-                      'assets/logo.png',
+                      'assets/Logo.png',
                       width: 215,
                       height: 215,
                       fit: BoxFit.contain,
