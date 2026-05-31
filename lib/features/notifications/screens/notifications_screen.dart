@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/notification/notification_provider.dart';
 import '../widgets/notification_tile.dart';
+import 'notification_detail_screen.dart';
 import '../../../core/constants/colors.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -97,6 +98,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           if (!notif.isRead) {
                             notificationProvider.markAsRead(notif.id);
                           }
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => NotificationDetailScreen(
+                                notificationId: notif.id,
+                              ),
+                            ),
+                          );
                         },
                         onDelete: () =>
                             notificationProvider.delete(notif.id),

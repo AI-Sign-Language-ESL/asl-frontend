@@ -18,14 +18,30 @@ class AuthProvider extends ChangeNotifier {
 
   /// Initialize auth state from storage
   Future<void> init() async {
-    final String? loggedInStr = await _storage.read(key: 'is_logged_in');
-    _isLoggedIn = loggedInStr == 'true';
     _userName = await _storage.read(key: 'user_name');
     _userEmail = await _storage.read(key: 'user_email');
-    
-    final String? isOrgStr = await _storage.read(key: 'is_org');
-    _isOrg = isOrgStr == 'true';
-    
+    _isOrg = (await _storage.read(key: 'is_org')) == 'true';
+
+    const tokenStorage = FlutterSecureStorage();
+    final accessToken = await tokenStorage.read(key: 'access');
+    final refreshToken = await tokenStorage.read(key: 'refresh');
+
+    final loggedInStr = await _storage.read(key: 'is_logged_in');
+    if (loggedInStr == 'true' && (accessToken == null || refreshToken == null)) {
+      _userName = null;
+      _userEmail = null;
+      _isOrg = false;
+      _isLoggedIn = false;
+      await _storage.delete(key: 'is_logged_in');
+      await _storage.delete(key: 'user_name');
+      await _storage.delete(key: 'user_email');
+      await _storage.delete(key: 'is_org');
+      await AuthService.logout();
+      notifyListeners();
+      return;
+    }
+
+    _isLoggedIn = loggedInStr == 'true';
     notifyListeners();
   }
 
