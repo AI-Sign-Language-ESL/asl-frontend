@@ -20,7 +20,15 @@ class DatasetProvider extends ChangeNotifier {
 
     try {
       final response = await ApiService.dio.get('/api/v1/dataset/contributions/me/');
-      final data = response.data as List;
+      final dynamic body = response.data;
+      final List data;
+      if (body is List) {
+        data = body;
+      } else if (body is Map && body['results'] is List) {
+        data = body['results'] as List;
+      } else {
+        data = [];
+      }
       _totalContributions = data.length;
       _approvedContributions = 0;
       _pendingContributions = 0;

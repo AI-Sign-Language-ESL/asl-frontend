@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
 import '../../../providers/theme/app_theme_provider.dart';
 import '../../../providers/locale/app_locale_provider.dart';
+import '../../../providers/auth/auth_provider.dart';
 import '../../../features/sidebar/widgets/modern_hamburger_icon.dart';
 import '../widgets/tafahom_logo.dart';
+import '../widgets/plan_badge.dart';
 
 class SettingsScreen extends StatefulWidget {
   final VoidCallback? onMenuTap;
@@ -104,20 +106,11 @@ class _SettingsScreenState extends State<SettingsScreen>
                           iconColor: primaryColor,
                           title: local.subscriptionLower,
                           subtitle: isArabic ? 'إدارة خطتك المدفوعة' : 'Manage your paid plan',
-                          trailing: Container(
+                          trailing: PlanBadge(
+                            plan: context.watch<AuthProvider>().plan,
+                            showIcon: true,
+                            fontSize: 12,
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              isArabic ? 'شهر واحد متبقي' : '1 month left',
-                              style: const TextStyle(
-                                color: primaryColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                              ),
-                            ),
                           ),
                           cardBg: cardBg,
                           textPrimary: textPrimary,

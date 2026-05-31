@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import 'package:tafahom_english_light/providers/theme/app_theme_provider.dart';
 import '../services/auth_service.dart';
 import 'verification_screen.dart';
 
@@ -83,11 +85,12 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     return Directionality(
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: const Color(0xFFD5EBF5),
+        backgroundColor: isDarkMode ? Colors.black : const Color(0xFFD5EBF5),
         body: Stack(
           children: [
             if (isArabic)
@@ -112,12 +115,12 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                         height: 180,
                       ),
                       const SizedBox(height: 24),
-                      const Text(
+                      Text(
                         'ليديك صوتك — أنضم إلينا',
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: isDarkMode ? Colors.white : Colors.black87,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -125,16 +128,20 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                     ] else ...[
                       Text(
                         local.createNewAccount ?? 'Create New Account',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black87,
                         ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         local.handsVoice ?? 'Hands Voice',
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: isDarkMode ? Colors.white60 : null,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 40),
@@ -288,17 +295,18 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
                           isArabic
                               ? 'هل لديك حساب مسبقاً؟'
                               : 'Already have an account?',
-                          style: const TextStyle(
-                              fontSize: 18, color: Colors.black87),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: isDarkMode ? Colors.white60 : Colors.black87),
                         ),
                         TextButton(
                           onPressed: () =>
                               Navigator.pushNamed(context, '/login'),
                           child: Text(
                             isArabic ? 'تسجيل الدخول' : 'Login',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
-                              color: Color(0xFF275878),
+                              color: isDarkMode ? const Color(0xFF60A5FA) : const Color(0xFF275878),
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -321,14 +329,17 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
     required String hint,
   }) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final isDark = context.read<AppThemeProvider>().isDarkMode;
 
     return TextField(
       controller: controller,
       textAlign: isArabic ? TextAlign.right : TextAlign.left,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -346,28 +357,32 @@ class _OrgSignupScreenState extends State<OrgSignupScreen> {
     required VoidCallback onToggle,
   }) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final isDark = context.read<AppThemeProvider>().isDarkMode;
+    final iconColor = isDark ? Colors.white60 : null;
 
     return TextField(
       controller: controller,
       obscureText: obscureText,
       textAlign: isArabic ? TextAlign.right : TextAlign.left,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
         filled: true,
-        fillColor: Colors.white,
-        prefixIcon: isArabic ? null : const Icon(Icons.lock_outline),
+        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        prefixIcon: isArabic ? null : Icon(Icons.lock_outline, color: iconColor),
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (isArabic) const Icon(Icons.lock_outline),
+            if (isArabic) Icon(Icons.lock_outline, color: iconColor),
             IconButton(
               icon: Icon(
                 obscureText ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey[700],
+                color: isDark ? Colors.white60 : Colors.grey[700],
               ),
               onPressed: onToggle,
             ),
-            if (!isArabic) const Icon(Icons.lock_outline),
+            if (!isArabic) Icon(Icons.lock_outline, color: iconColor),
           ],
         ),
         border: OutlineInputBorder(

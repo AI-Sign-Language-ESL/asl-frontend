@@ -8,6 +8,8 @@ import '../../../providers/dataset/dataset_provider.dart';
 import '../../../providers/notification/notification_provider.dart';
 import '../../../providers/theme/app_theme_provider.dart';
 import '../../../widgets/tafahom_logo.dart';
+import '../../../widgets/plan_badge.dart';
+import '../../../theme/subscription_plan.dart';
 import '../../notifications/screens/notifications_screen.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
@@ -482,10 +484,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
     final textSecondary =
         isDark ? DashboardColors.darkTextSecondary : DashboardColors.textSecondary;
     final tokenProvider = context.watch<TokenProvider>();
+    final authProvider = context.watch<AuthProvider>();
     final remainingTokens = tokenProvider.remainingTokens;
     final weeklyLimit = tokenProvider.weeklyLimit;
     final usageRatio = tokenProvider.usageRatio;
     final usagePercent = (usageRatio * 100).round();
+    final plan = authProvider.plan;
 
     return DashboardCard(
       isDark: isDark,
@@ -516,6 +520,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen>
                   letterSpacing: -0.3,
                 ),
               ),
+              const Spacer(),
+              PlanBadge(plan: plan, showIcon: false, fontSize: 11, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
             ],
           ),
           const SizedBox(height: 20),

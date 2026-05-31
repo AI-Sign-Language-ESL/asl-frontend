@@ -4,6 +4,7 @@ import 'package:confetti/confetti.dart';
 import 'package:provider/provider.dart';
 import '../services/dataset_service.dart';
 import '../providers/theme/app_theme_provider.dart';
+import '../providers/dataset/dataset_provider.dart';
 import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
 
@@ -156,6 +157,11 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
 
       _confettiController.play();
 
+      // Refresh contribution stats on profile
+      if (mounted) {
+        context.read<DatasetProvider>().fetchContributions();
+      }
+
       // Capture theme/locale BEFORE the async gap (still valid here because
       // we already passed the mounted check above).
       final bool isDarkMode = context.read<AppThemeProvider>().isDarkMode;
@@ -193,12 +199,24 @@ class _DatasetContributionScreenState extends State<DatasetContributionScreen>
                 const SizedBox(height: 8),
                 Text(
                   isArabic
-                      ? "تم إرسال فيديوك بنجاح"
-                      : "Your video has been submitted successfully",
+                      ? "تم إرسال فيديوك بنجاح وهو قيد المراجعة حالياً"
+                      : "Your video has been submitted and is now pending review",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
                     color: isDarkMode ? Colors.grey.shade500 : Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  isArabic
+                      ? "سيتم إعلامك عند الموافقة عليه"
+                      : "You will be notified once it's approved",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade500,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],

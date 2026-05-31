@@ -36,6 +36,8 @@ import 'screens/organization_profile_screen.dart' as legacy;
 
 // New features
 import 'features/sidebar/widgets/app_shell.dart';
+import 'features/chatbot/providers/chat_provider.dart';
+import 'features/chatbot/screens/chat_screen.dart' as chatbot;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +64,7 @@ class TafahomApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TokenProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => DatasetProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: const _AppContent(),
     );
@@ -120,6 +123,7 @@ class _AppContent extends StatelessWidget {
         '/user_profile': (_) => const legacy.UserProfileScreen(),
         '/org_profile': (_) => const legacy.OrganizationProfileScreen(),
         '/subscription': (_) => const legacy.SubscriptionScreen(),
+        '/chatbot': (_) => const chatbot.ChatScreen(),
       },
     );
   }

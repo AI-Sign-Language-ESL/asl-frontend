@@ -21,7 +21,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get builtBy => 'Built by NU • In collaboration with EgyDeaf';
 
   @override
-  String get welcome => 'مرحبا ';
+  String get welcome => 'أَهْلًا وَسَهْلًا!';
 
   @override
   String get signsAlive => 'حَيْثُ تَنْبِضُ إِشَارَاتُكَ بِالْحَيَاةِ';
@@ -88,6 +88,87 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get popular => 'شائع';
+
+  @override
+  String get planFree => 'مجانية';
+
+  @override
+  String get planBasic => 'أساسية';
+
+  @override
+  String get planGo => 'متقدمة';
+
+  @override
+  String get planEnterprise => 'مؤسسات';
+
+  @override
+  String get priceFree => 'مجاني';
+
+  @override
+  String get priceBasic => '100 جنيه/شهر';
+
+  @override
+  String get priceGo => '175 جنيه/شهر';
+
+  @override
+  String get priceEnterprise => '750 جنيه/شهر';
+
+  @override
+  String get freeTokens => '50 رمز أسبوعيًا';
+
+  @override
+  String get basicTextTranslation => 'ترجمة نصية أساسية';
+
+  @override
+  String get basicSignGeneration => 'توليد إشارات أساسي';
+
+  @override
+  String get communitySupport => 'دعم المجتمع';
+
+  @override
+  String get basicTokens => '250 رمز أسبوعيًا';
+
+  @override
+  String get textToSpeech => 'نص إلى كلام';
+
+  @override
+  String get speechToText => 'كلام إلى نص';
+
+  @override
+  String get youtubeIntegration => 'التكامل مع يوتيوب';
+
+  @override
+  String get generationHistory => 'سجل التوليد';
+
+  @override
+  String get historyCost => 'حفظ السجل يكلف 2 رمز لكل عنصر';
+
+  @override
+  String get goTokens => '500 رمز أسبوعيًا';
+
+  @override
+  String get unlimitedTranslationHistory => 'سجل ترجمة غير محدود';
+
+  @override
+  String get unlimitedGenerationHistory => 'سجل توليد غير محدود';
+
+  @override
+  String get priorityProcessing => 'معالجة ذات أولوية';
+
+  @override
+  String get everythingInBasic => 'كل ما في الخطة الأساسية';
+
+  @override
+  String get enterpriseTokens => '2000 رمز أسبوعيًا';
+
+  @override
+  String get createMeetings => 'إنشاء اجتماعات';
+
+  @override
+  String get meetingChatHistory => 'سجل محادثة الاجتماع';
+
+  @override
+  String get prioritySupport => 'دعم ذو أولوية';
 
   @override
   String get createNewAccount => 'إنشاء حساب جديد';
@@ -328,4 +409,49 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signInterpreter => 'مترجم لغة إشارة';
+
+  @override
+  String get chatbotName => 'فهم';
+
+  @override
+  String get chatbotGreeting => 'اسألني أي شيء عن لغة الإشارة...';
+
+  @override
+  String get chatbotHint => 'اكتب رسالتك...';
+
+  @override
+  String get chatbotThinking => 'جارٍ التفكير...';
+
+  @override
+  String get chatbotError => 'فشل الإرسال. اضغط لإعادة المحاولة.';
+
+  @override
+  String get chatbotRecording => 'جارٍ التسجيل...';
+
+  @override
+  String get chatbotClearTitle => 'مسح المحادثة؟';
+
+  @override
+  String get chatbotClearMessage => 'سيؤدي هذا إلى حذف جميع الرسائل في هذه المحادثة.';
+
+  @override
+  String get chatbotCancel => 'إلغاء';
+
+  @override
+  String get chatbotClear => 'مسح';
+
+  @override
+  String get chatbotSending => 'جارٍ الإرسال...';
+
+  @override
+  String get chatbotRetry => 'إعادة المحاولة';
+
+  @override
+  String get chatbotLoading => 'جارٍ تحميل المحادثة...';
+
+  @override
+  String get chatbotQuickActions => 'إجراءات سريعة';
+
+  @override
+  String get chatbotSuggestions => 'اقتراحات';
 }

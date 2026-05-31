@@ -52,7 +52,7 @@ class _AppShellState extends State<AppShell> {
     final navigationProvider = context.watch<NavigationProvider>();
     final pages = [
       HomeScreen(
-        username: authProvider.userName ?? 'User',
+        username: authProvider.firstName ?? authProvider.userName ?? 'User',
         usernameLower: (authProvider.userName ?? 'user').toLowerCase(),
         onMenuTap: onMenuTap,
       ),

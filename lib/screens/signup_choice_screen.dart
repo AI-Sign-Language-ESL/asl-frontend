@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tafahom_english_light/l10n/app_localizations.dart';
+import 'package:tafahom_english_light/providers/theme/app_theme_provider.dart';
 
 class SignupChoiceScreen extends StatelessWidget {
   const SignupChoiceScreen({super.key});
@@ -8,11 +10,12 @@ class SignupChoiceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
 
     return Directionality(
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: const Color(0xFFD5EBF5),
+        backgroundColor: isDarkMode ? Colors.black : const Color(0xFFD5EBF5),
         body: Stack(
           children: [
             if (isArabic)
@@ -56,10 +59,10 @@ class SignupChoiceScreen extends StatelessWidget {
                         isArabic
                             ? 'إنشاء حساب جديد'
                             : local.signUpAs ?? 'Sign up as',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: isDarkMode ? Colors.white : Colors.black87,
                         ),
                       ),
                     ),
@@ -89,9 +92,9 @@ class SignupChoiceScreen extends StatelessWidget {
                           ? 'صُنع بحب ♥ لمجتمع الصم'
                           : local.madeWithLove ??
                               'Made with ♥ for the Deaf community',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: isDarkMode ? Colors.white60 : Colors.black,
                       ),
                       textAlign: TextAlign.center,
                     ),

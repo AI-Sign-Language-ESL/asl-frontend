@@ -9,6 +9,10 @@ import '../providers/notification/notification_provider.dart';
 import '../features/notifications/screens/notifications_screen.dart';
 import '../widgets/tafahom_logo.dart';
 import '../features/sidebar/widgets/modern_hamburger_icon.dart';
+import '../features/chatbot/widgets/home_assistant_card.dart';
+import '../features/chatbot/screens/chat_screen.dart';
+import '../theme/subscription_plan.dart';
+import '../widgets/plan_badge.dart';
 import 'sign_to_text_screen.dart';
 import 'text_to_sign_screen.dart';
 import 'dataset_contribution_screen.dart';
@@ -40,7 +44,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = AppLocalizations.of(context)!;
     final isDarkMode = context.watch<AppThemeProvider>().isDarkMode;
-    final authProvider = context.watch<AuthProvider>();
+    final plan = context.watch<AuthProvider>().plan;
 
     final scaffoldBg = isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
     final accent = isDarkMode ? const Color(0xFF60A5FA) : primaryBlue;
@@ -58,8 +62,10 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(context, menuIconColor, isDarkMode, accent),
-              const SizedBox(height: 24),
-              _buildGreeting(context, textPrimary, textSecondary, accent, isDarkMode),
+              const SizedBox(height: 12),
+              _buildAssistantCard(context),
+              const SizedBox(height: 16),
+              _buildGreeting(context, textPrimary, textSecondary, plan),
               const SizedBox(height: 28),
               Text(
                 'Quick Actions',
@@ -71,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildQuickActions(context, accent, cardBg, textPrimary, textSecondary),
+              _buildQuickActions(context, plan),
               const SizedBox(height: 28),
               Text(
                 'Features',
@@ -85,7 +91,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildFeatures(context, cardBg, textPrimary, textSecondary, accent, isDarkMode),
               const SizedBox(height: 24),
-              _buildBanner(context, accent, isDarkMode),
+              _buildBanner(context, plan),
               const SizedBox(height: 20),
             ],
           ),
@@ -159,12 +165,20 @@ class HomeScreen extends StatelessWidget {
       );
   }
 
+  Widget _buildAssistantCard(BuildContext context) {
+    return HomeAssistantCard(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ChatScreen()),
+      ),
+    );
+  }
+
   Widget _buildGreeting(
     BuildContext context,
     Color textPrimary,
     Color textSecondary,
-    Color accent,
-    bool isDarkMode,
+    String? plan,
   ) {
     final local = AppLocalizations.of(context)!;
     final greetingKey = _getGreeting();
@@ -195,30 +209,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF10B981), Color(0xFF059669)],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.circle, color: primaryWhite, size: 8),
-                  SizedBox(width: 6),
-                  Text(
-                    'Free',
-                    style: TextStyle(
-                      color: primaryWhite,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            PlanBadge(plan: plan),
           ],
         ),
       ],
@@ -227,55 +218,50 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildQuickActions(
     BuildContext context,
-    Color accent,
-    Color cardBg,
-    Color textPrimary,
-    Color textSecondary,
+    String? plan,
   ) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 14,
-      crossAxisSpacing: 14,
-      childAspectRatio: 1.1,
-      children: [
-        _ActionCard(
-          icon: Icons.translate_rounded,
-          title: 'Text to Sign',
-          subtitle: 'Type & translate',
-          gradient: const LinearGradient(
-            colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
-          ),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const TextToSignScreen()),
-          ),
+
+    final actions = [
+      _ActionCard(
+        icon: Icons.translate_rounded,
+        title: 'Text to Sign',
+        subtitle: 'Type & translate',
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
         ),
-        _ActionCard(
-          icon: Icons.sign_language_rounded,
-          title: 'Sign to Text',
-          subtitle: 'Camera translation',
-          gradient: const LinearGradient(
-            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
-          ),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SignToTextScreen()),
-          ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TextToSignScreen()),
         ),
-        _ActionCard(
-          icon: Icons.cloud_upload_rounded,
-          title: 'Contribute',
-          subtitle: 'Add dataset videos',
-          gradient: const LinearGradient(
-            colors: [Color(0xFF059669), Color(0xFF047857)],
-          ),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const DatasetContributionScreen()),
-          ),
+      ),
+      _ActionCard(
+        icon: Icons.sign_language_rounded,
+        title: 'Sign to Text',
+        subtitle: 'Camera translation',
+        gradient: const LinearGradient(
+          colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
         ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SignToTextScreen()),
+        ),
+      ),
+      _ActionCard(
+        icon: Icons.cloud_upload_rounded,
+        title: 'Contribute',
+        subtitle: 'Add dataset videos',
+        gradient: const LinearGradient(
+          colors: [Color(0xFF059669), Color(0xFF047857)],
+        ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DatasetContributionScreen()),
+        ),
+      ),
+    ];
+
+    if (SubscriptionPlan.shouldShowUpgrade(plan)) {
+      actions.add(
         _ActionCard(
           icon: Icons.workspace_premium_rounded,
           title: 'Premium',
@@ -288,7 +274,17 @@ class HomeScreen extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
           ),
         ),
-      ],
+      );
+    }
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 14,
+      crossAxisSpacing: 14,
+      childAspectRatio: 1.1,
+      children: actions,
     );
   }
 
@@ -340,9 +336,17 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBanner(
     BuildContext context,
-    Color accent,
-    bool isDarkMode,
+    String? plan,
   ) {
+    if (!SubscriptionPlan.shouldShowUpgrade(plan)) return const SizedBox.shrink();
+
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final nextPlan = SubscriptionPlan.nextPlanName(plan);
+    final title = nextPlan != null ? 'Upgrade to $nextPlan' : 'Upgrade to Premium';
+    final subtitle = plan == null || plan == 'free'
+        ? 'Get more translations, priority support, and advanced features'
+        : 'Unlock the full experience with more tokens and features';
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -367,9 +371,9 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Upgrade to Premium',
-                  style: TextStyle(
+                Text(
+                  title,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: primaryWhite,
@@ -377,9 +381,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Unlock unlimited translations and premium features',
-                  style: TextStyle(
+                Text(
+                  subtitle,
+                  style: const TextStyle(
                     fontSize: 13,
                     color: Colors.white70,
                     fontWeight: FontWeight.w500,

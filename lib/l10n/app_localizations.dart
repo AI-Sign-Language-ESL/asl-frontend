@@ -257,6 +257,168 @@ abstract class AppLocalizations {
   /// **'POPULAR'**
   String get popular;
 
+  /// No description provided for @planFree.
+  ///
+  /// In en, this message translates to:
+  /// **'FREE'**
+  String get planFree;
+
+  /// No description provided for @planBasic.
+  ///
+  /// In en, this message translates to:
+  /// **'BASIC'**
+  String get planBasic;
+
+  /// No description provided for @planGo.
+  ///
+  /// In en, this message translates to:
+  /// **'GO'**
+  String get planGo;
+
+  /// No description provided for @planEnterprise.
+  ///
+  /// In en, this message translates to:
+  /// **'ENTERPRISE'**
+  String get planEnterprise;
+
+  /// No description provided for @priceFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get priceFree;
+
+  /// No description provided for @priceBasic.
+  ///
+  /// In en, this message translates to:
+  /// **'100 EGP/month'**
+  String get priceBasic;
+
+  /// No description provided for @priceGo.
+  ///
+  /// In en, this message translates to:
+  /// **'175 EGP/month'**
+  String get priceGo;
+
+  /// No description provided for @priceEnterprise.
+  ///
+  /// In en, this message translates to:
+  /// **'750 EGP/month'**
+  String get priceEnterprise;
+
+  /// No description provided for @freeTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'50 weekly tokens'**
+  String get freeTokens;
+
+  /// No description provided for @basicTextTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic text translation'**
+  String get basicTextTranslation;
+
+  /// No description provided for @basicSignGeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic sign generation'**
+  String get basicSignGeneration;
+
+  /// No description provided for @communitySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Community support'**
+  String get communitySupport;
+
+  /// No description provided for @basicTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'250 weekly tokens'**
+  String get basicTokens;
+
+  /// No description provided for @textToSpeech.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-to-Speech'**
+  String get textToSpeech;
+
+  /// No description provided for @speechToText.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech-to-Text'**
+  String get speechToText;
+
+  /// No description provided for @youtubeIntegration.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube Integration'**
+  String get youtubeIntegration;
+
+  /// No description provided for @generationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation History'**
+  String get generationHistory;
+
+  /// No description provided for @historyCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving history costs 2 tokens per item'**
+  String get historyCost;
+
+  /// No description provided for @goTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'500 weekly tokens'**
+  String get goTokens;
+
+  /// No description provided for @unlimitedTranslationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited Translation History'**
+  String get unlimitedTranslationHistory;
+
+  /// No description provided for @unlimitedGenerationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited Generation History'**
+  String get unlimitedGenerationHistory;
+
+  /// No description provided for @priorityProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority Processing'**
+  String get priorityProcessing;
+
+  /// No description provided for @everythingInBasic.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything included in Basic'**
+  String get everythingInBasic;
+
+  /// No description provided for @enterpriseTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'2000 weekly tokens'**
+  String get enterpriseTokens;
+
+  /// No description provided for @createMeetings.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Meetings'**
+  String get createMeetings;
+
+  /// No description provided for @meetingChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting Chat History'**
+  String get meetingChatHistory;
+
+  /// No description provided for @prioritySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority Support'**
+  String get prioritySupport;
+
   /// No description provided for @createNewAccount.
   ///
   /// In en, this message translates to:
@@ -736,6 +898,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign Language Interpreter'**
   String get signInterpreter;
+
+  /// No description provided for @chatbotName.
+  ///
+  /// In en, this message translates to:
+  /// **'Fehm'**
+  String get chatbotName;
+
+  /// No description provided for @chatbotGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me anything about sign language...'**
+  String get chatbotGreeting;
+
+  /// No description provided for @chatbotHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get chatbotHint;
+
+  /// No description provided for @chatbotThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking...'**
+  String get chatbotThinking;
+
+  /// No description provided for @chatbotError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send. Tap to retry.'**
+  String get chatbotError;
+
+  /// No description provided for @chatbotRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get chatbotRecording;
+
+  /// No description provided for @chatbotClearTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear conversation?'**
+  String get chatbotClearTitle;
+
+  /// No description provided for @chatbotClearMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will delete all messages in this conversation.'**
+  String get chatbotClearMessage;
+
+  /// No description provided for @chatbotCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get chatbotCancel;
+
+  /// No description provided for @chatbotClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get chatbotClear;
+
+  /// No description provided for @chatbotSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get chatbotSending;
+
+  /// No description provided for @chatbotRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get chatbotRetry;
+
+  /// No description provided for @chatbotLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading conversation...'**
+  String get chatbotLoading;
+
+  /// No description provided for @chatbotQuickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get chatbotQuickActions;
+
+  /// No description provided for @chatbotSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get chatbotSuggestions;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

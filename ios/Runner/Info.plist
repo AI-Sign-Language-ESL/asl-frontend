@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Fehm uses the microphone to record voice messages and convert speech to text.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Fehm uses speech recognition to convert your voice into text for messaging.</string>
 </dict>
 </plist>

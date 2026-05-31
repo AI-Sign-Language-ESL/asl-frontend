@@ -90,6 +90,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String get popular => 'POPULAR';
 
   @override
+  String get planFree => 'FREE';
+
+  @override
+  String get planBasic => 'BASIC';
+
+  @override
+  String get planGo => 'GO';
+
+  @override
+  String get planEnterprise => 'ENTERPRISE';
+
+  @override
+  String get priceFree => 'Free';
+
+  @override
+  String get priceBasic => '100 EGP/month';
+
+  @override
+  String get priceGo => '175 EGP/month';
+
+  @override
+  String get priceEnterprise => '750 EGP/month';
+
+  @override
+  String get freeTokens => '50 weekly tokens';
+
+  @override
+  String get basicTextTranslation => 'Basic text translation';
+
+  @override
+  String get basicSignGeneration => 'Basic sign generation';
+
+  @override
+  String get communitySupport => 'Community support';
+
+  @override
+  String get basicTokens => '250 weekly tokens';
+
+  @override
+  String get textToSpeech => 'Text-to-Speech';
+
+  @override
+  String get speechToText => 'Speech-to-Text';
+
+  @override
+  String get youtubeIntegration => 'YouTube Integration';
+
+  @override
+  String get generationHistory => 'Generation History';
+
+  @override
+  String get historyCost => 'Saving history costs 2 tokens per item';
+
+  @override
+  String get goTokens => '500 weekly tokens';
+
+  @override
+  String get unlimitedTranslationHistory => 'Unlimited Translation History';
+
+  @override
+  String get unlimitedGenerationHistory => 'Unlimited Generation History';
+
+  @override
+  String get priorityProcessing => 'Priority Processing';
+
+  @override
+  String get everythingInBasic => 'Everything included in Basic';
+
+  @override
+  String get enterpriseTokens => '2000 weekly tokens';
+
+  @override
+  String get createMeetings => 'Create Meetings';
+
+  @override
+  String get meetingChatHistory => 'Meeting Chat History';
+
+  @override
+  String get prioritySupport => 'Priority Support';
+
+  @override
   String get createNewAccount => 'Create new account';
 
   @override
@@ -328,4 +409,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInterpreter => 'Sign Language Interpreter';
+
+  @override
+  String get chatbotName => 'Fehm';
+
+  @override
+  String get chatbotGreeting => 'Ask me anything about sign language...';
+
+  @override
+  String get chatbotHint => 'Type a message...';
+
+  @override
+  String get chatbotThinking => 'Thinking...';
+
+  @override
+  String get chatbotError => 'Failed to send. Tap to retry.';
+
+  @override
+  String get chatbotRecording => 'Recording...';
+
+  @override
+  String get chatbotClearTitle => 'Clear conversation?';
+
+  @override
+  String get chatbotClearMessage => 'This will delete all messages in this conversation.';
+
+  @override
+  String get chatbotCancel => 'Cancel';
+
+  @override
+  String get chatbotClear => 'Clear';
+
+  @override
+  String get chatbotSending => 'Sending...';
+
+  @override
+  String get chatbotRetry => 'Retry';
+
+  @override
+  String get chatbotLoading => 'Loading conversation...';
+
+  @override
+  String get chatbotQuickActions => 'Quick Actions';
+
+  @override
+  String get chatbotSuggestions => 'Suggestions';
 }

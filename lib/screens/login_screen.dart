@@ -55,10 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final userProvider = context.read<AuthProvider>();
       await userProvider.login(
-        name: userData['name'] as String? ??
-            userData['username'] as String? ??
-            'User',
+        name: userData['username'] as String? ?? 'User',
+        firstName: userData['first_name'] as String? ?? userData['name'] as String?,
         email: userData['email'] as String?,
+        plan: userData['plan'] as String?,
       );
 
       context.read<NotificationProvider>().fetchNotifications();
@@ -111,17 +111,21 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
-      // Fetch profile to get correct username
+      // Fetch profile to get correct name and plan
       String userName;
+      String? firstName;
+      String? plan;
       try {
         final profile = await AuthService.getProfile();
         userName = profile["username"] as String? ?? "User";
+        firstName = profile["first_name"] as String?;
+        plan = profile["plan"] as String?;
       } catch (_) {
         userName = data["user"]?["username"] as String? ?? "User";
       }
 
       final userProvider = context.read<AuthProvider>();
-      await userProvider.login(name: userName);
+      await userProvider.login(name: userName, firstName: firstName, plan: plan);
 
       context.read<NotificationProvider>().fetchNotifications();
       context.read<NavigationProvider>().resetToHome();
