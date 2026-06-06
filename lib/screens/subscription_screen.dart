@@ -254,10 +254,10 @@ class SubscriptionScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [
-                              const Color(0xFFD97706),
-                              const Color(0xFFF59E0B),
+                              Color(0xFFD97706),
+                              Color(0xFFF59E0B),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(20),

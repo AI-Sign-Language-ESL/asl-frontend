@@ -12,7 +12,7 @@ import 'premium_sidebar.dart';
 // Original screens — imported only for rendering, no circular dependency
 import '../../../screens/home_screen.dart';
 import '../../../screens/text_to_sign_screen.dart';
-import '../../../screens/sign_to_text_screen.dart';
+import '../../sign_to_text/screens/sign_to_text_screen.dart';
 import '../../../screens/dataset_contribution_screen.dart';
 import '../../../screens/subscription_screen.dart';
 import '../../../screens/settings_screen.dart';

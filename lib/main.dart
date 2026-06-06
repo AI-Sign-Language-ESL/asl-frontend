@@ -17,6 +17,7 @@ import 'providers/sidebar/navigation_provider.dart';
 import 'providers/token/token_provider.dart';
 import 'providers/notification/notification_provider.dart';
 import 'providers/dataset/dataset_provider.dart';
+import 'providers/translation_provider.dart';
 
 // Screens (legacy)
 import 'screens/login_screen.dart';
@@ -28,7 +29,6 @@ import 'screens/reset_password_screen.dart';
 import 'screens/reset_sent_screen.dart';
 import 'screens/set_new_password_screen.dart';
 import 'screens/home_screen.dart' as legacy;
-import 'screens/sign_to_text_screen.dart' as legacy;
 import 'screens/text_to_sign_screen.dart' as legacy;
 import 'screens/subscription_screen.dart' as legacy;
 import 'screens/user_profile_screen.dart' as legacy;
@@ -38,6 +38,8 @@ import 'screens/organization_profile_screen.dart' as legacy;
 import 'features/sidebar/widgets/app_shell.dart';
 import 'features/chatbot/providers/chat_provider.dart';
 import 'features/chatbot/screens/chat_screen.dart' as chatbot;
+import 'features/sign_to_text/providers/sign_to_text_provider.dart';
+import 'features/sign_to_text/screens/sign_to_text_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +67,8 @@ class TafahomApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => DatasetProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => TranslationProvider()),
+        ChangeNotifierProvider(create: (_) => SignToTextProvider()..init()),
       ],
       child: const _AppContent(),
     );
@@ -118,7 +122,8 @@ class _AppContent extends StatelessWidget {
               username: 'User',
               usernameLower: 'user',
             ),
-        '/sign-to-text': (context) => const legacy.SignToTextScreen(),
+        '/sign-to-text': (context) => const SignToTextScreen(),
+        '/sign-translation': (context) => const SignToTextScreen(),
         '/text-to-sign': (context) => const legacy.TextToSignScreen(),
         '/user_profile': (_) => const legacy.UserProfileScreen(),
         '/org_profile': (_) => const legacy.OrganizationProfileScreen(),

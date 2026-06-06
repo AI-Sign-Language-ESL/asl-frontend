@@ -9,6 +9,7 @@
 #include <file_selector_linux/file_selector_plugin.h>
 #include <flutter_secure_storage_linux/flutter_secure_storage_linux_plugin.h>
 #include <flutter_sound/flutter_sound_plugin.h>
+#include <hand_detection/hand_detection_plugin.h>
 
 void fl_register_plugins(FlPluginRegistry* registry) {
   g_autoptr(FlPluginRegistrar) file_selector_linux_registrar =
@@ -20,4 +21,7 @@ void fl_register_plugins(FlPluginRegistry* registry) {
   g_autoptr(FlPluginRegistrar) flutter_sound_registrar =
       fl_plugin_registry_get_registrar_for_plugin(registry, "FlutterSoundPlugin");
   flutter_sound_plugin_register_with_registrar(flutter_sound_registrar);
+  g_autoptr(FlPluginRegistrar) hand_detection_registrar =
+      fl_plugin_registry_get_registrar_for_plugin(registry, "HandDetectionPlugin");
+  hand_detection_plugin_register_with_registrar(hand_detection_registrar);
 }

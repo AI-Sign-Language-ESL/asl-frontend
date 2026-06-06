@@ -26,8 +26,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
   CameraController? _cameraController;
   bool _cameraLoading = false;
 
-  String _recognizedText =
-      "Hello, this is a demonstration of sign translation. This box is scrollable and will display the text generated from sign language input captured by the camera above. You can also play this text using the audio controls below.";
+  String _recognizedText = "";
 
   final FlutterTts _tts = FlutterTts();
   bool _isPlaying = false;
