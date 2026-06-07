@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import '../services/api_service.dart';
@@ -89,8 +91,27 @@ class TranslationWebSocketService {
     _intentionalClose = false;
     _reconnectAttempts = 0;
     final t = token ?? ApiService.accessToken ?? '';
-    final baseUrl = url ?? 'wss://api.tafahom.io/ws/translation/stream';
-    _wsUrl = '$baseUrl?token=$t';
+    
+    String finalBaseUrl = url ?? '';
+    if (finalBaseUrl.isEmpty) {
+      String apiBase = ApiService.dio.options.baseUrl;
+      if (apiBase.startsWith('https://')) {
+        apiBase = apiBase.replaceFirst('https://', 'wss://');
+      } else if (apiBase.startsWith('http://')) {
+        apiBase = apiBase.replaceFirst('http://', 'ws://');
+      }
+      
+      if (!kIsWeb && Platform.isAndroid) {
+        apiBase = apiBase.replaceAll('localhost', '10.0.2.2')
+                         .replaceAll('127.0.0.1', '10.0.2.2');
+      }
+      
+      finalBaseUrl = '$apiBase/ws/translation/stream';
+    }
+    
+    _wsUrl = '$finalBaseUrl?token=$t';
+    debugPrint('[WebSocket] Preparing to connect to exactly: $_wsUrl');
+    debugPrint('[WebSocket] Token length being sent: ${t.length}');
     _doConnect();
   }
 
@@ -98,12 +119,20 @@ class TranslationWebSocketService {
     if (_disposed) return;
     _cleanup();
     try {
+      debugPrint('[WebSocket] Attempting connection to: $_wsUrl');
       final uri = Uri.parse(_wsUrl!);
       final headers = <String, String>{};
-      if (ApiService.accessToken != null) {
+      if (ApiService.accessToken != null && ApiService.accessToken!.isNotEmpty) {
         headers['Authorization'] = 'Bearer ${ApiService.accessToken}';
       }
       _channel = IOWebSocketChannel.connect(uri, headers: headers);
+      
+      _channel!.ready.then((_) {
+        debugPrint('[WebSocket] Connection SUCCESS. Successfully connected to: $_wsUrl');
+      }).catchError((error) {
+        debugPrint('[WebSocket] Connection FAILED during ready phase. Error: $error');
+      });
+
       _emitEvent(TranslationEvent(
         type: TranslationEventType.connectionStateChanged,
         error: 'connecting',
@@ -116,6 +145,7 @@ class TranslationWebSocketService {
       );
       _startHeartbeat();
     } catch (e) {
+      debugPrint('[WebSocket] Synchronous connection exception: $e');
       _emitEvent(TranslationEvent(
         type: TranslationEventType.connectionStateChanged,
         error: 'disconnected',
@@ -128,10 +158,10 @@ class TranslationWebSocketService {
     try {
       final data = jsonDecode(message as String) as Map<String, dynamic>;
 
-      if (data['action'] == 'pong') return;
+      if (data['action'] == 'pong' || data['type'] == 'pong') return;
 
-      if (data.containsKey('ping')) {
-        sendJson({'action': 'pong'});
+      if (data['type'] == 'ping' || data.containsKey('ping')) {
+        sendJson({'type': 'pong'});
         return;
       }
 
@@ -147,6 +177,7 @@ class TranslationWebSocketService {
   }
 
   void _onError(dynamic error) {
+    debugPrint('[WebSocket] Stream error received: $error');
     _emitEvent(TranslationEvent(
       type: TranslationEventType.connectionStateChanged,
       error: 'disconnected',
@@ -156,6 +187,9 @@ class TranslationWebSocketService {
   }
 
   void _onDone() {
+    final closeCode = _channel?.closeCode;
+    final closeReason = _channel?.closeReason;
+    debugPrint('[WebSocket] Server closed connection. Code: $closeCode, Reason: $closeReason');
     _emitEvent(TranslationEvent(
       type: TranslationEventType.connectionStateChanged,
       error: 'disconnected',
@@ -179,7 +213,7 @@ class TranslationWebSocketService {
   void _startHeartbeat() {
     _stopHeartbeat();
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      sendJson({'action': 'ping'});
+      sendJson({'type': 'ping'});
     });
   }
 
@@ -200,11 +234,11 @@ class TranslationWebSocketService {
   }
 
   void sendStartTranslation() {
-    sendJson({'action': 'start_translation', 'language': _language});
+    sendJson({'action': 'start', 'output_type': 'text', 'language': _language});
   }
 
   void sendStopTranslation() {
-    sendJson({'action': 'stop_translation'});
+    sendJson({'action': 'stop'});
   }
 
   void sendLandmarks(List<List<List<double>>> sequence) {
@@ -250,7 +284,6 @@ class TranslationWebSocketService {
     ));
   }
 
-  @override
   void dispose() {
     _disposed = true;
     disconnect();

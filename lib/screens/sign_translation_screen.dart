@@ -233,26 +233,30 @@ class _SignTranslationScreenState extends State<SignTranslationScreen>
               ),
             const SizedBox(height: 8),
             Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height:
-                          MediaQuery.of(context).size.height * 0.3,
-                      child: const CameraWidget(),
+                    // Large Camera Preview (approx 55-65%)
+                    const Expanded(
+                      flex: 6,
+                      child: CameraWidget(),
                     ),
                     const SizedBox(height: 12),
-                    SizedBox(
-                      height: 100,
-                      child: const TranslationWidget(),
+                    
+                    // Translation Result Card
+                    const Expanded(
+                      flex: 3,
+                      child: TranslationWidget(),
                     ),
+                    const SizedBox(height: 8),
+
+                    // Connection Status Indicator & Errors
                     if (provider.isConnected ||
                         provider.status == TranslationStatus.translating ||
                         provider.status == TranslationStatus.connecting)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4, bottom: 4),
+                        padding: const EdgeInsets.only(bottom: 4),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -261,60 +265,59 @@ class _SignTranslationScreenState extends State<SignTranslationScreen>
                               height: 8,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: provider.status ==
-                                        TranslationStatus.connecting
+                                color: provider.status == TranslationStatus.connecting
                                     ? Colors.orange
-                                    : provider.status ==
-                                            TranslationStatus.translating
+                                    : provider.status == TranslationStatus.translating
                                         ? Colors.amber
                                         : Colors.green,
                               ),
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              provider.status ==
-                                      TranslationStatus.connecting
+                              provider.status == TranslationStatus.connecting
                                   ? 'Connecting...'
-                                  : provider.status ==
-                                          TranslationStatus.translating
+                                  : provider.status == TranslationStatus.translating
                                       ? 'Translating...'
                                       : 'Connected',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: isDarkMode
-                                    ? Colors.white54
-                                    : Colors.black54,
+                                color: isDarkMode ? Colors.white54 : Colors.black54,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    if (provider.status == TranslationStatus.error &&
-                        provider.error != null)
+                    if (provider.status == TranslationStatus.error && provider.error != null)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.only(bottom: 4),
                         child: Text(
                           provider.error!,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 13,
-                          ),
+                          style: const TextStyle(color: Colors.red, fontSize: 13),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    const SizedBox(height: 12),
+                    
+                    // Compact Audio Player
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: boxBg,
                         borderRadius: BorderRadius.circular(30),
-                        border:
-                            Border.all(color: audioBorder, width: 1.5),
+                        border: Border.all(color: audioBorder, width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Row(
                         children: [
                           IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                             onPressed: provider.currentText != null
                                 ? () => _toggleSpeak(provider)
                                 : null,
@@ -322,57 +325,47 @@ class _SignTranslationScreenState extends State<SignTranslationScreen>
                               provider.isSpeaking
                                   ? Icons.stop_circle_rounded
                                   : Icons.play_circle_fill,
-                              color: provider.currentText != null
-                                  ? accentColor
-                                  : Colors.grey,
-                              size: 40,
+                              color: provider.currentText != null ? accentColor : Colors.grey,
+                              size: 36,
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: SizedBox(
-                              height: 30,
+                              height: 24,
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: List.generate(20, (i) {
                                   double height = provider.isSpeaking
-                                      ? 5 +
-                                          _random.nextInt(20).toDouble()
-                                      : 8 + (i % 5 * 2).toDouble();
+                                      ? 5 + _random.nextInt(16).toDouble()
+                                      : 6 + (i % 5 * 1.5).toDouble();
                                   return AnimatedContainer(
-                                    duration: const Duration(
-                                        milliseconds: 100),
+                                    duration: const Duration(milliseconds: 100),
                                     width: 3,
                                     height: height,
                                     decoration: BoxDecoration(
-                                      color: provider.isSpeaking
-                                          ? accentColor
-                                          : waveInactiveColor,
-                                      borderRadius:
-                                          BorderRadius.circular(10),
+                                      color: provider.isSpeaking ? accentColor : waveInactiveColor,
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                   );
                                 }),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 12),
                           Text(
                             _formatDuration(_secondsElapsed),
                             style: TextStyle(
                               color: timerColor,
                               fontWeight: FontWeight.w500,
+                              fontSize: 13,
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Icon(Icons.volume_up, color: timerColor),
+                          Icon(Icons.volume_up, color: timerColor, size: 20),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const TranslationHistoryWidget(),
-                    const SizedBox(height: 24),
                   ],
                 ),
               ),

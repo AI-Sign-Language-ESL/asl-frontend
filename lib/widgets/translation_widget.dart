@@ -24,6 +24,13 @@ class TranslationWidget extends StatelessWidget {
         color: boxBg,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: boxBorder, width: 2.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),

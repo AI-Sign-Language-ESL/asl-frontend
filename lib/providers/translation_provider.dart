@@ -105,6 +105,11 @@ class TranslationProvider extends ChangeNotifier {
         }
         notifyListeners();
 
+      case TranslationEventType.connected:
+        _status = TranslationStatus.ready;
+        _error = null;
+        notifyListeners();
+
       case TranslationEventType.translationError:
         _error = event.error;
         _status = TranslationStatus.error;
