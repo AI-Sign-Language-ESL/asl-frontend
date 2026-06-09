@@ -24,7 +24,6 @@ class ApiErrorHandler {
       case DioExceptionType.badCertificate:
         return ApiException("Bad certificate from server.");
       case DioExceptionType.unknown:
-      default:
         return ApiException("An unexpected networking error occurred.");
     }
   }

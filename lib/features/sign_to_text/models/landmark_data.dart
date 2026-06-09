@@ -40,7 +40,7 @@ class FrameLandmarks {
   }
 
   factory FrameLandmarks.empty() {
-    final zero = LandmarkPoint(x: 0, y: 0, z: 0);
+    const zero = LandmarkPoint(x: 0, y: 0, z: 0);
     return FrameLandmarks(
       pose: List.filled(7, zero),
       leftHand: List.filled(10, zero),

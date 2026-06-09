@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' show Size;
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -98,14 +99,14 @@ class LandmarkDetector {
     const handIndices = [
       HandLandmarkType.wrist,
       HandLandmarkType.thumbTip,
-      HandLandmarkType.indexFingerMcp,
+      HandLandmarkType.indexFingerMCP,
       HandLandmarkType.indexFingerTip,
-      HandLandmarkType.middleFingerMcp,
+      HandLandmarkType.middleFingerMCP,
       HandLandmarkType.middleFingerTip,
-      HandLandmarkType.ringFingerMcp,
+      HandLandmarkType.ringFingerMCP,
       HandLandmarkType.ringFingerTip,
-      HandLandmarkType.pinkyFingerMcp,
-      HandLandmarkType.pinkyFingerTip,
+      HandLandmarkType.pinkyMCP,
+      HandLandmarkType.pinkyTip,
     ];
 
     for (final hand in hands) {
@@ -134,7 +135,7 @@ class LandmarkDetector {
       final rotation = InputImageRotation.values[
         (sensorOrientation / 90).round() % 4
       ];
-      final format = InputImageFormat.nv21;
+      const format = InputImageFormat.nv21;
       final size = Size(image.width.toDouble(), image.height.toDouble());
 
       final WriteBuffer allBytes = WriteBuffer();
