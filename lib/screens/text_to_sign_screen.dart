@@ -149,7 +149,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       return;
     }
     _unityWidgetController!.postMessage(
-      "tpose",
+      "hope",
       "ReceiveAnimations",
       jsonPayload,
     );
