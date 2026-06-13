@@ -17,7 +17,13 @@ import '../widgets/landmark_overlay.dart';
 
 class SignToTextScreen extends StatefulWidget {
   final VoidCallback? onMenuTap;
-  const SignToTextScreen({super.key, this.onMenuTap});
+  final TranslationMode initialMode;
+
+  const SignToTextScreen({
+    super.key, 
+    this.onMenuTap,
+    this.initialMode = TranslationMode.webSocket,
+  });
 
   @override
   State<SignToTextScreen> createState() => _SignToTextScreenState();
@@ -53,6 +59,13 @@ class _SignToTextScreenState extends State<SignToTextScreen>
   Future<void> _initProvider() async {
     final provider = Provider.of<SignToTextProvider>(context, listen: false);
     await provider.init();
+    
+    // Defer the mode set so it doesn't build during init
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        provider.setMode(widget.initialMode);
+      }
+    });
   }
 
   Future<void> _initTts() async {
@@ -242,6 +255,9 @@ class _SignToTextScreenState extends State<SignToTextScreen>
             const SizedBox(height: 8),
             _buildStatusBar(provider, isDarkMode),
             const SizedBox(height: 8),
+            _buildProtocolToggle(provider, isDarkMode, accentColor, boxBorder),
+            const SizedBox(height: 8),
+            
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -249,12 +265,22 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                   children: [
                     _buildCameraSection(provider, isDarkMode, boxBg, boxBorder, accentColor),
                     const SizedBox(height: 12),
+                    
+                    if (provider.mode == TranslationMode.http && provider.cameraActive)
+                      _buildHttpStatus(provider, isDarkMode, boxBg, boxBorder, accentColor),
+                      
+                    const SizedBox(height: 12),
+                    
                     if (provider.currentGloss != null)
                       _buildGlossBadge(provider, isDarkMode),
+                      
+                    _buildTranslationBoxHeader(provider, isDarkMode),
                     _buildTranslationBox(provider, isDarkMode, boxBg, boxBorder),
                     const SizedBox(height: 12),
+                    
                     if (provider.error != null)
                       _buildErrorDisplay(provider),
+                      
                     _buildControlButtons(provider, isDarkMode, accentColor, boxBg, boxBorder),
                     const SizedBox(height: 12),
                     _buildAudioControls(provider, accentColor, timerColor, waveInactiveColor, boxBg, audioBorder),
@@ -324,6 +350,139 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     );
   }
 
+  Widget _buildProtocolToggle(SignToTextProvider provider, bool isDarkMode, Color accentColor, Color boxBorder) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.white10 : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: boxBorder),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => provider.setMode(TranslationMode.webSocket),
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: provider.mode == TranslationMode.webSocket ? accentColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'WebSocket',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: provider.mode == TranslationMode.webSocket 
+                          ? Colors.white 
+                          : (isDarkMode ? Colors.white54 : Colors.black54),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => provider.setMode(TranslationMode.http),
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: provider.mode == TranslationMode.http ? accentColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'HTTP Mode',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: provider.mode == TranslationMode.http 
+                          ? Colors.white 
+                          : (isDarkMode ? Colors.white54 : Colors.black54),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHttpStatus(SignToTextProvider provider, bool isDarkMode, Color boxBg, Color boxBorder, Color accentColor) {
+    String statusText = 'Collecting';
+    Color statusColor = accentColor;
+    
+    if (provider.status == SignToTextStatus.cooldown) {
+      statusText = 'Cooldown (1.5s)';
+      statusColor = Colors.orange;
+    } else if (provider.status == SignToTextStatus.connecting) {
+      statusText = 'Predicting...';
+      statusColor = Colors.blue;
+    } else if (provider.status == SignToTextStatus.translating) {
+      statusText = 'Collecting';
+      statusColor = Colors.green;
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: boxBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: boxBorder, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'HTTP Status',
+                style: TextStyle(fontSize: 12, color: isDarkMode ? Colors.white54 : Colors.black54, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                statusText,
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: statusColor),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Frame Buffer',
+                style: TextStyle(fontSize: 12, color: isDarkMode ? Colors.white54 : Colors.black54, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${provider.frameCount} / 96',
+                style: TextStyle(
+                  fontSize: 15, 
+                  fontWeight: FontWeight.bold, 
+                  fontFamily: 'monospace',
+                  color: isDarkMode ? Colors.white : Colors.black87
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCameraSection(
     SignToTextProvider provider,
     bool isDarkMode,
@@ -369,7 +528,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
                       },
                     ),
                   ),
-                  if (provider.status == SignToTextStatus.translating && provider.currentGloss == null)
+                  if (provider.status == SignToTextStatus.translating && provider.currentGloss == null && provider.mode == TranslationMode.webSocket)
                     const Positioned(
                       bottom: 12,
                       left: 0,
@@ -444,6 +603,37 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     );
   }
 
+  Widget _buildTranslationBoxHeader(SignToTextProvider provider, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0, left: 8, right: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            provider.mode == TranslationMode.webSocket ? 'Live Translation' : 'Batch Translation',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: isDarkMode ? Colors.white70 : Colors.black87,
+            ),
+          ),
+          TextButton(
+            onPressed: provider.cameraActive ? provider.clearTranslation : null,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+              backgroundColor: Colors.red.withValues(alpha: 0.1),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Clear', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTranslationBox(
     SignToTextProvider provider,
     bool isDarkMode,
@@ -484,7 +674,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
     bool isArabic,
     bool isDarkMode,
   ) {
-    if (provider.status == SignToTextStatus.translating && provider.currentGloss == null) {
+    if ((provider.status == SignToTextStatus.translating || provider.status == SignToTextStatus.connecting) && provider.currentGloss == null && provider.currentText == null) {
       return Row(
         children: [
           const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
@@ -557,7 +747,7 @@ class _SignToTextScreenState extends State<SignToTextScreen>
             icon: provider.isTranslating ? Icons.stop_rounded : Icons.play_arrow_rounded,
             label: provider.isTranslating ? 'Stop' : 'Start',
             color: provider.isTranslating ? Colors.red : Colors.green,
-            onTap: provider.status == SignToTextStatus.connecting
+            onTap: provider.status == SignToTextStatus.connecting && provider.mode == TranslationMode.webSocket
                 ? null
                 : () => _toggleTranslation(provider),
           ),

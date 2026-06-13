@@ -87,11 +87,12 @@ class _PremiumSidebarState extends State<PremiumSidebar> {
     return [
       SidebarMenuItem(icon: Icons.home_rounded, label: local?.home ?? 'Home', index: 0),
       SidebarMenuItem(icon: Icons.translate_rounded, label: local?.textToSign ?? 'Text to Sign', index: 1),
-      SidebarMenuItem(icon: Icons.sign_language_rounded, label: local?.signToText ?? 'Sign to Text', index: 2),
-      SidebarMenuItem(icon: Icons.cloud_upload_rounded, label: local?.contributeDataset ?? 'Contribute to Dataset', index: 3),
-      SidebarMenuItem(icon: Icons.workspace_premium_rounded, label: local?.subscription ?? 'Subscriptions', index: 4),
-      SidebarMenuItem(icon: Icons.person_rounded, label: local?.profile ?? 'Profile', index: 5),
-      SidebarMenuItem(icon: Icons.settings_rounded, label: local?.settings ?? 'Settings', index: 6),
+      SidebarMenuItem(icon: Icons.sign_language_rounded, label: local?.signToText ?? 'Sign Translation', index: 2),
+      SidebarMenuItem(icon: Icons.cloud_rounded, label: 'HTTP Translation', index: 3),
+      SidebarMenuItem(icon: Icons.cloud_upload_rounded, label: local?.contributeDataset ?? 'Contribute to Dataset', index: 4),
+      SidebarMenuItem(icon: Icons.workspace_premium_rounded, label: local?.subscription ?? 'Subscriptions', index: 5),
+      SidebarMenuItem(icon: Icons.person_rounded, label: local?.profile ?? 'Profile', index: 6),
+      SidebarMenuItem(icon: Icons.settings_rounded, label: local?.settings ?? 'Settings', index: 7),
     ];
   }
 
@@ -141,7 +142,7 @@ class _PremiumSidebarState extends State<PremiumSidebar> {
                 );
                 return;
               }
-              context.read<NavigationProvider>().navigateTo(5);
+              context.read<NavigationProvider>().navigateTo(6);
               widget.onNavigate?.call();
             },
           ),
@@ -172,7 +173,7 @@ class _PremiumSidebarState extends State<PremiumSidebar> {
                   isSelected: currentPageIndex == item.index,
                   isCollapsed: isCollapsed,
                   onTap: () {
-                    if (item.index == 5 && !authProvider.isLoggedIn) {
+                    if (item.index == 6 && !authProvider.isLoggedIn) {
                       widget.onNavigate?.call();
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         '/login',

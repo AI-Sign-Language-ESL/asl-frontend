@@ -9,10 +9,10 @@ import '../../../providers/auth/auth_provider.dart';
 import '../../../providers/notification/notification_provider.dart';
 import 'premium_sidebar.dart';
 
-// Original screens — imported only for rendering, no circular dependency
 import '../../../screens/home_screen.dart';
 import '../../../screens/text_to_sign_screen.dart';
 import '../../sign_to_text/screens/sign_to_text_screen.dart';
+import '../../sign_to_text/providers/sign_to_text_provider.dart'; // Added for TranslationMode
 import '../../../screens/dataset_contribution_screen.dart';
 import '../../../screens/subscription_screen.dart';
 import '../../../screens/settings_screen.dart';
@@ -57,7 +57,8 @@ class _AppShellState extends State<AppShell> {
         onMenuTap: onMenuTap,
       ),
       TextToSignScreen(onMenuTap: onMenuTap),
-      SignToTextScreen(onMenuTap: onMenuTap),
+      SignToTextScreen(onMenuTap: onMenuTap, initialMode: TranslationMode.webSocket),
+      SignToTextScreen(onMenuTap: onMenuTap, initialMode: TranslationMode.http),
       DatasetContributionScreen(onMenuTap: onMenuTap),
       SubscriptionScreen(onMenuTap: onMenuTap),
       ProfileSettingsScreen(
